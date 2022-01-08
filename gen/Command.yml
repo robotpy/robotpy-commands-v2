@@ -16,11 +16,29 @@ functions:
   GetTypeName:
     ignore: true
   RequirementsDisjoint:
+  Command_WithTimeout:
+    ignore: true
+  Command_WithInterrupt:
+    ignore: true
+  Command_BeforeStarting:
+    ignore: true
+  Command_AndThen:
+    ignore: true
+  Command_Perpetually:
+    ignore: true
+  Command_AsProxy:
+    ignore: true
+  Command_Schedule:
+    ignore: true
+  Command_Schedule:
+    overloads:
+      std::shared_ptr<frc2::Command>:
+        ignore: true
+      std::shared_ptr<frc2::Command>, bool:
+        ignore: true
 classes:
   Command:
     shared_ptr: true
-    ignored_bases:
-    - std::enable_shared_from_this<Command>
     attributes:
       m_isGrouped:
     methods:
@@ -31,23 +49,41 @@ classes:
       IsFinished:
       GetRequirements:
       WithTimeout:
+        cpp_code: |
+          &Command_WithTimeout
       WithInterrupt:
+        cpp_code: |
+          &Command_WithInterrupt
       BeforeStarting:
         overloads:
           std::function<void ( )>, std::initializer_list<std::shared_ptr<Subsystem>>:
             ignore: true
           std::function<void ( )>, wpi::ArrayRef<std::shared_ptr<Subsystem>>:
+            cpp_code: |
+              &Command_BeforeStarting
       AndThen:
         overloads:
           std::function<void ( )>, std::initializer_list<std::shared_ptr<Subsystem>>:
             ignore: true
           std::function<void ( )>, wpi::ArrayRef<std::shared_ptr<Subsystem>>:
+            cpp_code: |
+              &Command_AndThen
       Perpetually:
+        cpp_code: |
+          &Command_Perpetually
       AsProxy:
+        cpp_code: |
+          &Command_AsProxy
       Schedule:
         overloads:
           bool:
+            cpp_code: |
+              [](std::shared_ptr<Command> self, bool interruptable) {
+                Command_Schedule(self, interruptable);
+              }
           "":
+            cpp_code: |
+              [](std::shared_ptr<Command> self) { Command_Schedule(self, true); }
       Cancel:
       IsScheduled:
       HasRequirement:

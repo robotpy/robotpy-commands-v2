@@ -11,9 +11,9 @@
 
 cls_Command
   .def("andThen",
-    [](Command* self, py::args cmds) {
+    [](std::shared_ptr<Command> self, py::args cmds) {
       std::vector<std::shared_ptr<Command>> commands;
-      commands.emplace_back(self->shared_from_this());
+      commands.emplace_back(self);
       for (auto cmd : cmds) {
         auto cmdptr = py::cast<std::shared_ptr<Command>>(cmd);
         commands.emplace_back(cmdptr);
@@ -24,9 +24,9 @@ cls_Command
     "convenient/less-verbose than constructing a new {@link SequentialCommandGroup} explicitly.\n"
     DECORATOR_NOTE)
   .def("alongWith",
-    [](Command* self, py::args cmds) {
+    [](std::shared_ptr<Command> self, py::args cmds) {
       std::vector<std::shared_ptr<Command>> commands;
-      commands.emplace_back(self->shared_from_this());
+      commands.emplace_back(self);
       for (auto cmd : cmds) {
         auto cmdptr = py::cast<std::shared_ptr<Command>>(cmd);
         commands.emplace_back(cmdptr);
@@ -39,18 +39,18 @@ cls_Command
     "ParallelCommandGroup explicitly.\n"
     DECORATOR_NOTE)
   .def("deadlineWith",
-    [](Command* self, py::args cmds) {
+    [](std::shared_ptr<Command> self, py::args cmds) {
       return std::make_shared<ParallelDeadlineGroup>(
-        self->shared_from_this(), std::move(pyargs2cmdList(cmds)));
+        self, std::move(pyargs2cmdList(cmds)));
     },
     "Decorates this command with a set of commands to run parallel to it, ending when the calling\n"
     "command ends and interrupting all the others. Often more convenient/less-verbose than\n"
     "constructing a new {@link ParallelDeadlineGroup} explicitly.\n"
     DECORATOR_NOTE)
   .def("raceWith",
-    [](Command* self, py::args cmds) {
+    [](std::shared_ptr<Command> self, py::args cmds) {
       std::vector<std::shared_ptr<Command>> commands;
-      commands.emplace_back(self->shared_from_this());
+      commands.emplace_back(self);
       for (auto cmd : cmds) {
         auto cmdptr = py::cast<std::shared_ptr<Command>>(cmd);
         commands.emplace_back(cmdptr);

@@ -42,7 +42,7 @@ class ProxyScheduleCommand;
  *
  * @see CommandScheduler
  */
-class Command : public std::enable_shared_from_this<Command>, public frc::ErrorBase {
+class Command : public frc::ErrorBase {
  public:
   Command() = default;
   ~Command() override;
@@ -190,7 +190,7 @@ class Command : public std::enable_shared_from_this<Command>, public frc::ErrorB
   /**
    * Schedules this command, defaulting to interruptible.
    */
-  void Schedule() { Schedule(true); }
+  void Schedule();
 
   /**
    * Cancels this command.  Will call the command's interrupted() method.
@@ -261,3 +261,18 @@ class Command : public std::enable_shared_from_this<Command>, public frc::ErrorB
  */
 bool RequirementsDisjoint(Command* first, Command* second);
 }  // namespace frc2
+
+// workarounds for not having enable_shared_from_this
+std::shared_ptr<frc2::ParallelRaceGroup> Command_WithTimeout(std::shared_ptr<frc2::Command> self, units::second_t duration);
+std::shared_ptr<frc2::ParallelRaceGroup> Command_WithInterrupt(std::shared_ptr<frc2::Command> self, std::function<bool()> condition);
+std::shared_ptr<frc2::SequentialCommandGroup> Command_BeforeStarting(
+    std::shared_ptr<frc2::Command> self,
+    std::function<void()> toRun, wpi::ArrayRef<std::shared_ptr<frc2::Subsystem>> requirements);
+std::shared_ptr<frc2::SequentialCommandGroup> Command_AndThen(
+    std::shared_ptr<frc2::Command> self,
+    std::function<void()> toRun, wpi::ArrayRef<std::shared_ptr<frc2::Subsystem>> requirements);
+std::shared_ptr<frc2::PerpetualCommand> Command_Perpetually(std::shared_ptr<frc2::Command> self) ;
+std::shared_ptr<frc2::ProxyScheduleCommand> Command_AsProxy(std::shared_ptr<frc2::Command> self);
+
+void Command_Schedule(std::shared_ptr<frc2::Command> self);
+void Command_Schedule(std::shared_ptr<frc2::Command> self, bool interruptible);
