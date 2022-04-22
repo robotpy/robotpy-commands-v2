@@ -58,10 +58,10 @@ extra_includes = [
 ]
 
 generate = [
-    { Button = "frc2/command/button/Button.h" },
-    { JoystickButton = "frc2/command/button/JoystickButton.h" },
-    { NetworkButton = "frc2/command/button/NetworkButton.h" },
-    { POVButton = "frc2/command/button/POVButton.h" },
+    # { Button = "frc2/command/button/Button.h" },
+    # { JoystickButton = "frc2/command/button/JoystickButton.h" },
+    # { NetworkButton = "frc2/command/button/NetworkButton.h" },
+    # { POVButton = "frc2/command/button/POVButton.h" },
     { Trigger = "frc2/command/button/Trigger.h" },
 
     { CommandBase = "frc2/command/CommandBase.h" },

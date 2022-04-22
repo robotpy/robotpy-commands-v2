@@ -1,4 +1,6 @@
 from . import _init_impl
+from .trigger import Trigger
+from .coroutinecommand import CoroutineCommand, commandify
 
 from .version import version as __version__
 
@@ -40,7 +42,7 @@ from ._impl import (
     TrapezoidProfileCommandRadians,
     TrapezoidProfileSubsystem,
     TrapezoidProfileSubsystemRadians,
-    Trigger,
+    # Trigger,
     WaitCommand,
     WaitUntilCommand,
     # button,
@@ -84,9 +86,14 @@ __all__ = [
     "TrapezoidProfileCommandRadians",
     "TrapezoidProfileSubsystem",
     "TrapezoidProfileSubsystemRadians",
-    "Trigger",
+    # "Trigger",
     "WaitCommand",
     "WaitUntilCommand",
     # "button",
     "requirementsDisjoint",
+
+    # py side
+    "commandify",
+    "CoroutineCommand",
+    "Trigger",
 ]

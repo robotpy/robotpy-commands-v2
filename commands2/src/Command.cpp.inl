@@ -159,5 +159,12 @@ cls_Command
     "\n"
     ":returns: the command with the timeout added\n"
     DECORATOR_NOTE)
+  .def("__iter__",
+    [](std::shared_ptr<Command> self) {
+      return py::make_iterator(CommandIterator(self), CommandIteratorSentinel());
+    },
+    py::keep_alive<0, 1>(),
+    "qweqwe\n"
+    )
   ;
   

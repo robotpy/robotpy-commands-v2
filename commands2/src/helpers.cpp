@@ -24,3 +24,19 @@ std::vector<frc2::Subsystem*> pyargs2SubsystemList(py::args subs) {
   }
   return subsystems;
 }
+
+CommandIterator::CommandIterator(std::shared_ptr<frc2::Command> cmd) : cmd(cmd) {}
+std::shared_ptr<frc2::Command> CommandIterator::operator*() const { return cmd; }
+CommandIterator& CommandIterator::operator++() {
+  if (!called_initialize) {
+    cmd->Initialize();
+    called_initialize = true;
+    return *this;
+  }
+  cmd->Execute();
+  return *this;
+}
+
+bool operator==(const CommandIterator& it, const CommandIteratorSentinel&) {
+  return it.called_initialize && it.cmd->IsFinished();
+}
