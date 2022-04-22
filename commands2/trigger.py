@@ -35,42 +35,42 @@ class Trigger:
 	def whenActive(self, command: Command, /, interruptible: bool = True) -> None: ...
 
 	@overload
-	def whenActive(self, coroutine: Union[Coroutine, Coroutineable], /, *, interruptible: bool = True, requirements: Optional[List[Subsystem]] = None) -> None: ...
+	def whenActive(self, coroutine: Union[Coroutine, Coroutineable], /, *, interruptible: bool = True, requirements: Optional[List[Subsystem]] = None, runs_when_disabled: bool = False) -> None: ...
 
 	@overload
-	def whenActive(self, coroutine: None, /, *, interruptible: bool = True, requirements: Optional[List[Subsystem]] = None) -> Callable[[Coroutineable], None]: ...
+	def whenActive(self, coroutine: None, /, *, interruptible: bool = True, requirements: Optional[List[Subsystem]] = None, runs_when_disabled: bool = False) -> Callable[[Coroutineable], None]: ...
 
-	def whenActive(self, command_or_coroutine: Optional[Union[Command, Coroutine, Coroutineable]], /, interruptible: bool = True, requirements: Optional[List[Subsystem]] = None) -> Union[None, Callable[[Coroutineable], None]]:
+	def whenActive(self, command_or_coroutine: Optional[Union[Command, Coroutine, Coroutineable]], /, interruptible: bool = True, requirements: Optional[List[Subsystem]] = None, runs_when_disabled: bool = False) -> Union[None, Callable[[Coroutineable], None]]:
 		if command_or_coroutine is None:
 			def wrapper(coroutine: Coroutineable) -> None:
-				self.whenActive(coroutine, interruptible = interruptible, requirements = requirements)
+				self.whenActive(coroutine, interruptible = interruptible, requirements = requirements, runs_when_disabled = runs_when_disabled)
 			return wrapper
 
 		if isinstance(command_or_coroutine, Command):
 			self._trigger.whenActive(command_or_coroutine, interruptible)
 			return
 
-		self._trigger.whenActive(CoroutineCommand(command_or_coroutine, requirements), interruptible)
+		self._trigger.whenActive(CoroutineCommand(command_or_coroutine, requirements, runs_when_disabled), interruptible)
 		return
 
 	@overload
 	def whenInactive(self, command: Command, /, interruptible: bool = True) -> None: ...
 
 	@overload
-	def whenInactive(self, coroutine: Union[Coroutine, Coroutineable], /, *, interruptible: bool = True, requirements: Optional[List[Subsystem]] = None) -> None: ...
+	def whenInactive(self, coroutine: Union[Coroutine, Coroutineable], /, *, interruptible: bool = True, requirements: Optional[List[Subsystem]] = None, runs_when_disabled: bool = False) -> None: ...
 
 	@overload
-	def whenInactive(self, coroutine: None, /, *, interruptible: bool = True, requirements: Optional[List[Subsystem]] = None) -> Callable[[Coroutineable], None]: ...
+	def whenInactive(self, coroutine: None, /, *, interruptible: bool = True, requirements: Optional[List[Subsystem]] = None, runs_when_disabled: bool = False) -> Callable[[Coroutineable], None]: ...
 
-	def whenInactive(self, command_or_coroutine: Optional[Union[Command, Coroutine, Coroutineable]], /, interruptible: bool = True, requirements: Optional[List[Subsystem]] = None) -> Union[None, Callable[[Coroutineable], None]]:
+	def whenInactive(self, command_or_coroutine: Optional[Union[Command, Coroutine, Coroutineable]], /, interruptible: bool = True, requirements: Optional[List[Subsystem]] = None, runs_when_disabled: bool = False) -> Union[None, Callable[[Coroutineable], None]]:
 		if command_or_coroutine is None:
 			def wrapper(coroutine: Coroutineable) -> None:
-				self.whenInactive(coroutine, interruptible = interruptible, requirements = requirements)
+				self.whenInactive(coroutine, interruptible = interruptible, requirements = requirements, runs_when_disabled = runs_when_disabled)
 			return wrapper
 
 		if isinstance(command_or_coroutine, Command):
 			self._trigger.whenInactive(command_or_coroutine, interruptible)
 			return
 
-		self._trigger.whenInactive(CoroutineCommand(command_or_coroutine, requirements), interruptible)
+		self._trigger.whenInactive(CoroutineCommand(command_or_coroutine, requirements, runs_when_disabled), interruptible)
 		return

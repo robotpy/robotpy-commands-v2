@@ -33,9 +33,10 @@ class CoroutineCommand(CommandBase):
 	coroutine_function: Optional[Coroutineable]
 	is_finished: bool
 
-	def __init__(self, coroutine: Union[Coroutine, Coroutineable], requirements: Optional[List[Subsystem]] = None) -> None:
+	def __init__(self, coroutine: Union[Coroutine, Coroutineable], requirements: Optional[List[Subsystem]] = None, runs_when_disabled: bool = False) -> None:
 		self.coroutine = None
 		self.coroutine_function = None
+		self.runsWhenDisabled = lambda: runs_when_disabled
 
 		if is_coroutine(coroutine):
 			self.coroutine = coroutine
