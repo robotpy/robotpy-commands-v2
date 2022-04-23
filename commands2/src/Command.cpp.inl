@@ -164,7 +164,12 @@ cls_Command
       return py::make_iterator(CommandIterator(self), CommandIteratorSentinel());
     },
     py::keep_alive<0, 1>(),
-    "qweqwe\n"
+    "Creates an Iterator for this command. The iterator will run the command and\n"
+    "will only exhaust when the command is finished.\n"
+    "Note that the iterator will not run the command in the background. It must be\n"
+    "explicitly be iterated over.\n"
+    "\n"
+    ":returns: an iterator for this command\n"
     )
   ;
   
