@@ -5,14 +5,24 @@ from ._impl import _Trigger
 
 from .coroutinecommand import CoroutineCommand, Coroutineable, Coroutine
 
+from wpimath.filter import Debouncer
 
 class Trigger:
     """
     A button that can be pressed or released.
     """
 
-    def __init__(self, is_active: Callable[[], bool] = lambda: False) -> None:
-        self._trigger = _Trigger(is_active)
+    @overload
+    def __init__(self, is_active: Callable[[], bool] = lambda: False) -> None: ...
+
+    @overload
+    def __init__(self, is_active: _Trigger) -> None: ...
+
+    def __init__(self, is_active: Union[Callable[[], bool], _Trigger] = lambda: False) -> None:
+        if isinstance(is_active, _Trigger):
+            self._trigger = is_active
+        else:
+            self._trigger = _Trigger(is_active)
 
     def __bool__(self) -> bool:
         return bool(self._trigger)
@@ -40,6 +50,10 @@ class Trigger:
 
     def and_(self, other: "Trigger") -> "Trigger":
         return self & other
+
+    def debounce(self, debounce_time: float, type: Debouncer.DebounceType) -> "Trigger":
+        return Trigger(_Trigger.debounce(debounce_time, type))
+
 
     @overload
     def whenActive(self, command: Command, /, interruptible: bool = True) -> None:
