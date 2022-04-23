@@ -50,7 +50,3 @@ classes:
       Debounce:
       Get:
         rename: __bool__
-
-
-inline_code: |
-  #include "src/Trigger.cpp.inl"
