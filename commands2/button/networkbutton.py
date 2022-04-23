@@ -21,7 +21,7 @@ class NetworkButton(Button):
             super().__init__(
                 lambda: NetworkTables.isConnected and entry.getBoolean(False)
             )
-        else:
+        elif num_args == 2:
             table = kwargs.get("table", args[0])
             field = kwargs.get("field", args[-1])
 
@@ -30,3 +30,7 @@ class NetworkButton(Button):
 
             entry = table.getEntry(field)
             self.__init__(entry)
+        else:
+            raise TypeError(
+                f"__init__() takes 1 or 2 positional arguments but {num_args} were given"
+            )
