@@ -8,6 +8,7 @@ class Button(Trigger):
 
     @see Trigger
     """
+
     whenPressed = Trigger.whenActive
     whenReleased = Trigger.whenInactive
     whileHeld = Trigger.whileActiveContinous

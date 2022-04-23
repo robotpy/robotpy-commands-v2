@@ -10,7 +10,7 @@ class JoystickButton(Button):
 
     @see Trigger
     """
-    
+
     def __init__(self, joystick: Joystick, button: int) -> None:
         """
         Creates a JoystickButton that commands can be bound to.

@@ -91,8 +91,11 @@ class CoroutineCommand(CommandBase):
     def isFinished(self):
         return self.is_finished
 
+
 @overload
-def commandify(*, requirements: Optional[List[Subsystem]] = None, runs_when_disabled: bool = False) -> Callable[[Coroutineable], Callable[..., CoroutineCommand]]:
+def commandify(
+    *, requirements: Optional[List[Subsystem]] = None, runs_when_disabled: bool = False
+) -> Callable[[Coroutineable], Callable[..., CoroutineCommand]]:
     """
     A decorator that turns a coroutine function into a command.
     A def should be under this.
@@ -101,6 +104,7 @@ def commandify(*, requirements: Optional[List[Subsystem]] = None, runs_when_disa
     :param runs_when_disabled: Whether or not this command runs when the robot is disabled.
     """
 
+
 @overload
 def commandify(coroutine: Coroutineable, /) -> Callable[..., CoroutineCommand]:
     """
@@ -108,7 +112,17 @@ def commandify(coroutine: Coroutineable, /) -> Callable[..., CoroutineCommand]:
     A def should be under this.
     """
 
-def commandify(coroutine: Optional[Coroutineable] = None, /, *, requirements: Optional[List[Subsystem]] = None, runs_when_disabled: bool = False) -> Union[Callable[[Coroutineable], Callable[..., CoroutineCommand]],Callable[..., CoroutineCommand]]:
+
+def commandify(
+    coroutine: Optional[Coroutineable] = None,
+    /,
+    *,
+    requirements: Optional[List[Subsystem]] = None,
+    runs_when_disabled: bool = False,
+) -> Union[
+    Callable[[Coroutineable], Callable[..., CoroutineCommand]],
+    Callable[..., CoroutineCommand],
+]:
     def wrapper(func: Coroutineable) -> Callable[..., CoroutineCommand]:
         @wraps(func)
         def arg_accepter(*args, **kwargs) -> CoroutineCommand:
@@ -118,9 +132,8 @@ def commandify(coroutine: Optional[Coroutineable] = None, /, *, requirements: Op
             )
 
         return arg_accepter
-    
+
     if coroutine is None:
         return wrapper
 
     return wrapper(coroutine)
-

@@ -6,6 +6,7 @@ from .coroutinecommand import CoroutineCommand, Coroutineable, Coroutine
 
 from wpimath.filter import Debouncer
 
+
 class Trigger:
     """
     A class used to bind command scheduling to events.  The
@@ -36,7 +37,9 @@ class Trigger:
         :param is_active: The c++ trigger to wrap.
         """
 
-    def __init__(self, is_active: Union[Callable[[], bool], _Trigger] = lambda: False) -> None:
+    def __init__(
+        self, is_active: Union[Callable[[], bool], _Trigger] = lambda: False
+    ) -> None:
         if isinstance(is_active, _Trigger):
             self._trigger = is_active
         else:
@@ -165,7 +168,6 @@ class Trigger:
         :param runs_when_disabled: Whether the coroutine should run when the subsystem is disabled.
         """
 
-
     def whenActive(
         self,
         command_or_coroutine: Optional[Union[Command, Coroutine, Coroutineable]] = None,
@@ -204,6 +206,7 @@ class Trigger:
         :param command:       The command to bind.
         :param interruptible: Whether the command should be interruptible.
         """
+
     @overload
     def whenInactive(
         self,
@@ -271,9 +274,10 @@ class Trigger:
         )
         return
 
-
     @overload
-    def whileActiveContinous(self, command: Command, /, interruptible: bool = True) -> None:
+    def whileActiveContinous(
+        self, command: Command, /, interruptible: bool = True
+    ) -> None:
         """
         Binds a command to be started repeatedly while the trigger is active, and
         canceled when it becomes inactive.
@@ -350,7 +354,6 @@ class Trigger:
             interruptible,
         )
         return
-
 
     @overload
     def whileActiveOnce(self, command: Command, /, interruptible: bool = True) -> None:
@@ -430,8 +433,6 @@ class Trigger:
             interruptible,
         )
         return
-
-
 
     @overload
     def toggleWhenActive(self, command: Command, /, interruptible: bool = True) -> None:
