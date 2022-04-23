@@ -1,5 +1,5 @@
 from functools import wraps
-from typing import Any, Callable, Generator, List, Union, Optional
+from typing import Any, Callable, Generator, List, Union, Optional, overload
 from ._impl import CommandBase, Subsystem
 import inspect
 from typing_extensions import TypeGuard
@@ -91,17 +91,36 @@ class CoroutineCommand(CommandBase):
     def isFinished(self):
         return self.is_finished
 
+@overload
+def commandify(*, requirements: Optional[List[Subsystem]] = None, runs_when_disabled: bool = False) -> Callable[[Coroutineable], Callable[..., CoroutineCommand]]:
+    """
+    A decorator that turns a coroutine function into a command.
+    A def should be under this.
 
-class commandify:
-    def __init__(self, requirements: Optional[List[Subsystem]] = None) -> None:
-        self.requirements = requirements
+    :param requirements: The subsystems that this command requires.
+    :param runs_when_disabled: Whether or not this command runs when the robot is disabled.
+    """
 
-    def __call__(self, func: Coroutineable):
+@overload
+def commandify(coroutine: Coroutineable, /) -> Callable[..., CoroutineCommand]:
+    """
+    A decorator that turns a coroutine function into a command.
+    A def should be under this.
+    """
+
+def commandify(coroutine: Optional[Coroutineable] = None, /, *, requirements: Optional[List[Subsystem]] = None, runs_when_disabled: bool = False) -> Union[Callable[[Coroutineable], Callable[..., CoroutineCommand]],Callable[..., CoroutineCommand]]:
+    def wrapper(func: Coroutineable) -> Callable[..., CoroutineCommand]:
         @wraps(func)
         def arg_accepter(*args, **kwargs) -> CoroutineCommand:
             return CoroutineCommand(
                 lambda: ensure_generator_function(func)(*args, **kwargs),
-                self.requirements,
+                requirements,
             )
 
         return arg_accepter
+    
+    if coroutine is None:
+        return wrapper
+
+    return wrapper(coroutine)
+
