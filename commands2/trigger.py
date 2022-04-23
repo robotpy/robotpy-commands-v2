@@ -29,8 +29,17 @@ class Trigger:
     def __or__(self, other: "Trigger") -> "Trigger":
         return Trigger(lambda: self() or other())
 
-    def __not__(self) -> "Trigger":
+    def __invert__(self) -> "Trigger":
         return Trigger(lambda: not self())
+
+    def not_(self) -> "Trigger":
+        return ~self
+
+    def or_(self, other: "Trigger") -> "Trigger":
+        return self | other
+
+    def and_(self, other: "Trigger") -> "Trigger":
+        return self & other
 
     @overload
     def whenActive(self, command: Command, /, interruptible: bool = True) -> None:
@@ -147,3 +156,6 @@ class Trigger:
             interruptible,
         )
         return
+
+
+        def whileActiveContinuous
