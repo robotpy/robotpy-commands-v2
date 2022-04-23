@@ -5,6 +5,7 @@ extra_includes:
 
 classes:
   Trigger:
+    rename: "_Trigger"
     shared_ptr: true
     methods:
       Trigger:

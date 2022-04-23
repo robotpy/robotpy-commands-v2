@@ -86,7 +86,7 @@ __all__ = [
     "TrapezoidProfileCommandRadians",
     "TrapezoidProfileSubsystem",
     "TrapezoidProfileSubsystemRadians",
-    # "Trigger",
+    # "_Trigger",
     "WaitCommand",
     "WaitUntilCommand",
     # "button",

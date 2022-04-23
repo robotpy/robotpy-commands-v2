@@ -1,7 +1,7 @@
 from typing import Callable, Optional, overload, List, Union
 
 from ._impl import Command, Subsystem
-from ._impl import Trigger as _Trigger
+from ._impl import _Trigger
 
 from .coroutinecommand import CoroutineCommand, Coroutineable, Coroutine
 
