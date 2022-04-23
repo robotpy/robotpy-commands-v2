@@ -34,6 +34,10 @@ def ensure_generator_function(func: Coroutineable) -> Callable[..., Coroutine]:
 
 
 class CoroutineCommand(CommandBase):
+    """
+    A class that wraps a coroutine function into a command.
+    """
+
     coroutine: Optional[Coroutine]
     coroutine_function: Optional[Coroutineable]
     is_finished: bool
@@ -44,6 +48,13 @@ class CoroutineCommand(CommandBase):
         requirements: Optional[List[Subsystem]] = None,
         runs_when_disabled: bool = False,
     ) -> None:
+        """
+        Creates a CoroutineCommand than can be used as a command.
+
+        :param coroutine: The coroutine or coroutine function to bind.
+        :param requirements: The subsystems that this command requires.
+        :param runs_when_disabled: Whether or not this command runs when the robot is disabled.
+        """
         self.coroutine = None
         self.coroutine_function = None
         self.runsWhenDisabled = lambda: runs_when_disabled

@@ -8,14 +8,33 @@ from wpimath.filter import Debouncer
 
 class Trigger:
     """
-    A button that can be pressed or released.
+    A class used to bind command scheduling to events.  The
+    Trigger class is a base for all command-event-binding classes, and so the
+    methods are named fairly abstractly; for purpose-specific wrappers, see
+    Button.
+
+    @see Button
     """
 
     @overload
-    def __init__(self, is_active: Callable[[], bool] = lambda: False) -> None: ...
+    def __init__(self, is_active: Callable[[], bool] = lambda: False) -> None:
+        """
+        Create a new trigger that is active when the given condition is true.
+
+        :param is_active: Whether the trigger is active.
+
+        Create a new trigger that is never active (default constructor) - activity
+        can be further determined by subclass code.
+        """
 
     @overload
-    def __init__(self, is_active: _Trigger) -> None: ...
+    def __init__(self, is_active: _Trigger) -> None:
+        """
+        Create a new trigger from an existing c++ trigger.
+        Robot code does not need to use this constructor.
+
+        :param is_active: The c++ trigger to wrap.
+        """
 
     def __init__(self, is_active: Union[Callable[[], bool], _Trigger] = lambda: False) -> None:
         if isinstance(is_active, _Trigger):
@@ -24,41 +43,90 @@ class Trigger:
             self._trigger = _Trigger(is_active)
 
     def __bool__(self) -> bool:
+        """
+        Returns whether or not the trigger is currently active
+        """
         return bool(self._trigger)
 
     def get(self) -> bool:
+        """
+        Returns whether or not the trigger is currently active
+        """
         return bool(self)
 
     def __call__(self) -> bool:
+        """
+        Returns whether or not the trigger is currently active
+        """
         return bool(self)
 
     def __and__(self, other: "Trigger") -> "Trigger":
+        """
+        Composes this trigger with another trigger, returning a new trigger that is active when both
+        triggers are active.
+
+        :param trigger: the trigger to compose with
+
+        :returns: the trigger that is active when both triggers are active
+        """
         return Trigger(lambda: self() and other())
 
     def __or__(self, other: "Trigger") -> "Trigger":
+        """
+        Composes this trigger with another trigger, returning a new trigger that is active when either
+        triggers are active.
+
+        :param trigger: the trigger to compose with
+
+        :returns: the trigger that is active when both triggers are active
+        """
         return Trigger(lambda: self() or other())
 
     def __invert__(self) -> "Trigger":
+        """
+        Creates a new trigger that is active when this trigger is inactive, i.e. that acts as the
+        negation of this trigger.
+
+        :param trigger: the trigger to compose with
+
+        :returns: the trigger that is active when both triggers are active
+        """
         return Trigger(lambda: not self())
 
-    def not_(self) -> "Trigger":
-        return ~self
+    and_ = __and__
+    or_ = __or__
+    not_ = __invert__
 
-    def or_(self, other: "Trigger") -> "Trigger":
-        return self | other
+    def debounce(self, debounceTime: float, type: Debouncer.DebounceType) -> "Trigger":
+        """
+        Creates a new debounced trigger from this trigger - it will become active
+        when this trigger has been active for longer than the specified period.
 
-    def and_(self, other: "Trigger") -> "Trigger":
-        return self & other
+        :param debounceTime: The debounce period.
+        :param type:         The debounce type.
 
-    def debounce(self, debounce_time: float, type: Debouncer.DebounceType) -> "Trigger":
-        return Trigger(_Trigger.debounce(debounce_time, type))
+        :returns: The debounced trigger.
+        """
+        return Trigger(_Trigger.debounce(debounceTime, type))
 
     def cancelWhenActive(self, command: Command) -> None:
+        """
+        Binds a command to be canceled when the trigger becomes active.  Takes a
+        raw pointer, and so is non-owning; users are responsible for the lifespan
+        and scheduling of the command.
+
+        :param command: The command to bind.
+        """
         self._trigger.cancelWhenActive(command)
 
     @overload
     def whenActive(self, command: Command, /, interruptible: bool = True) -> None:
-        ...
+        """
+        Binds a command to start when the trigger becomes active.
+
+        :param command:       The command to bind.
+        :param interruptible: Whether the command should be interruptible.
+        """
 
     @overload
     def whenActive(
@@ -70,23 +138,37 @@ class Trigger:
         requirements: Optional[List[Subsystem]] = None,
         runs_when_disabled: bool = False,
     ) -> None:
-        ...
+        """
+        Binds a coroutine to start when the trigger becomes active.
+
+        :param coroutine: The coroutine or coroutine function to bind.
+        :param interruptible: Whether the command should be interruptible.
+        :param requirements: The subsystems required to run the coroutine.
+        :param runs_when_disabled: Whether the coroutine should run when the subsystem is disabled.
+        """
 
     @overload
     def whenActive(
         self,
-        coroutine: None,
         /,
         *,
         interruptible: bool = True,
         requirements: Optional[List[Subsystem]] = None,
         runs_when_disabled: bool = False,
     ) -> Callable[[Coroutineable], None]:
-        ...
+        """
+        Binds a coroutine to start when the trigger becomes active (Decorator Form).
+        A def should be under this.
+
+        :param interruptible: Whether the command should be interruptible.
+        :param requirements: The subsystems required to run the coroutine.
+        :param runs_when_disabled: Whether the coroutine should run when the subsystem is disabled.
+        """
+
 
     def whenActive(
         self,
-        command_or_coroutine: Optional[Union[Command, Coroutine, Coroutineable]],
+        command_or_coroutine: Optional[Union[Command, Coroutine, Coroutineable]] = None,
         /,
         interruptible: bool = True,
         requirements: Optional[List[Subsystem]] = None,
@@ -116,8 +198,12 @@ class Trigger:
 
     @overload
     def whenInactive(self, command: Command, /, interruptible: bool = True) -> None:
-        ...
+        """
+        Binds a command to start when the trigger becomes inactive.
 
+        :param command:       The command to bind.
+        :param interruptible: Whether the command should be interruptible.
+        """
     @overload
     def whenInactive(
         self,
@@ -128,23 +214,36 @@ class Trigger:
         requirements: Optional[List[Subsystem]] = None,
         runs_when_disabled: bool = False,
     ) -> None:
-        ...
+        """
+        Binds a coroutine to start when the trigger becomes inactive.
+
+        :param coroutine: The coroutine or coroutine function to bind.
+        :param interruptible: Whether the command should be interruptible.
+        :param requirements: The subsystems required to run the coroutine.
+        :param runs_when_disabled: Whether the coroutine should run when the subsystem is disabled.
+        """
 
     @overload
     def whenInactive(
         self,
-        coroutine: None,
         /,
         *,
         interruptible: bool = True,
         requirements: Optional[List[Subsystem]] = None,
         runs_when_disabled: bool = False,
     ) -> Callable[[Coroutineable], None]:
-        ...
+        """
+        Binds a coroutine to start when the trigger becomes active (Decorator Form).
+        A def should be under this.
+
+        :param interruptible: Whether the command should be interruptible.
+        :param requirements: The subsystems required to run the coroutine.
+        :param runs_when_disabled: Whether the coroutine should run when the subsystem is disabled.
+        """
 
     def whenInactive(
         self,
-        command_or_coroutine: Optional[Union[Command, Coroutine, Coroutineable]],
+        command_or_coroutine: Optional[Union[Command, Coroutine, Coroutineable]] = None,
         /,
         interruptible: bool = True,
         requirements: Optional[List[Subsystem]] = None,
@@ -175,7 +274,13 @@ class Trigger:
 
     @overload
     def whileActiveContinous(self, command: Command, /, interruptible: bool = True) -> None:
-        ...
+        """
+        Binds a command to be started repeatedly while the trigger is active, and
+        canceled when it becomes inactive.
+
+        :param command:       The command to bind.
+        :param interruptible: Whether the command should be interruptible.
+        """
 
     @overload
     def whileActiveContinous(
@@ -187,23 +292,38 @@ class Trigger:
         requirements: Optional[List[Subsystem]] = None,
         runs_when_disabled: bool = False,
     ) -> None:
-        ...
+        """
+        Binds a command to be started repeatedly while the trigger is active, and
+        canceled when it becomes inactive.
+
+        :param coroutine: The coroutine or coroutine function to bind.
+        :param interruptible: Whether the command should be interruptible.
+        :param requirements: The subsystems required to run the coroutine.
+        :param runs_when_disabled: Whether the coroutine should run when the subsystem is disabled.
+        """
 
     @overload
     def whileActiveContinous(
         self,
-        coroutine: None,
         /,
         *,
         interruptible: bool = True,
         requirements: Optional[List[Subsystem]] = None,
         runs_when_disabled: bool = False,
     ) -> Callable[[Coroutineable], None]:
-        ...
+        """
+        Binds a command to be started repeatedly while the trigger is active, and
+        canceled when it becomes inactive (Decorator Form).
+        A def should be under this.
+
+        :param interruptible: Whether the command should be interruptible.
+        :param requirements: The subsystems required to run the coroutine.
+        :param runs_when_disabled: Whether the coroutine should run when the subsystem is disabled.
+        """
 
     def whileActiveContinous(
         self,
-        command_or_coroutine: Optional[Union[Command, Coroutine, Coroutineable]],
+        command_or_coroutine: Optional[Union[Command, Coroutine, Coroutineable]] = None,
         /,
         interruptible: bool = True,
         requirements: Optional[List[Subsystem]] = None,
@@ -234,7 +354,13 @@ class Trigger:
 
     @overload
     def whileActiveOnce(self, command: Command, /, interruptible: bool = True) -> None:
-        ...
+        """
+        Binds a command to be started when the trigger becomes active, and
+        canceled when it becomes inactive.
+
+        :param command:       The command to bind.
+        :param interruptible: Whether the command should be interruptible.
+        """
 
     @overload
     def whileActiveOnce(
@@ -246,23 +372,38 @@ class Trigger:
         requirements: Optional[List[Subsystem]] = None,
         runs_when_disabled: bool = False,
     ) -> None:
-        ...
+        """
+        Binds a command to be started when the trigger becomes active, and
+        canceled when it becomes inactive.
+
+        :param coroutine: The coroutine or coroutine function to bind.
+        :param interruptible: Whether the command should be interruptible.
+        :param requirements: The subsystems required to run the coroutine.
+        :param runs_when_disabled: Whether the coroutine should run when the subsystem is disabled.
+        """
 
     @overload
     def whileActiveOnce(
         self,
-        coroutine: None,
         /,
         *,
         interruptible: bool = True,
         requirements: Optional[List[Subsystem]] = None,
         runs_when_disabled: bool = False,
     ) -> Callable[[Coroutineable], None]:
-        ...
+        """
+        Binds a command to be started when the trigger becomes active, and
+        canceled when it becomes inactive (Decorator Form).
+        A def should be under this.
+
+        :param interruptible: Whether the command should be interruptible.
+        :param requirements: The subsystems required to run the coroutine.
+        :param runs_when_disabled: Whether the coroutine should run when the subsystem is disabled.
+        """
 
     def whileActiveOnce(
         self,
-        command_or_coroutine: Optional[Union[Command, Coroutine, Coroutineable]],
+        command_or_coroutine: Optional[Union[Command, Coroutine, Coroutineable]] = None,
         /,
         interruptible: bool = True,
         requirements: Optional[List[Subsystem]] = None,
@@ -294,6 +435,13 @@ class Trigger:
 
     @overload
     def toggleWhenActive(self, command: Command, /, interruptible: bool = True) -> None:
+        """
+        Binds a command to start when the trigger becomes active, and be canceled
+        when it again becomes active.
+
+        :param command:       The command to bind.
+        :param interruptible: Whether the command should be interruptible.
+        """
         ...
 
     @overload
@@ -306,23 +454,38 @@ class Trigger:
         requirements: Optional[List[Subsystem]] = None,
         runs_when_disabled: bool = False,
     ) -> None:
-        ...
+        """
+        Binds a command to start when the trigger becomes active, and be canceled
+        when it again becomes active.
+
+        :param coroutine: The coroutine or coroutine function to bind.
+        :param interruptible: Whether the command should be interruptible.
+        :param requirements: The subsystems required to run the coroutine.
+        :param runs_when_disabled: Whether the coroutine should run when the subsystem is disabled.
+        """
 
     @overload
     def toggleWhenActive(
         self,
-        coroutine: None,
         /,
         *,
         interruptible: bool = True,
         requirements: Optional[List[Subsystem]] = None,
         runs_when_disabled: bool = False,
     ) -> Callable[[Coroutineable], None]:
-        ...
+        """
+        Binds a command to start when the trigger becomes active, and be canceled
+        when it again becomes active (Decorator Form).
+        A def should be under this.
+
+        :param interruptible: Whether the command should be interruptible.
+        :param requirements: The subsystems required to run the coroutine.
+        :param runs_when_disabled: Whether the coroutine should run when the subsystem is disabled.
+        """
 
     def toggleWhenActive(
         self,
-        command_or_coroutine: Optional[Union[Command, Coroutine, Coroutineable]],
+        command_or_coroutine: Optional[Union[Command, Coroutine, Coroutineable]] = None,
         /,
         interruptible: bool = True,
         requirements: Optional[List[Subsystem]] = None,
