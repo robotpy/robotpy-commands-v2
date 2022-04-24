@@ -61,7 +61,7 @@ class CoroutineCommand(CommandBase):
 
         if is_coroutine(coroutine):
             self.coroutine = coroutine
-        elif is_coroutine_function(coroutine):
+        elif is_coroutineable(coroutine):
             self.coroutine_function = coroutine
         else:
             raise TypeError("The coroutine must be a coroutine or a coroutine function")
