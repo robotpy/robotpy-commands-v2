@@ -75,7 +75,7 @@ class CoroutineCommand(CommandBase):
         if self.coroutine_function:
             self.coroutine = ensure_generator_function(self.coroutine_function)()
         elif self.coroutine and self.is_finished:
-            RuntimeError("Generator objects cannot be reused.")
+            raise RuntimeError("Generator objects cannot be reused.")
 
         self.is_finished = False
 
