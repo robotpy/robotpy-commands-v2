@@ -34,6 +34,10 @@ class NetworkButton(Button):
         num_args = len(args) + len(kwargs)
         if num_args == 1:
             entry: NetworkTableEntry = kwargs.get("entry") or args[0]
+
+            if not isinstance(entry, NetworkTableEntry):
+                raise self._type_error(entry)
+            
             super().__init__(
                 lambda: NetworkTables.isConnected() and entry.getBoolean(False)
             )
@@ -47,6 +51,13 @@ class NetworkButton(Button):
             entry = table.getEntry(field)
             self.__init__(entry)
         else:
-            raise TypeError(
-                f"__init__() takes 1 or 2 positional arguments but {num_args} were given"
-            )
+            raise self._type_error(args)
+
+    def _type_error(self, *args):
+        return TypeError(
+            "NetworkButton.__init__(): incompatible constructor arguments. The following argument types are supported:\n"
+            "\t1. commands2.button.NetworkButton(entry: NetworkTableEntry)\n"
+            "\t2. commands2.button.NetworkButton(table: str, field: str)\n"
+            "\t3. commands2.button.NetworkButton(table: NetworkTable, field: str)\n"
+            f"Invoked with: {', '.join(map(str, args))}"
+        )
