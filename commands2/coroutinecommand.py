@@ -55,6 +55,7 @@ class CoroutineCommand(CommandBase):
         :param requirements: The subsystems that this command requires.
         :param runs_when_disabled: Whether or not this command runs when the robot is disabled.
         """
+        super().__init__()
         self.coroutine = None
         self.coroutine_function = None
         self.runsWhenDisabled = lambda: runs_when_disabled

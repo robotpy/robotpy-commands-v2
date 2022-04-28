@@ -33,13 +33,13 @@ class NetworkButton(Button):
     def __init__(self, *args, **kwargs) -> None:
         num_args = len(args) + len(kwargs)
         if num_args == 1:
-            entry: NetworkTableEntry = kwargs.get("entry", args[0])
+            entry: NetworkTableEntry = kwargs.get("entry") or args[0]
             super().__init__(
                 lambda: NetworkTables.isConnected and entry.getBoolean(False)
             )
         elif num_args == 2:
-            table = kwargs.get("table", args[0])
-            field = kwargs.get("field", args[-1])
+            table = kwargs.get("table") or args[0]
+            field = kwargs.get("field") or args[-1]
 
             if isinstance(table, str):
                 table = NetworkTables.getTable(table)
