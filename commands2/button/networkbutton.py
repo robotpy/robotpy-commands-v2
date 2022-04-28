@@ -35,7 +35,7 @@ class NetworkButton(Button):
         if num_args == 1:
             entry: NetworkTableEntry = kwargs.get("entry") or args[0]
             super().__init__(
-                lambda: NetworkTables.isConnected and entry.getBoolean(False)
+                lambda: NetworkTables.isConnected() and entry.getBoolean(False)
             )
         elif num_args == 2:
             table = kwargs.get("table") or args[0]
