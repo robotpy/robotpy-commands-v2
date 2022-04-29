@@ -107,7 +107,7 @@ def commandify(
 
 
 @overload
-def commandify(coroutine: Coroutineable, /) -> Callable[..., CoroutineCommand]:
+def commandify(coroutine: Coroutineable) -> Callable[..., CoroutineCommand]:
     """
     A decorator that turns a coroutine function into a command.
     A def should be under this.
