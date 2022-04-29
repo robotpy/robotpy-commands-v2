@@ -116,7 +116,6 @@ def commandify(coroutine: Coroutineable, /) -> Callable[..., CoroutineCommand]:
 
 def commandify(
     coroutine: Optional[Coroutineable] = None,
-    /,
     *,
     requirements: Optional[List[Subsystem]] = None,
     runs_when_disabled: bool = False,

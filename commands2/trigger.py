@@ -110,7 +110,7 @@ class Trigger:
 
         :returns: The debounced trigger.
         """
-        return Trigger(_Trigger.debounce(debounceTime, type))
+        return Trigger(self._trigger.debounce(debounceTime, type))
 
     def cancelWhenActive(self, command: Command) -> None:
         """
@@ -123,7 +123,7 @@ class Trigger:
         self._trigger.cancelWhenActive(command)
 
     @overload
-    def whenActive(self, command: Command, /, interruptible: bool = True) -> None:
+    def whenActive(self, command_or_coroutine: Command, interruptible: bool = True) -> None:
         """
         Binds a command to start when the trigger becomes active.
 
@@ -134,8 +134,7 @@ class Trigger:
     @overload
     def whenActive(
         self,
-        coroutine: Union[Coroutine, Coroutineable],
-        /,
+        command_or_coroutine: Union[Coroutine, Coroutineable],
         *,
         interruptible: bool = True,
         requirements: Optional[List[Subsystem]] = None,
@@ -153,7 +152,6 @@ class Trigger:
     @overload
     def whenActive(
         self,
-        /,
         *,
         interruptible: bool = True,
         requirements: Optional[List[Subsystem]] = None,
@@ -171,7 +169,6 @@ class Trigger:
     def whenActive(
         self,
         command_or_coroutine: Optional[Union[Command, Coroutine, Coroutineable]] = None,
-        /,
         interruptible: bool = True,
         requirements: Optional[List[Subsystem]] = None,
         runs_when_disabled: bool = False,
@@ -199,7 +196,7 @@ class Trigger:
         return
 
     @overload
-    def whenInactive(self, command: Command, /, interruptible: bool = True) -> None:
+    def whenInactive(self, command_or_coroutine: Command, interruptible: bool = True) -> None:
         """
         Binds a command to start when the trigger becomes inactive.
 
@@ -210,8 +207,7 @@ class Trigger:
     @overload
     def whenInactive(
         self,
-        coroutine: Union[Coroutine, Coroutineable],
-        /,
+        command_or_coroutine: Union[Coroutine, Coroutineable],
         *,
         interruptible: bool = True,
         requirements: Optional[List[Subsystem]] = None,
@@ -229,7 +225,6 @@ class Trigger:
     @overload
     def whenInactive(
         self,
-        /,
         *,
         interruptible: bool = True,
         requirements: Optional[List[Subsystem]] = None,
@@ -247,7 +242,6 @@ class Trigger:
     def whenInactive(
         self,
         command_or_coroutine: Optional[Union[Command, Coroutine, Coroutineable]] = None,
-        /,
         interruptible: bool = True,
         requirements: Optional[List[Subsystem]] = None,
         runs_when_disabled: bool = False,
@@ -276,7 +270,7 @@ class Trigger:
 
     @overload
     def whileActiveContinous(
-        self, command: Command, /, interruptible: bool = True
+        self, command_or_coroutine: Command, interruptible: bool = True
     ) -> None:
         """
         Binds a command to be started repeatedly while the trigger is active, and
@@ -289,8 +283,7 @@ class Trigger:
     @overload
     def whileActiveContinous(
         self,
-        coroutine: Union[Coroutine, Coroutineable],
-        /,
+        command_or_coroutine: Union[Coroutine, Coroutineable],
         *,
         interruptible: bool = True,
         requirements: Optional[List[Subsystem]] = None,
@@ -309,7 +302,6 @@ class Trigger:
     @overload
     def whileActiveContinous(
         self,
-        /,
         *,
         interruptible: bool = True,
         requirements: Optional[List[Subsystem]] = None,
@@ -328,7 +320,6 @@ class Trigger:
     def whileActiveContinous(
         self,
         command_or_coroutine: Optional[Union[Command, Coroutine, Coroutineable]] = None,
-        /,
         interruptible: bool = True,
         requirements: Optional[List[Subsystem]] = None,
         runs_when_disabled: bool = False,
@@ -356,7 +347,7 @@ class Trigger:
         return
 
     @overload
-    def whileActiveOnce(self, command: Command, /, interruptible: bool = True) -> None:
+    def whileActiveOnce(self, command_or_coroutine: Command, interruptible: bool = True) -> None:
         """
         Binds a command to be started when the trigger becomes active, and
         canceled when it becomes inactive.
@@ -368,8 +359,7 @@ class Trigger:
     @overload
     def whileActiveOnce(
         self,
-        coroutine: Union[Coroutine, Coroutineable],
-        /,
+        command_or_coroutine: Union[Coroutine, Coroutineable],
         *,
         interruptible: bool = True,
         requirements: Optional[List[Subsystem]] = None,
@@ -388,7 +378,6 @@ class Trigger:
     @overload
     def whileActiveOnce(
         self,
-        /,
         *,
         interruptible: bool = True,
         requirements: Optional[List[Subsystem]] = None,
@@ -407,7 +396,6 @@ class Trigger:
     def whileActiveOnce(
         self,
         command_or_coroutine: Optional[Union[Command, Coroutine, Coroutineable]] = None,
-        /,
         interruptible: bool = True,
         requirements: Optional[List[Subsystem]] = None,
         runs_when_disabled: bool = False,
@@ -435,7 +423,7 @@ class Trigger:
         return
 
     @overload
-    def toggleWhenActive(self, command: Command, /, interruptible: bool = True) -> None:
+    def toggleWhenActive(self, command_or_coroutine: Command, interruptible: bool = True) -> None:
         """
         Binds a command to start when the trigger becomes active, and be canceled
         when it again becomes active.
@@ -448,8 +436,7 @@ class Trigger:
     @overload
     def toggleWhenActive(
         self,
-        coroutine: Union[Coroutine, Coroutineable],
-        /,
+        command_or_coroutine: Union[Coroutine, Coroutineable],
         *,
         interruptible: bool = True,
         requirements: Optional[List[Subsystem]] = None,
@@ -468,7 +455,6 @@ class Trigger:
     @overload
     def toggleWhenActive(
         self,
-        /,
         *,
         interruptible: bool = True,
         requirements: Optional[List[Subsystem]] = None,
@@ -487,7 +473,6 @@ class Trigger:
     def toggleWhenActive(
         self,
         command_or_coroutine: Optional[Union[Command, Coroutine, Coroutineable]] = None,
-        /,
         interruptible: bool = True,
         requirements: Optional[List[Subsystem]] = None,
         runs_when_disabled: bool = False,
