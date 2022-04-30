@@ -123,7 +123,9 @@ class Trigger:
         self._trigger.cancelWhenActive(command)
 
     @overload
-    def whenActive(self, command_or_coroutine: Command, interruptible: bool = True) -> None:
+    def whenActive(
+        self, command_or_coroutine: Command, interruptible: bool = True
+    ) -> None:
         """
         Binds a command to start when the trigger becomes active.
 
@@ -196,7 +198,9 @@ class Trigger:
         return
 
     @overload
-    def whenInactive(self, command_or_coroutine: Command, interruptible: bool = True) -> None:
+    def whenInactive(
+        self, command_or_coroutine: Command, interruptible: bool = True
+    ) -> None:
         """
         Binds a command to start when the trigger becomes inactive.
 
@@ -347,7 +351,9 @@ class Trigger:
         return
 
     @overload
-    def whileActiveOnce(self, command_or_coroutine: Command, interruptible: bool = True) -> None:
+    def whileActiveOnce(
+        self, command_or_coroutine: Command, interruptible: bool = True
+    ) -> None:
         """
         Binds a command to be started when the trigger becomes active, and
         canceled when it becomes inactive.
@@ -423,7 +429,9 @@ class Trigger:
         return
 
     @overload
-    def toggleWhenActive(self, command_or_coroutine: Command, interruptible: bool = True) -> None:
+    def toggleWhenActive(
+        self, command_or_coroutine: Command, interruptible: bool = True
+    ) -> None:
         """
         Binds a command to start when the trigger becomes active, and be canceled
         when it again becomes active.

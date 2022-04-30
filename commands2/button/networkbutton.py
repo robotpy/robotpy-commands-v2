@@ -37,7 +37,7 @@ class NetworkButton(Button):
 
             if not isinstance(entry, NetworkTableEntry):
                 raise self._type_error(entry)
-            
+
             super().__init__(
                 lambda: NetworkTables.isConnected() and entry.getBoolean(False)
             )

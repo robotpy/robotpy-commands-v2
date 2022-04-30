@@ -19,7 +19,11 @@ class POVButton(Button):
         :param angle: The angle of the POV corresponding to a button press.
         :param povNumber: The number of the POV on the joystick.
         """
-        if not isinstance(joystick, Joystick) or not isinstance(angle, int) or not isinstance(povNumber, int):
+        if (
+            not isinstance(joystick, Joystick)
+            or not isinstance(angle, int)
+            or not isinstance(povNumber, int)
+        ):
             raise TypeError(
                 "POVButton.__init__(): incompatible constructor arguments. The following argument types are supported:\n"
                 "\t1. commands2.button.POVButton(joystick: Joystick, angle: int, povNumber: int)\n"

@@ -4,6 +4,7 @@ import commands2.button
 from util import Counter
 import pytest
 
+
 class MyButton(commands2.button.Button):
     def __init__(self):
         super().__init__(self.isPressed)
