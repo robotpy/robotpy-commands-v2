@@ -161,7 +161,7 @@ def test_cancel_when_pressed(scheduler: commands2.CommandScheduler):
     assert cmd1.canceled == 1
     assert not scheduler.isScheduled(cmd1)
 
-@pytest.mark.xfail(strict=False)
+
 def test_function_bindings(scheduler: commands2.CommandScheduler):
 
     buttonWhenPressed = MyButton()
@@ -174,9 +174,9 @@ def test_function_bindings(scheduler: commands2.CommandScheduler):
 
     counter = Counter()
 
-    buttonWhenPressed.whenPressed(lambda: (print("wp"), counter.increment(), None)[2])
-    buttonWhileHeld.whileHeld(lambda: (print("wh"), counter.increment(), None)[2])
-    buttonWhenReleased.whenReleased(lambda: (print("wr"), counter.increment(), None)[2])
+    buttonWhenPressed.whenPressed(counter.increment)
+    buttonWhileHeld.whileHeld(counter.increment)
+    buttonWhenReleased.whenReleased(counter.increment)
 
     scheduler.run()
     buttonWhenPressed.setPressed(True)

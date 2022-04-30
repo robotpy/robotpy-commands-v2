@@ -28,6 +28,7 @@ def ensure_generator_function(func: Coroutineable) -> Callable[..., Coroutine]:
     @wraps(func)
     def wrapper(*args, **kwargs):
         func(*args, **kwargs)
+        return
         yield
 
     return wrapper
@@ -81,6 +82,7 @@ class CoroutineCommand(CommandBase):
         self.is_finished = False
 
     def execute(self):
+        print("r")
         try:
             if not self.is_finished:
                 if not self.coroutine:
