@@ -21,7 +21,9 @@ def test_when_pressed_coroutine(scheduler: commands2.CommandScheduler):
     button = MyButton()
     button.setPressed(False)
 
-    class state: pass
+    class state:
+        pass
+
     state.executed = False
 
     @button.whenPressed
@@ -45,7 +47,9 @@ def test_when_released_coroutine(scheduler: commands2.CommandScheduler):
     button = MyButton()
     button.setPressed(True)
 
-    class state: pass
+    class state:
+        pass
+
     state.executed = False
 
     @button.whenReleased()
@@ -64,11 +68,14 @@ def test_when_released_coroutine(scheduler: commands2.CommandScheduler):
 
     assert state.executed
 
+
 def test_while_held_coroutine(scheduler: commands2.CommandScheduler):
     button = MyButton()
     button.setPressed(False)
 
-    class state: pass
+    class state:
+        pass
+
     state.executed = 0
 
     @button.whileHeld(interruptible=True)
@@ -85,17 +92,20 @@ def test_while_held_coroutine(scheduler: commands2.CommandScheduler):
     scheduler.run()
     scheduler.run()
     assert state.executed == 2
-    
+
     button.setPressed(False)
     scheduler.run()
 
     assert state.executed == 2
 
+
 def test_when_held_coroutine(scheduler: commands2.CommandScheduler):
     button = MyButton()
     button.setPressed(False)
 
-    class state: pass
+    class state:
+        pass
+
     state.executed = 0
 
     @button.whenHeld(runs_when_disabled=True)
@@ -112,16 +122,19 @@ def test_when_held_coroutine(scheduler: commands2.CommandScheduler):
     scheduler.run()
     scheduler.run()
     assert state.executed == 2
-    
+
     button.setPressed(False)
 
     assert state.executed == 2
+
 
 def test_toggle_when_pressed_coroutine(scheduler: commands2.CommandScheduler):
     button = MyButton()
     button.setPressed(False)
 
-    class state: pass
+    class state:
+        pass
+
     state.executed = 0
 
     @button.toggleWhenPressed
@@ -129,8 +142,7 @@ def test_toggle_when_pressed_coroutine(scheduler: commands2.CommandScheduler):
         while True:
             state.executed += 1
             yield
-    
-    
+
     scheduler.run()
 
     assert not state.executed

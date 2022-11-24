@@ -1,4 +1,4 @@
-from networktables import NetworkTable, NetworkTables, NetworkTableEntry
+from ntcore import NetworkTable, NetworkTableEntry
 
 from typing import Union, overload
 

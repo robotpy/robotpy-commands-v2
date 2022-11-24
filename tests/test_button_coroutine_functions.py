@@ -20,8 +20,11 @@ class MyButton(commands2.button.Button):
 def test_when_pressed_coroutine(scheduler: commands2.CommandScheduler):
     button = MyButton()
 
-    class state: pass
+    class state:
+        pass
+
     state.executed = False
+
     def cmd1():
         state.executed = True
         return
@@ -43,8 +46,11 @@ def test_when_pressed_coroutine(scheduler: commands2.CommandScheduler):
 def test_when_released_coroutine(scheduler: commands2.CommandScheduler):
     button = MyButton()
 
-    class state: pass
+    class state:
+        pass
+
     state.executed = False
+
     def cmd1():
         state.executed = True
         return
@@ -62,11 +68,15 @@ def test_when_released_coroutine(scheduler: commands2.CommandScheduler):
 
     assert state.executed
 
+
 def test_while_held_coroutine(scheduler: commands2.CommandScheduler):
     button = MyButton()
 
-    class state: pass
+    class state:
+        pass
+
     state.executed = 0
+
     def cmd1():
         state.executed += 1
         return
@@ -82,17 +92,21 @@ def test_while_held_coroutine(scheduler: commands2.CommandScheduler):
     scheduler.run()
     scheduler.run()
     assert state.executed == 2
-    
+
     button.setPressed(False)
     scheduler.run()
 
     assert state.executed == 2
 
+
 def test_when_held_coroutine(scheduler: commands2.CommandScheduler):
     button = MyButton()
 
-    class state: pass
+    class state:
+        pass
+
     state.executed = 0
+
     def cmd1():
         while True:
             state.executed += 1
@@ -108,23 +122,27 @@ def test_when_held_coroutine(scheduler: commands2.CommandScheduler):
     scheduler.run()
     scheduler.run()
     assert state.executed == 2
-    
+
     button.setPressed(False)
 
     assert state.executed == 2
 
+
 def test_toggle_when_pressed_coroutine(scheduler: commands2.CommandScheduler):
     button = MyButton()
 
-    class state: pass
+    class state:
+        pass
+
     state.executed = 0
+
     def cmd1():
         while True:
             state.executed += 1
             yield
-    
+
     button.setPressed(False)
-    
+
     button.toggleWhenPressed(cmd1)
     scheduler.run()
 
