@@ -43,7 +43,7 @@ def test_select_command_enum(scheduler: commands2.CommandScheduler):
     c = ConditionHolder()
 
     def _assert_false():
-        assert False
+        raise Exception("Incorrect command ran")
 
     class Selector(enum.Enum):
         ONE = enum.auto()
@@ -54,11 +54,14 @@ def test_select_command_enum(scheduler: commands2.CommandScheduler):
     cmd2 = commands2.RunCommand(c.setTrue)
     cmd3 = commands2.RunCommand(_assert_false)
 
-    sc = commands2.SelectCommand(lambda: Selector.TWO, [
-        (Selector.ONE, cmd1),
-        (Selector.TWO, cmd2),
-        (Selector.THREE, cmd3),
-    ])
+    sc = commands2.SelectCommand(
+        lambda: Selector.TWO,
+        [
+            (Selector.ONE, cmd1),
+            (Selector.TWO, cmd2),
+            (Selector.THREE, cmd3),
+        ],
+    )
 
     scheduler.schedule(sc)
     scheduler.run()
