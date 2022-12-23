@@ -43,7 +43,7 @@ def test_select_command_enum(scheduler: commands2.CommandScheduler):
     c = ConditionHolder()
 
     def _assert_false():
-        raise Exception("Incorrect command ran")
+        assert False
 
     class Selector(enum.Enum):
         ONE = enum.auto()
