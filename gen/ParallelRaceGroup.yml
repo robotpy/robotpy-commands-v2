@@ -7,7 +7,6 @@ extra_includes:
 
 classes:
   ParallelRaceGroup:
-    shared_ptr: true
     methods:
       ParallelRaceGroup:
         overloads:

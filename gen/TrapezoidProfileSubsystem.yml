@@ -2,7 +2,6 @@
 
 classes:
   TrapezoidProfileSubsystem:
-    shared_ptr: true
     template_params:
     - Distance
     typealias:

@@ -1,6 +1,7 @@
 ---
 
 extra_includes:
+- frc2/command/CommandBase.h
 - frc2/command/InstantCommand.h
 - frc2/command/ParallelCommandGroup.h
 - frc2/command/ParallelRaceGroup.h
@@ -12,8 +13,8 @@ extra_includes:
 - frc2/command/WaitUntilCommand.h
 - src/helpers.h
 
-inline_code: |
-  #include <src/Command.cpp.inl>
+# inline_code: |
+#   #include <src/Command.cpp.inl>
 
 functions:
   GetTypeName:
@@ -27,7 +28,6 @@ classes:
     - std::span
     - std::function
     - units::second_t
-    shared_ptr: true
     attributes:
       m_isComposed:
     enums:
@@ -39,19 +39,70 @@ classes:
       End:
       IsFinished:
       GetRequirements:
-      Schedule:
+      WithTimeout:
         cpp_code: |
-          [](std::shared_ptr<Command> self) { Command_Schedule(self); }
+          [](CommandPtr &&self, units::second_t duration) {
+            return std::move(self).WithTimeout(duration);
+          }
+      Until:
+        ignore: true # TODO
+      WithInterrupt:
+        ignore: true # TODO
+      BeforeStarting:
+        overloads:
+          std::function<void ( )>, std::initializer_list<Subsystem *>:
+            ignore: true
+          std::function<void ( )>, std::span<Subsystem * const>:
+            ignore: true # TODO
+      AndThen:
+        overloads:
+          std::function<void ( )>, std::initializer_list<Subsystem *>:
+            ignore: true
+          std::function<void ( )>, std::span<Subsystem * const>:
+            ignore: true # TODO
+      Perpetually:
+        ignore: true # TODO
+      Repeatedly:
+        ignore: true # TODO
+      AsProxy:
+        ignore: true # TODO
+      Unless:
+        ignore: true # TODO
+      IgnoringDisable:
+        ignore: true # TODO
+      WithInterruptBehavior:
+        ignore: true # TODO
+      FinallyDo:
+        ignore: true # TODO
+      HandleInterrupt:
+        ignore: true # TODO
+      WithName:
+        ignore: true # TODO
+      Schedule:
+        ignore: true # TODO
       Cancel:
+        ignore: true # TODO
       IsScheduled:
+        ignore: true # TODO
       HasRequirement:
+        ignore: true # TODO
       IsComposed:
+        ignore: true # TODO
       SetComposed:
+        ignore: true # TODO
       IsGrouped:
+        ignore: true # TODO
       SetGrouped:
+        ignore: true # TODO
       RunsWhenDisabled:
+        ignore: true # TODO
       GetInterruptionBehavior:
+        ignore: true # TODO
       GetName:
+        ignore: true # TODO
       SetName:
+        ignore: true # TODO
       ToPtr:
-        ignore: true
+        ignore_py: true
+      TransferOwnership:
+        ignore_py: true

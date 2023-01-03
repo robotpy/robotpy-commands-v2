@@ -6,7 +6,6 @@ extra_includes:
 
 classes:
   WaitCommand:
-    shared_ptr: true
     attributes:
       m_timer:
     methods:

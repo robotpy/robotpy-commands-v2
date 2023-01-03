@@ -6,7 +6,6 @@ extra_includes:
 
 classes:
   SwerveControllerCommand:
-    shared_ptr: true
     template_params:
     - size_t NumModules
     methods:

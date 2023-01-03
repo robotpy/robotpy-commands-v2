@@ -5,7 +5,6 @@ extra_includes:
 
 classes:
   CommandBase:
-    shared_ptr: true
     attributes:
       m_requirements:
         # this is supposed to be protected, but had to make it public
@@ -15,11 +14,11 @@ classes:
     methods:
       AddRequirements:
         overloads:
-          std::shared_ptr<Subsystem>:
-          std::initializer_list<std::shared_ptr<Subsystem>>:
+          Subsystem*:
+          std::initializer_list<Subsystem *>:
             ignore: true
-          std::span<std::shared_ptr<Subsystem>>:
-          wpi::SmallSet<std::shared_ptr<Subsystem>, 4>:
+          std::span<Subsystem * const>:
+          wpi::SmallSet<Subsystem *, 4>:
       GetRequirements:
       SetName:
       GetName:
@@ -36,6 +35,6 @@ classes:
 inline_code: |
   cls_CommandBase
     .def("addRequirements", [](CommandBase * self, py::args requirements) {
-        auto reqs = pyargs2SharedSubsystemList(requirements);
+        auto reqs = pyargs2SubsystemList(requirements);
         self->AddRequirements(reqs);
     });

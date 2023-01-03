@@ -6,13 +6,12 @@ extra_includes:
 
 classes:
   ConditionalCommand:
-    shared_ptr: true
     methods:
       ConditionalCommand:
         overloads:
           T1&&, T2&&, std::function<bool ( )>:
             ignore: true
-          std::shared_ptr<Command>, std::shared_ptr<Command>, std::function<bool ( )>:
+          std::unique_ptr<Command>, std::unique_ptr<Command>, std::function<bool ( )>:
       Initialize:
       Execute:
       End:

@@ -7,7 +7,6 @@ extra_includes:
 
 classes:
   RunCommand:
-    shared_ptr: true
     methods:
       RunCommand:
         overloads:
@@ -19,7 +18,7 @@ classes:
 inline_code: |
   cls_RunCommand
     .def(py::init([](std::function<void()> toRun, py::args requirements) {
-      auto reqs = pyargs2SharedSubsystemList(requirements);
+      auto reqs = pyargs2SubsystemList(requirements);
       return std::make_shared<RunCommand_Trampoline>(toRun, reqs);
     }))
   ;

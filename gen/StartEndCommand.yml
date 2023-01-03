@@ -21,7 +21,7 @@ inline_code: |
   cls_StartEndCommand
     .def(py::init([](std::function<void()> onInit, std::function<void()> onEnd,
                      py::args requirements) {
-        auto reqs = pyargs2SharedSubsystemList(requirements);
+        auto reqs = pyargs2SubsystemList(requirements);
         return std::make_shared<StartEndCommand_Trampoline>(onInit, onEnd, reqs);
       })
     )

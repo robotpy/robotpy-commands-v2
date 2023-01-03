@@ -10,7 +10,6 @@ functions:
     ignore: true
 classes:
   SelectCommand:
-    shared_ptr: true
     template_params:
     - Key
     methods:

@@ -15,8 +15,6 @@ classes:
       GetInstance:
         return_value_policy: reference
         no_release_gil: true
-      ResetInstance:
-        no_release_gil: true
       SetPeriod:
       GetActiveButtonLoop:
       SetActiveButtonLoop:
@@ -24,9 +22,10 @@ classes:
       ClearButtons:
       Schedule:
         overloads:
-          std::shared_ptr<Command>:
-          std::span<std::shared_ptr<Command>>:
-          std::initializer_list<std::shared_ptr<Command>>:
+          frc2::CommandPtr&:
+          frc2::Command*:
+          std::span<Command * const>:
+          std::initializer_list<Command *>:
             ignore: true
       Run:
       RegisterSubsystem:
@@ -34,44 +33,40 @@ classes:
           frc2::Subsystem*:
           std::initializer_list<Subsystem *>:
             ignore: true
-          std::span<Subsystem *>:
+          std::span<Subsystem * const>:
       UnregisterSubsystem:
         overloads:
           frc2::Subsystem*:
           std::initializer_list<Subsystem *>:
             ignore: true
-          std::span<Subsystem *>:
-      RemoveDefaultCommand:
+          std::span<Subsystem * const>:
       SetDefaultCommand:
-        template_impls:
-        - ["std::shared_ptr<Command>"]        
+        overloads:
+          frc2::Subsystem*, T&&:
+            ignore: true
+          frc2::Subsystem*, frc2::CommandPtr&&:
+            cpp_code: |
+              [](CommandScheduler *self, frc2::Subsystem* s, frc2::CommandPtr&& c) {
+                return self->SetDefaultCommand(s, std::forward<frc2::CommandPtr>(c));
+              }
+      RemoveDefaultCommand:
       GetDefaultCommand:
       Cancel:
         overloads:
-          std::shared_ptr<Command>:
           frc2::Command*:
-            ignore: true
           frc2::CommandPtr&:
-            ignore: true
-          std::span<std::shared_ptr<Command>>:
-          std::initializer_list<std::shared_ptr<Command>>:
+          std::span<Command * const>:
+          std::initializer_list<Command *>:
             ignore: true
       CancelAll:
       IsScheduled:
         overloads:
-          std::span<std::shared_ptr<Command>> [const]:
-          std::initializer_list<const std::shared_ptr<Command>> [const]:
+          std::span<const Command * const> [const]:
+          std::initializer_list<const Command *> [const]:
             ignore: true
-          std::shared_ptr<Command> [const]:
           frc2::Command* [const]:
-            ignore: true
           frc2::CommandPtr& [const]:
-            ignore: true
       Requiring:
-        overloads:
-          std::shared_ptr<Subsystem> [const]:
-          frc2::Subsystem* [const]:
-            ignore: true
       Disable:
       Enable:
       OnCommandInitialize:
@@ -80,9 +75,9 @@ classes:
       OnCommandFinish:
       RequireUngrouped:
         overloads:
-          const std::shared_ptr<Command>:
-          std::span<const std::shared_ptr<Command>>:
-          std::initializer_list<const std::shared_ptr<Command>>:
+          frc2::Command*:
+          std::span<const std::unique_ptr<Command>>:
+          std::initializer_list<const Command *>:
             ignore: true
       InitSendable:
     inline_code: |

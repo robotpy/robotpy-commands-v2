@@ -2,7 +2,6 @@
 
 classes:
   SubsystemBase:
-    shared_ptr: true
     ignored_bases:
     - wpi::SendableHelper<SubsystemBase>
     methods:

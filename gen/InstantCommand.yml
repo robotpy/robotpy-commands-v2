@@ -21,7 +21,7 @@ classes:
 inline_code: |
   cls_InstantCommand
     .def(py::init([](std::function<void()> toRun, py::args requirements) {
-        auto reqs = pyargs2SharedSubsystemList(requirements);
+        auto reqs = pyargs2SubsystemList(requirements);
         return std::make_shared<InstantCommand_Trampoline>(toRun, reqs);
       })
     )
