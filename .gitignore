@@ -11,6 +11,7 @@ py.typed
 /dist
 
 /.vscode
+/.idea
 
 /wpilib/buttons/rpy-include
 /wpilib/buttons/_init_commands_v1_buttons.py
