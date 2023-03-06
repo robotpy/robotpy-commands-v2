@@ -1,19 +1,19 @@
 import enum
 import commands2
-from util import ConditionHolder
+from CommandTestBase import ConditionHolderRequirement
 
 
 def test_select_command_int(scheduler: commands2.CommandScheduler):
-    c = ConditionHolder()
+    c = ConditionHolderRequirement()
 
     def _assert_false():
         assert False
 
-    cmd1 = commands2.RunCommand(_assert_false)
-    cmd2 = commands2.RunCommand(c.setTrue)
-    cmd3 = commands2.RunCommand(_assert_false)
+    cmd1 = commands2.cmd.run(_assert_false)
+    cmd2 = commands2.cmd.run(c.set_true)
+    cmd3 = commands2.cmd.run(_assert_false)
 
-    sc = commands2.SelectCommand(lambda: 2, [(1, cmd1), (2, cmd2), (3, cmd3)])
+    sc = commands2.cmd.select({1: cmd1, 2: cmd2, 3: cmd3}, lambda: 2)
 
     scheduler.schedule(sc)
     scheduler.run()
@@ -22,16 +22,16 @@ def test_select_command_int(scheduler: commands2.CommandScheduler):
 
 
 def test_select_command_str(scheduler: commands2.CommandScheduler):
-    c = ConditionHolder()
+    c = ConditionHolderRequirement()
 
     def _assert_false():
         assert False
 
-    cmd1 = commands2.RunCommand(_assert_false)
-    cmd2 = commands2.RunCommand(c.setTrue)
-    cmd3 = commands2.RunCommand(_assert_false)
+    cmd1 = commands2.cmd.run(_assert_false)
+    cmd2 = commands2.cmd.run(c.set_true)
+    cmd3 = commands2.cmd.run(_assert_false)
 
-    sc = commands2.SelectCommand(lambda: "2", [("1", cmd1), ("2", cmd2), ("3", cmd3)])
+    sc = commands2.cmd.select({"1": cmd1, "2": cmd2, "3": cmd3}, lambda: "2")
 
     scheduler.schedule(sc)
     scheduler.run()
@@ -40,7 +40,7 @@ def test_select_command_str(scheduler: commands2.CommandScheduler):
 
 
 def test_select_command_enum(scheduler: commands2.CommandScheduler):
-    c = ConditionHolder()
+    c = ConditionHolderRequirement()
 
     def _assert_false():
         assert False
@@ -50,17 +50,17 @@ def test_select_command_enum(scheduler: commands2.CommandScheduler):
         TWO = enum.auto()
         THREE = enum.auto()
 
-    cmd1 = commands2.RunCommand(_assert_false)
-    cmd2 = commands2.RunCommand(c.setTrue)
-    cmd3 = commands2.RunCommand(_assert_false)
+    cmd1 = commands2.cmd.run(_assert_false)
+    cmd2 = commands2.cmd.run(c.set_true)
+    cmd3 = commands2.cmd.run(_assert_false)
 
-    sc = commands2.SelectCommand(
+    sc = commands2.cmd.select(
+        {
+            Selector.ONE: cmd1,
+            Selector.TWO: cmd2,
+            Selector.THREE: cmd3,
+        },
         lambda: Selector.TWO,
-        [
-            (Selector.ONE, cmd1),
-            (Selector.TWO, cmd2),
-            (Selector.THREE, cmd3),
-        ],
     )
 
     scheduler.schedule(sc)

@@ -1,7 +1,7 @@
 from abc import abstractmethod
 from typing import Generator, Callable, Set, Optional
 
-from .Requirement import Requirement, InterruptBehavior
+from .requirement import Requirement, InterruptBehavior
 
 
 class Command:
@@ -15,6 +15,13 @@ class Command:
 
     def end(self, interrupted: bool):
         pass
+
+    @property
+    def is_composed(self) -> bool:
+        return getattr(self, "_composed", False)
+
+    def mark_composed(self):
+        setattr(self, "_composed", True)
 
 
 def commandify(
@@ -35,7 +42,9 @@ def commandify(
         def inner(*args, **kwargs):
             class DecoratedCommand(Command):
                 def __init__(self):
-                    self.requirements = requirements
+                    self.requirements = requirements if requirements else {
+                        arg for arg in args if isinstance(arg, Requirement)
+                    }
                     self.runs_when_disabled = runs_when_disabled
                     self.interruption_behavior = interruption_behavior
 

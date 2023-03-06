@@ -1,10 +1,10 @@
 import commands2
-from util import Counter
+from CommandTestBase import ValueHolderRequirement
 
 
 def test_run_command(scheduler: commands2.CommandScheduler):
-    counter = Counter()
-    cmd = commands2.RunCommand(counter.increment)
+    counter = ValueHolderRequirement()
+    cmd = commands2.cmd.run(counter.increment)
 
     scheduler.schedule(cmd)
     scheduler.run()

@@ -1,14 +1,15 @@
 import commands2
-from util import ConditionHolder
+from CommandTestBase import ConditionHolderRequirement
+from commands2.cmd import run_once
 
 
 def test_instant_command(scheduler: commands2.CommandScheduler):
-    cond = ConditionHolder()
+    cond = ConditionHolderRequirement()
 
-    cmd = commands2.InstantCommand(cond.setTrue)
+    cmd = run_once(cond.set_true, {cond})
 
     scheduler.schedule(cmd)
     scheduler.run()
 
-    assert cond.getCondition()
-    assert not scheduler.isScheduled(cmd)
+    assert cond.get_condition()
+    assert not scheduler.is_scheduled(cmd)
