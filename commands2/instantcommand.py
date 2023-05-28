@@ -1,0 +1,19 @@
+from .functionalcommand import FunctionalCommand
+from .subsystem import Subsystem
+
+from typing import Callable
+
+class InstantCommand(FunctionalCommand):
+
+    def __init__(
+        self,
+        toRun: Callable[[], None] | None = None,
+        *requirements: Subsystem
+    ):
+        super().__init__(
+            lambda: None,
+            toRun or (lambda: None),
+            lambda _: None,
+            lambda: True,
+            *requirements
+        )
