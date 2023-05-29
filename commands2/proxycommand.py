@@ -5,6 +5,8 @@ from typing import Callable, overload, Union
 
 class ProxyCommand(Command):
 
+    _supplier: Callable[[], Command]
+
     @overload
     def __init__(self, supplier: Callable[[], Command]): ...
 
@@ -29,7 +31,7 @@ class ProxyCommand(Command):
         self._command.schedule()
 
     def end(self, interrupted: bool):
-        if interrupted:
+        if interrupted and self._command is not None:
             self._command.cancel()
         self._command = None
     

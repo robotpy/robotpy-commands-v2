@@ -1,4 +1,7 @@
 from .command import Command
+from .commandscheduler import CommandScheduler
+
+from typing import Union, Optional
 
 class Subsystem:
 
@@ -17,12 +20,12 @@ class Subsystem:
     def simulationPeriodic(self) -> None:
         pass
 
-    def getDefaultCommand(self) -> Command | None:
+    def getDefaultCommand(self) -> Optional[Command]:
         return CommandScheduler.getInstance().getDefaultCommand(self)
     
     def setDefaultCommand(self, command: Command) -> None:
         CommandScheduler.getInstance().setDefaultCommand(self, command)
 
-    def getCurrentCommand(self) -> Command | None:
-        return CommandScheduler.getInstance().getCurrentCommand(self)
+    def getCurrentCommand(self) -> Optional[Command]:
+        return CommandScheduler.getInstance().requiring(self)
     

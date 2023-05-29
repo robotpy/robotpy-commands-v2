@@ -1,6 +1,7 @@
 from commands2.command import Command, InterruptionBehavior
 from .command import Command, InterruptionBehavior
 from .commandgroup import *
+from .commandscheduler import CommandScheduler
 
 from typing import Callable, Dict, List
 

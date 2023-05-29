@@ -1,5 +1,6 @@
 from .command import Command
 from .commandgroup import *
+from .commandscheduler import CommandScheduler
 
 from typing import Callable
 

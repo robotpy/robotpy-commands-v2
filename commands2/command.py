@@ -3,6 +3,7 @@ from typing import Set
 from typing_extensions import Self
 
 from .subsystem import Subsystem
+from .commandscheduler import CommandScheduler
 
 class InterruptionBehavior(Enum):
     kCancelIncoming = 0

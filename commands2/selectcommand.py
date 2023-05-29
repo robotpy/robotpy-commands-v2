@@ -2,6 +2,7 @@ from commands2.command import InterruptionBehavior
 from .command import Command, InterruptionBehavior
 from .commandgroup import *
 from .printcommand import PrintCommand
+from .commandscheduler import CommandScheduler
 
 from typing import Callable, overload, Dict, Any, Hashable
 
@@ -17,12 +18,12 @@ class SelectCommand(Command):
         self._commands = commands
         self._selector = selector
 
-        CommandScheduler.getInstance().registerComposedCommands(commands.values())
+        CommandScheduler.getInstance().registerComposedCommands(*commands.values())
 
         self._runsWhenDisabled = True
         self._interruptBehavior = InterruptionBehavior.kCancelIncoming
         for command in commands.values():
-            self.addRequirements(command)
+            self.addRequirements(*command.getRequirements())
             self._runsWhenDisabled = self._runsWhenDisabled and command.runsWhenDisabled()
             if command.getInterruptionBehavior() == InterruptionBehavior.kCancelSelf:
                 self._interruptBehavior = InterruptionBehavior.kCancelSelf

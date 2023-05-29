@@ -1,13 +1,13 @@
 from .functionalcommand import FunctionalCommand
 from .subsystem import Subsystem
 
-from typing import Callable
+from typing import Callable, Optional
 
 class InstantCommand(FunctionalCommand):
 
     def __init__(
         self,
-        toRun: Callable[[], None] | None = None,
+        toRun: Optional[Callable[[], None]] = None,
         *requirements: Subsystem
     ):
         super().__init__(
