@@ -4,13 +4,13 @@ from commands2 import WaitCommand
 import pytest
 
 
-class MySubsystem(commands2.SubsystemBase):
+class MySubsystem(commands2.Subsystem):
     def __init__(self, param) -> None:
         super().__init__()
         self.param = param
 
 
-class MyCommand(commands2.CommandBase):
+class MyCommand(commands2.Command):
     def __init__(self, param) -> None:
         super().__init__()
         self.addRequirements(MySubsystem(param))

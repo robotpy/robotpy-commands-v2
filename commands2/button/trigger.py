@@ -131,6 +131,9 @@ class Trigger:
     def negate(self) -> "Trigger":
         return ~self
     
+    def not_(self) -> "Trigger":
+        return ~self
+
     def debounce(self, seconds: float, debounce_type: Debouncer.DebounceType = Debouncer.DebounceType.kRising) -> "Trigger":
         debouncer = Debouncer(seconds, debounce_type)
         return Trigger(lambda: debouncer.calculate(self()))

@@ -1,9 +1,15 @@
 
-from .command import Command
+
+
+from .command import InterruptionBehavior
 from .subsystem import Subsystem
 
-from typing import Optional, Set, Dict, List, Callable, overload
+from typing import Optional, Set, Dict, List, Callable, overload, TYPE_CHECKING
 from typing_extensions import Self
+
+if TYPE_CHECKING:
+    from .command import Command
+
 
 from wpilib.event import EventLoop
 from wpilib import TimedRobot
@@ -15,8 +21,6 @@ from wpilib import RobotBase
 import hal
 
 from .commandgroup import *
-from .command import *
-
 class CommandScheduler:
 
     _instance: Optional[Self] = None
@@ -29,6 +33,10 @@ class CommandScheduler:
     @staticmethod
     def getInstance() -> "CommandScheduler":
         return CommandScheduler()
+    
+    @staticmethod
+    def resetInstance() -> None:
+        CommandScheduler._instance = None
     
     def __init__(self) -> None:
         self._composedCommands: Set[Command] = set()

@@ -40,7 +40,7 @@ def test_with_interrupt(scheduler: commands2.CommandScheduler):
 def test_before_starting(scheduler: commands2.CommandScheduler):
     cond = ConditionHolder()
 
-    cmd = commands2.InstantCommand().beforeStarting(cond.setTrue)
+    cmd = commands2.InstantCommand().beforeStarting(commands2.InstantCommand(cond.setTrue))
 
     scheduler.schedule(cmd)
 
@@ -55,7 +55,7 @@ def test_before_starting(scheduler: commands2.CommandScheduler):
 def test_and_then_fn(scheduler: commands2.CommandScheduler):
     cond = ConditionHolder()
 
-    cmd = commands2.InstantCommand().andThen(cond.setTrue)
+    cmd = commands2.InstantCommand().andThen(commands2.InstantCommand(cond.setTrue))
 
     scheduler.schedule(cmd)
 

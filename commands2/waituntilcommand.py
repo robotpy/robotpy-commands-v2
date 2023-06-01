@@ -1,10 +1,10 @@
-from commands2.command import Command, InterruptionBehavior
-from .command import Command, InterruptionBehavior
-from .commandgroup import *
 
-from typing import Callable, Dict, overload
+from typing import Callable, Dict, overload, TYPE_CHECKING
 
 from wpilib import Timer
+
+if TYPE_CHECKING:
+    from .command import Command
 
 class WaitUntilCommand(Command):
 

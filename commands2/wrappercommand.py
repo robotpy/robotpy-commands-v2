@@ -1,8 +1,10 @@
 from commands2.command import Command, InterruptionBehavior
-from .command import Command, InterruptionBehavior
 from .commandgroup import *
 
-from typing import Callable, Dict, Set
+from typing import Callable, Dict, Set, TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from .command import Command, InterruptionBehavior
 
 class WrapperCommand(Command):
 

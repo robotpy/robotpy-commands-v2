@@ -9,7 +9,7 @@ class StartEnd:
     def start(self):
         self.counter += 1
 
-    def end(self):
+    def end(self, interrupted):
         self.counter += 1
 
 
@@ -17,7 +17,7 @@ def test_start_end():
     with CommandTestHelper() as helper:
         se = StartEnd()
 
-        cmd = StartEndCommand(se.start, se.end, [])
+        cmd = StartEndCommand(se.start, se.end)
 
         helper.scheduler.schedule(cmd)
         helper.scheduler.run()

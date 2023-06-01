@@ -48,5 +48,5 @@ class ConditionHolder:
         self.cond = True
 
 
-class TestSubsystem(commands2.SubsystemBase):
+class TestSubsystem(commands2.Subsystem):
     pass

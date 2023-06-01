@@ -10,8 +10,8 @@ class SelectCommand(Command):
 
     def __init__(
         self,
+        selector: Callable[[], Hashable],
         commands: Dict[Hashable, Command],
-        selector: Callable[[], Hashable]
     ):
         super().__init__()
 

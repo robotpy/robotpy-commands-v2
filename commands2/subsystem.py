@@ -1,12 +1,13 @@
-from .command import Command
 from .commandscheduler import CommandScheduler
 
-from typing import Union, Optional
+from typing import Union, Optional, TYPE_CHECKING
 
+if TYPE_CHECKING:
+    from .command import Command
 class Subsystem:
 
-    def __new__(cls) -> 'Subsystem':
-        instance = super().__new__(cls)
+    def __new__(cls, *arg, **kwargs) -> 'Subsystem':
+        instance = super().__new__(cls, *arg, **kwargs)
         # add to the scheduler
         CommandScheduler.getInstance().registerSubsystem(instance)
         return instance

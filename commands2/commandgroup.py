@@ -1,4 +1,4 @@
-from typing import Set
+from typing import Set, TYPE_CHECKING
 from .command import Command
 
 class IllegalCommandUse(Exception):
