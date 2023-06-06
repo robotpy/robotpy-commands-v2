@@ -1,10 +1,18 @@
+from __future__ import annotations
+
+from typing import Callable
+
 from .command import Command
 from .commandgroup import *
 from .subsystem import Subsystem
 
-from typing import Callable
 
 class FunctionalCommand(Command):
+    """
+    A command that allows the user to pass in functions for each of the basic command methods through
+    the constructor. Useful for inline definitions of complex commands - note, however, that if a
+    command is beyond a certain complexity it is usually better practice to write a proper class for
+    it than to inline it."""
 
     def __init__(
         self,
@@ -12,24 +20,33 @@ class FunctionalCommand(Command):
         onExecute: Callable[[], None],
         onEnd: Callable[[bool], None],
         isFinished: Callable[[], bool],
-        *requirements: Subsystem
+        *requirements: Subsystem,
     ):
+        """
+        Creates a new FunctionalCommand.
+
+        :param onInit: the function to run on command initialization
+        :param onExecute: the function to run on command execution
+        :param onEnd: the function to run on command end
+        :param isFinished: the function that determines whether the command has finished
+        :param requirements: the subsystems required by this command"""
         super().__init__()
 
-        self.onInit = onInit
-        self.onExecute = onExecute
-        self.onEnd = onEnd
+        self._onInit = onInit
+        self._onExecute = onExecute
+        self._onEnd = onEnd
+        self._isFinished = isFinished
 
         self.addRequirements(*requirements)
 
     def initialize(self):
-        self.onInit()
+        self._onInit()
 
     def execute(self):
-        self.onExecute()
+        self._onExecute()
 
     def end(self, interrupted: bool):
-        self.onEnd(interrupted)
+        self._onEnd(interrupted)
 
     def isFinished(self) -> bool:
-        return self.isFinished()
+        return self._isFinished()

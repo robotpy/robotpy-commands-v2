@@ -1,24 +1,31 @@
-from commands2.command import Command, InterruptionBehavior
-from .command import Command, InterruptionBehavior
+from __future__ import annotations
+
+from typing import Callable
+
 from .commandgroup import *
 from .functionalcommand import FunctionalCommand
 from .subsystem import Subsystem
 
-from typing import Callable, Dict
 
 class StartEndCommand(FunctionalCommand):
+    """
+    A command that runs a given runnable when it is initialized, and another runnable when it ends.
+    Useful for running and then stopping a motor, or extending and then retracting a solenoid. Has no
+    end condition as-is; either subclass it or use Command#withTimeout(double) or {@link
+    Command#until(java.util.function.BooleanSupplier)} to give it one.
+    """
 
     def __init__(
         self,
         onInit: Callable[[], None],
         onEnd: Callable[[bool], None],
-        *requirements: Subsystem
+        *requirements: Subsystem,
     ):
-        super().__init__(
-            onInit,
-            lambda: None,
-            onEnd,
-            lambda: False,
-            *requirements
-        )
+        """
+        Creates a new StartEndCommand. Will run the given runnables when the command starts and when it
+        ends.
 
+        :param onInit: the Runnable to run on command init
+        :param onEnd: the Runnable to run on command end
+        :param requirements: the subsystems required by this command"""
+        super().__init__(onInit, lambda: None, onEnd, lambda: False, *requirements)

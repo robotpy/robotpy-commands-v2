@@ -1,6 +1,5 @@
 import commands2
 import commands2.button
-
 from util import Counter
 
 
@@ -68,6 +67,7 @@ def test_on_false(scheduler: commands2.CommandScheduler):
     assert cmd1.executed
     assert scheduler.isScheduled(cmd1)
 
+
 def test_while_true(scheduler: commands2.CommandScheduler):
     cmd1 = MyCommand()
     button = MyButton()
@@ -112,26 +112,26 @@ def test_toggle_when_pressed(scheduler: commands2.CommandScheduler):
 
 
 def test_function_bindings(scheduler: commands2.CommandScheduler):
-    buttonWhenPressed = MyButton()
-    buttonWhileHeld = MyButton()
-    buttonWhenReleased = MyButton()
+    buttonOnTrue = MyButton()
+    buttonWhileTrue = MyButton()
+    buttonOnFalse = MyButton()
 
-    buttonWhenPressed.setPressed(False)
-    buttonWhileHeld.setPressed(True)
-    buttonWhenReleased.setPressed(True)
+    buttonOnTrue.setPressed(False)
+    buttonWhileTrue.setPressed(True)
+    buttonOnFalse.setPressed(True)
 
     counter = Counter()
 
-    buttonWhenPressed.onTrue(commands2.InstantCommand(counter.increment))
-    buttonWhileHeld.whileTrue(commands2.InstantCommand(counter.increment))
-    buttonWhenReleased.onFalse(commands2.InstantCommand(counter.increment))
+    buttonOnTrue.onTrue(commands2.InstantCommand(counter.increment))
+    buttonWhileTrue.whileTrue(commands2.InstantCommand(counter.increment))
+    buttonOnFalse.onFalse(commands2.InstantCommand(counter.increment))
 
     scheduler.run()
-    buttonWhenPressed.setPressed(True)
-    buttonWhenReleased.setPressed(False)
+    buttonOnTrue.setPressed(True)
+    buttonOnFalse.setPressed(False)
     scheduler.run()
 
-    assert counter.value == 4
+    assert counter.value == 2
 
 
 def test_button_composition(scheduler: commands2.CommandScheduler):

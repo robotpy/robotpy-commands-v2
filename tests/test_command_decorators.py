@@ -1,5 +1,5 @@
-from util import ConditionHolder, ManualSimTime
 import commands2
+from util import ConditionHolder, ManualSimTime
 
 
 def test_with_timeout(scheduler: commands2.CommandScheduler):
@@ -40,7 +40,9 @@ def test_with_interrupt(scheduler: commands2.CommandScheduler):
 def test_before_starting(scheduler: commands2.CommandScheduler):
     cond = ConditionHolder()
 
-    cmd = commands2.InstantCommand().beforeStarting(commands2.InstantCommand(cond.setTrue))
+    cmd = commands2.InstantCommand().beforeStarting(
+        commands2.InstantCommand(cond.setTrue)
+    )
 
     scheduler.schedule(cmd)
 

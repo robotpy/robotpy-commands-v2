@@ -1,7 +1,6 @@
 import commands2
-from commands2 import WaitCommand
-
 import pytest
+from commands2 import WaitCommand
 
 
 class MySubsystem(commands2.Subsystem):

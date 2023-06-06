@@ -1,67 +1,131 @@
-from typing import Any, Callable, Optional, overload
+from types import SimpleNamespace
+from typing import Callable, overload
+
 from typing_extensions import Self
 from wpilib.event import EventLoop
-from ..command import Command
-from ..commandscheduler import CommandScheduler
-from types import SimpleNamespace
-from wpilib.event import BooleanEvent
 from wpimath.filter import Debouncer
 
+from ..command import Command
+from ..commandscheduler import CommandScheduler
+from ..util import format_args_kwargs
+
+
 class Trigger:
+    """
+    This class provides an easy way to link commands to conditions.
+
+    It is very easy to link a button to a command. For instance, you could link the trigger button
+    of a joystick to a "score" command.
+    """
 
     _loop: EventLoop
     _condition: Callable[[], bool]
 
     @overload
     def __init__(self, condition: Callable[[], bool] = lambda: False):
+        """
+        Creates a new trigger based on the given condition.
+
+        Polled by the default scheduler button loop.
+
+        :param condition: the condition represented by this trigger
+        """
         ...
 
     @overload
     def __init__(self, loop: EventLoop, condition: Callable[[], bool]):
+        """
+        Creates a new trigger based on the given condition.
+
+        :param loop: The loop instance that polls this trigger.
+        :param condition: the condition represented by this trigger
+        """
         ...
-    
+
     def __init__(self, *args, **kwargs):
-        if len(args) + len(kwargs) == 1:
-            self._loop = CommandScheduler().getDefaultButtonLoop()
-            if args:
-                self._condition = args[0]
-            else:
-                self._condition = kwargs["condition"]
-        else:
-            if "loop" in kwargs:
-                self._loop = kwargs["loop"]
-                got_loop_from_args = False
-            else:
-                self._loop = args[0]
-                got_loop_from_args = True
-            
+        def init_loop_condition(loop: EventLoop, condition: Callable[[], bool]):
+            self._loop = loop
+            self._condition = condition
+
+        def init_condition(condition: Callable[[], bool]):
+            init_loop_condition(CommandScheduler().getDefaultButtonLoop(), condition)
+
+        num_args = len(args) + len(kwargs)
+
+        if num_args == 0:
+            return init_condition(lambda: False)
+        elif num_args == 1 and len(kwargs) == 1:
             if "condition" in kwargs:
-                self._condition = kwargs["condition"]
-            else:
-                if got_loop_from_args:
-                    self._condition = args[1]
-                else:
-                    self._condition = args[0]
-            
+                return init_condition(kwargs["condition"])
+        elif num_args == 1 and len(args) == 1:
+            if callable(args[0]):
+                return init_condition(args[0])
+        elif num_args == 2:
+            loop, condition, *_ = args + (None, None)
+            if "loop" in kwargs:
+                loop = kwargs["loop"]
+            if "condition" in kwargs:
+                condition = kwargs["condition"]
+            if loop is not None and condition is not None:
+                return init_loop_condition(loop, condition)
+
+        raise TypeError(
+            f"""
+TypeError: Trigger(): incompatible function arguments. The following argument types are supported:
+    1. (self: Trigger)
+    2. (self: Trigger, condition: () -> bool)
+    3. (self: Trigger, loop: EventLoop, condition: () -> bool)
+                        
+Invoked with: {format_args_kwargs(self, *args, **kwargs)}
+"""
+        )
+
     def onTrue(self, command: Command) -> Self:
+        """
+        Starts the given command whenever the condition changes from `false` to `true`.
+
+        :param command: the command to start
+        :returns: this trigger, so calls can be chained
+        """
+
         @self._loop.bind
         def _(state=SimpleNamespace(pressed_last=self._condition())):
             pressed = self._condition()
             if not state.pressed_last and pressed:
                 command.schedule()
             state.pressed_last = pressed
+
         return self
-    
+
     def onFalse(self, command: Command) -> Self:
+        """
+        Starts the given command whenever the condition changes from `true` to `false`.
+
+        :param command: the command to start
+        :returns: this trigger, so calls can be chained
+        """
+
         @self._loop.bind
         def _(state=SimpleNamespace(pressed_last=self._condition())):
             pressed = self._condition()
             if state.pressed_last and not pressed:
                 command.schedule()
             state.pressed_last = pressed
+
         return self
-    
+
     def whileTrue(self, command: Command) -> Self:
+        """
+        Starts the given command when the condition changes to `true` and cancels it when the condition
+        changes to `false`.
+
+        Doesn't re-start the command if it ends while the condition is still `true`. If the command
+        should restart, see edu.wpi.first.wpilibj2.command.RepeatCommand.
+
+        :param command: the command to start
+        :returns: this trigger, so calls can be chained
+        """
+
         @self._loop.bind
         def _(state=SimpleNamespace(pressed_last=self._condition())):
             pressed = self._condition()
@@ -70,9 +134,21 @@ class Trigger:
             elif state.pressed_last and not pressed:
                 command.cancel()
             state.pressed_last = pressed
+
         return self
-    
+
     def whileFalse(self, command: Command) -> Self:
+        """
+        Starts the given command when the condition changes to `false` and cancels it when the
+        condition changes to `true`.
+
+        Doesn't re-start the command if it ends while the condition is still `false`. If the command
+        should restart, see edu.wpi.first.wpilibj2.command.RepeatCommand.
+
+        :param command: the command to start
+        :returns: this trigger, so calls can be chained
+        """
+
         @self._loop.bind
         def _(state=SimpleNamespace(pressed_last=self._condition())):
             pressed = self._condition()
@@ -81,9 +157,17 @@ class Trigger:
             elif not state.pressed_last and pressed:
                 command.cancel()
             state.pressed_last = pressed
+
         return self
-    
+
     def toggleOnTrue(self, command: Command) -> Self:
+        """
+        Toggles a command when the condition changes from `false` to `true`.
+
+        :param command: the command to toggle
+        :returns: this trigger, so calls can be chained
+        """
+
         @self._loop.bind
         def _(state=SimpleNamespace(pressed_last=self._condition())):
             pressed = self._condition()
@@ -93,9 +177,17 @@ class Trigger:
                 else:
                     command.schedule()
             state.pressed_last = pressed
+
         return self
-    
+
     def toggleOnFalse(self, command: Command) -> Self:
+        """
+        Toggles a command when the condition changes from `true` to `false`.
+
+        :param command: the command to toggle
+        :returns: this trigger, so calls can be chained
+        """
+
         @self._loop.bind
         def _(state=SimpleNamespace(pressed_last=self._condition())):
             pressed = self._condition()
@@ -105,35 +197,69 @@ class Trigger:
                 else:
                     command.schedule()
             state.pressed_last = pressed
+
         return self
-    
+
     def __call__(self) -> bool:
         return self._condition()
-    
+
     def getAsBoolean(self) -> bool:
         return self._condition()
-    
+
+    def __bool__(self) -> bool:
+        return self._condition()
+
     def __and__(self, other: "Trigger") -> "Trigger":
         return Trigger(lambda: self() and other())
-    
+
     def and_(self, other: "Trigger") -> "Trigger":
+        """
+        Composes two triggers with logical AND.
+
+        :param trigger: the condition to compose with
+        :returns: A trigger which is active when both component triggers are active.
+        """
         return self & other
-    
+
     def __or__(self, other: "Trigger") -> "Trigger":
         return Trigger(lambda: self() or other())
-    
+
     def or_(self, other: "Trigger") -> "Trigger":
+        """
+        Composes two triggers with logical OR.
+
+        :param trigger: the condition to compose with
+        :returns: A trigger which is active when either component trigger is active.
+        """
         return self | other
-    
+
     def __invert__(self) -> "Trigger":
         return Trigger(lambda: not self())
-    
+
     def negate(self) -> "Trigger":
+        """
+        Creates a new trigger that is active when this trigger is inactive, i.e. that acts as the
+        negation of this trigger.
+
+        :returns: the negated trigger
+        """
         return ~self
-    
+
     def not_(self) -> "Trigger":
         return ~self
 
-    def debounce(self, seconds: float, debounce_type: Debouncer.DebounceType = Debouncer.DebounceType.kRising) -> "Trigger":
+    def debounce(
+        self,
+        seconds: float,
+        debounce_type: Debouncer.DebounceType = Debouncer.DebounceType.kRising,
+    ) -> "Trigger":
+        """
+        Creates a new debounced trigger from this trigger - it will become active when this trigger has
+        been active for longer than the specified period.
+
+        :param seconds: The debounce period.
+        :param type: The debounce type.
+        :returns: The debounced trigger.
+        """
         debouncer = Debouncer(seconds, debounce_type)
         return Trigger(lambda: debouncer.calculate(self()))

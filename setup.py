@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 
 import subprocess
+
 import setuptools
 
 try:
@@ -19,10 +20,10 @@ with open("README.md", "r", encoding="utf-8") as readme:
 setuptools.setup(
     name="robotpy-commands-v2",
     version=version,
-    author = "RobotPy Development Team",
-    author_email = "robotpy@googlegroups.com",
-    description = "WPILib command framework v2",
-    url = "https://github.com/robotpy/robotpy-commands-v2",
+    author="RobotPy Development Team",
+    author_email="robotpy@googlegroups.com",
+    description="WPILib command framework v2",
+    url="https://github.com/robotpy/robotpy-commands-v2",
     packages=["commands2"],
     install_requires=["wpilib~=2023.4.3"],
     license="BSD-3-Clause",

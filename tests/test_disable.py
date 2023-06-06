@@ -1,9 +1,8 @@
 import commands2
-import hal
 from util import Counter
 
 
-def test_run_command(scheduler: commands2.CommandScheduler):
+def test_disable(scheduler: commands2.CommandScheduler):
     counter = Counter()
     cmd = commands2.RunCommand(counter.increment)
 
@@ -11,7 +10,7 @@ def test_run_command(scheduler: commands2.CommandScheduler):
     scheduler.run()
     assert counter.value == 1
 
-    hal.shutdown()
+    scheduler.disable()
 
     scheduler.run()
     assert counter.value == 1

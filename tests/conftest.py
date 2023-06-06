@@ -1,6 +1,5 @@
-import pytest
-
 import commands2
+import pytest
 from wpilib.simulation import DriverStationSim
 
 

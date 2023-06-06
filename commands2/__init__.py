@@ -1,6 +1,5 @@
-
 from .command import Command, InterruptionBehavior
-from .commandgroup import CommandGroup
+from .commandgroup import CommandGroup, IllegalCommandUse
 from .commandscheduler import CommandScheduler
 from .conditionalcommand import ConditionalCommand
 from .functionalcommand import FunctionalCommand
@@ -30,6 +29,7 @@ __all__ = [
     "CommandScheduler",
     "ConditionalCommand",
     "FunctionalCommand",
+    "IllegalCommandUse",
     "InstantCommand",
     "InterruptionBehavior",
     "NotifierCommand",
