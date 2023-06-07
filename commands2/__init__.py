@@ -23,7 +23,10 @@ from .waitcommand import WaitCommand
 from .waituntilcommand import WaitUntilCommand
 from .wrappercommand import WrapperCommand
 
+from . import button
+
 __all__ = [
+    "button",
     "Command",
     "CommandGroup",
     "CommandScheduler",

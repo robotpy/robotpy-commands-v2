@@ -1,7 +1,7 @@
 import commands2
 import pytest
 from wpilib.simulation import DriverStationSim
-
+from ntcore import NetworkTableInstance
 
 @pytest.fixture(autouse=True)
 def scheduler():
@@ -9,3 +9,10 @@ def scheduler():
     DriverStationSim.setEnabled(True)
     DriverStationSim.notifyNewData()
     return commands2.CommandScheduler.getInstance()
+
+@pytest.fixture()
+def nt_instance():
+    inst = NetworkTableInstance.create()
+    inst.startLocal()
+    yield inst
+    inst.stopLocal()

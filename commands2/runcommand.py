@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import Callable
+from typing import Callable, Any
 
 from .commandgroup import *
 from .functionalcommand import FunctionalCommand
@@ -13,7 +13,7 @@ class RunCommand(FunctionalCommand):
     use Command#withTimeout(double) or Command#until(BooleanSupplier) to give it one.
     If you only wish to execute a Runnable once, use InstantCommand."""
 
-    def __init__(self, toRun: Callable[[], None], *requirements: Subsystem):
+    def __init__(self, toRun: Callable[[], Any], *requirements: Subsystem):
         """
         Creates a new RunCommand. The Runnable will be run continuously until the command ends. Does
         not run when disabled.

@@ -4,7 +4,7 @@
 from __future__ import annotations
 
 from enum import Enum
-from typing import TYPE_CHECKING, Callable, Set
+from typing import TYPE_CHECKING, Callable, Set, Any
 
 from typing_extensions import Self
 
@@ -391,6 +391,7 @@ class Command:
         :returns: the decorated command
         """
         from .conditionalcommand import ConditionalCommand
+        from .instantcommand import InstantCommand
 
         return ConditionalCommand(InstantCommand(), self, condition)
 
@@ -441,7 +442,7 @@ class Command:
 
         return W(self)
 
-    def finallyDo(self, end: Callable[[bool], None]) -> Command:
+    def finallyDo(self, end: Callable[[bool], Any]) -> Command:
         """
         Decorates this command with a lambda to call on interrupt or end, following the command's
         inherent #end(boolean) method.
@@ -459,7 +460,7 @@ class Command:
 
         return W(self)
 
-    def handleInterrupts(self, handler: Callable[[], None]) -> Command:
+    def handleInterrupt(self, handler: Callable[[], Any]) -> Command:
         """
         Decorates this command with a lambda to call on interrupt, following the command's inherent
         #end(boolean) method.

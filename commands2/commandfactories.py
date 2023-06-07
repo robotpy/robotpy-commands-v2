@@ -62,7 +62,7 @@ def startEnd(
     :param requirements: subsystems the action requires
     :returns: the command
     """
-    return StartEndCommand(run, lambda _: end(), *requirements)
+    return StartEndCommand(run, lambda: end(), *requirements)
 
 
 def runEnd(

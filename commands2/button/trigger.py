@@ -209,10 +209,10 @@ Invoked with: {format_args_kwargs(self, *args, **kwargs)}
     def __bool__(self) -> bool:
         return self._condition()
 
-    def __and__(self, other: "Trigger") -> "Trigger":
+    def __and__(self, other: Callable[[], bool]) -> "Trigger":
         return Trigger(lambda: self() and other())
 
-    def and_(self, other: "Trigger") -> "Trigger":
+    def and_(self, other: Callable[[], bool]) -> "Trigger":
         """
         Composes two triggers with logical AND.
 
@@ -221,10 +221,10 @@ Invoked with: {format_args_kwargs(self, *args, **kwargs)}
         """
         return self & other
 
-    def __or__(self, other: "Trigger") -> "Trigger":
+    def __or__(self, other: Callable[[], bool]) -> "Trigger":
         return Trigger(lambda: self() or other())
 
-    def or_(self, other: "Trigger") -> "Trigger":
+    def or_(self, other: Callable[[], bool]) -> "Trigger":
         """
         Composes two triggers with logical OR.
 

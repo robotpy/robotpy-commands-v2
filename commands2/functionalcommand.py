@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import Callable
+from typing import Callable, Any
 
 from .command import Command
 from .commandgroup import *
@@ -16,9 +16,9 @@ class FunctionalCommand(Command):
 
     def __init__(
         self,
-        onInit: Callable[[], None],
-        onExecute: Callable[[], None],
-        onEnd: Callable[[bool], None],
+        onInit: Callable[[], Any],
+        onExecute: Callable[[], Any],
+        onEnd: Callable[[bool], Any],
         isFinished: Callable[[], bool],
         *requirements: Subsystem,
     ):

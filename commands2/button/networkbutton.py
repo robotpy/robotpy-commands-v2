@@ -64,7 +64,7 @@ class NetworkButton(Trigger):
 
     def __init__(self, *args, **kwargs) -> None:
         def init_sub(sub: BooleanSubscriber):
-            super().__init__(
+            return super(NetworkButton, self).__init__(
                 lambda: sub.getTopic().getInstance().isConnected() and sub.get()
             )
 
