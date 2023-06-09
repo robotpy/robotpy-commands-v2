@@ -23,6 +23,8 @@ from .waitcommand import WaitCommand
 from .waituntilcommand import WaitUntilCommand
 from .wrappercommand import WrapperCommand
 
+from .commandfactories import none, runOnce, run, startEnd, runEnd, print_, waitSeconds, waitUntil, either, select, sequence, repeatingSequence, parallel, race, deadline
+
 from . import button
 
 __all__ = [
@@ -53,4 +55,20 @@ __all__ = [
     "WaitCommand",
     "WaitUntilCommand",
     "WrapperCommand",
+
+    "none",
+    "runOnce",
+    "run",
+    "startEnd",
+    "runEnd",
+    "print_",
+    "waitSeconds",
+    "waitUntil",
+    "either",
+    "select",
+    "sequence",
+    "repeatingSequence",
+    "parallel",
+    "race",
+    "deadline",
 ]

@@ -42,6 +42,7 @@ def test_only_while(scheduler: commands2.CommandScheduler):
 def test_ignoringDisable(scheduler: commands2.CommandScheduler):
     command = commands2.RunCommand(lambda: None).ignoringDisable(True)
     DriverStationSim.setEnabled(False)
+    DriverStationSim.notifyNewData()
     scheduler.schedule(command)
     scheduler.run()
     assert command.isScheduled()

@@ -13,30 +13,30 @@ def test_requirementInterrupt(scheduler: commands2.CommandScheduler):
     interrupted.addRequirements(requirement)
     interrupter = commands2.Command()
     interrupter.addRequirements(requirement)
-    mock_object(interrupted)
-    mock_object(interrupter)
+    start_spying_on(interrupted)
+    start_spying_on(interrupter)
 
     scheduler.schedule(interrupted)
     scheduler.run()
     scheduler.schedule(interrupter)
     scheduler.run()
 
-    assert interrupted.initialize.times_called > 0
-    assert interrupted.execute.times_called > 0
+    assert interrupted.initialize.times_called == 1
+    assert interrupted.execute.times_called == 1
     assert interrupted.end.called_with(interrupted=True)
 
-    assert interrupter.initialize.times_called > 0
-    assert interrupter.execute.times_called > 0
+    assert interrupter.initialize.times_called == 1
+    assert interrupter.execute.times_called == 1
 
     assert not interrupted.isScheduled()
     assert interrupter.isScheduled()
 
 def test_requirementUninterruptible(scheduler: commands2.CommandScheduler):
     requirement = commands2.Subsystem()
-    notInterrupted = commands2.RunCommand(lambda: None, requirement).withInteruptBehavior(commands2.InterruptionBehavior.kCancelIncoming)
+    notInterrupted = commands2.RunCommand(lambda: None, requirement).withInterruptBehavior(commands2.InterruptionBehavior.kCancelIncoming)
     interrupter = commands2.Command()
     interrupter.addRequirements(requirement)
-    mock_object(notInterrupted)
+    start_spying_on(notInterrupted)
 
     scheduler.schedule(notInterrupted)
     scheduler.schedule(interrupter)

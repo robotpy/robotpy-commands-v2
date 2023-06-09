@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import Callable
+from typing import Callable, Any
 
 from wpilib import Notifier
 
@@ -20,7 +20,7 @@ class NotifierCommand(Command):
     should not use this class."""
 
     def __init__(
-        self, toRun: Callable[[], None], period: float, *requirements: Subsystem
+        self, toRun: Callable[[], Any], period: float, *requirements: Subsystem
     ):
         """
         Creates a new NotifierCommand.

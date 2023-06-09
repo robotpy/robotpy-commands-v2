@@ -427,7 +427,7 @@ class Command:
 
         return W(self)
 
-    def withInteruptBehavior(self, behavior: InterruptionBehavior) -> Command:
+    def withInterruptBehavior(self, behavior: InterruptionBehavior) -> Command:
         """
         Decorates this command to have a different InterruptionBehavior interruption behavior.
 

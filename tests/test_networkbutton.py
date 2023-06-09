@@ -9,7 +9,7 @@ if TYPE_CHECKING:
 def test_networkbutton(scheduler: commands2.CommandScheduler, nt_instance: NetworkTableInstance):
     # command = commands2.Command()
     command = commands2.Command()
-    mock_object(command)
+    start_spying_on(command)
     
     pub = nt_instance.getTable("TestTable").getBooleanTopic("Test").publish()
 
@@ -23,4 +23,4 @@ def test_networkbutton(scheduler: commands2.CommandScheduler, nt_instance: Netwo
     pub.set(True)
     scheduler.run()
     scheduler.run()
-    assert command.schedule.times_called > 0
+    assert command.schedule.times_called == 1

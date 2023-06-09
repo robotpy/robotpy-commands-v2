@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import Callable, Dict, Iterable, List, Optional, Set
+from typing import Callable, Dict, Iterable, List, Optional, Set, Union
 
 import hal
 from typing_extensions import Self
@@ -363,16 +363,16 @@ class CommandScheduler:
         """
         return all(command in self._scheduledCommands for command in commands)
 
-    def requiring(self, subsystem: Subsystem) -> Command:
+    def requiring(self, subsystem: Subsystem) -> Union[None, Command]:
         """
-        Returns the command currently requiring a given subsystem. Null if no command is currently
+        Returns the command currently requiring a given subsystem. None if no command is currently
         requiring the subsystem
 
         :param subsystem: the subsystem to be inquired about
-        :returns: the command currently requiring the subsystem, or null if no command is currently
+        :returns: the command currently requiring the subsystem, or None if no command is currently
             scheduled
         """
-        return self._requirements[subsystem]
+        return self._requirements.get(subsystem)
 
     def disable(self) -> None:
         """Disables the command scheduler."""

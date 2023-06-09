@@ -82,12 +82,11 @@ class ParallelDeadlineGroup(CommandGroup):
                     self._finished = True
 
     def end(self, interrupted: bool):
-        if interrupted:
-            for command, isRunning in self._commands.items():
-                if not isRunning:
-                    continue
-                command.end(True)
-                self._commands[command] = False
+        for command, isRunning in self._commands.items():
+            if not isRunning:
+                continue
+            command.end(True)
+            self._commands[command] = False
 
     def isFinished(self) -> bool:
         return self._finished

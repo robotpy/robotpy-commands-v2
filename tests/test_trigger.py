@@ -179,7 +179,7 @@ def test_triggerCompositionSupplier():
 
 def test_debounce(scheduler: commands2.CommandScheduler):
     command = commands2.Command()
-    mock_object(command)
+    start_spying_on(command)
 
     button = InternalButton()
     debounced = button.debounce(0.1)
@@ -188,13 +188,14 @@ def test_debounce(scheduler: commands2.CommandScheduler):
 
     button.setPressed(True)
     scheduler.run()
-    assert command.schedule.times_called == 0
+    
+    verify(command, never()).schedule()
 
     stepTiming(0.3)
 
     button.setPressed(True)
     scheduler.run()
-    assert command.schedule.times_called > 0
+    assert command.schedule.times_called == 1
 
 
 def test_booleanSupplier():
