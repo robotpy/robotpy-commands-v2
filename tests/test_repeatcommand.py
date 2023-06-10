@@ -1,18 +1,20 @@
-import commands2
-
-from util import * # type: ignore
 from typing import TYPE_CHECKING
-from compositiontestbase import SingleCompositionTestBase # type: ignore
+
+import commands2
+from compositiontestbase import SingleCompositionTestBase  # type: ignore
+from util import *  # type: ignore
+
 if TYPE_CHECKING:
     from .util import *
     from .compositiontestbase import SingleCompositionTestBase
 
-
 import pytest
+
 
 class RepeatCommandCompositionTest(SingleCompositionTestBase):
     def composeSingle(self, member):
         return member.repeatedly()
+
 
 def test_callsMethodsCorrectly(scheduler: commands2.CommandScheduler):
     command = commands2.Command()

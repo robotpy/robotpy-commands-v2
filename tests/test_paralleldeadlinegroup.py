@@ -1,18 +1,22 @@
+from typing import TYPE_CHECKING
+
 import commands2
+from compositiontestbase import MultiCompositionTestBase  # type: ignore
+from util import *  # type: ignore
+
 # from tests.compositiontestbase import T
 
-from typing import TYPE_CHECKING
-from util import * # type: ignore
-from compositiontestbase import MultiCompositionTestBase # type: ignore
 if TYPE_CHECKING:
     from .util import *
     from .compositiontestbase import MultiCompositionTestBase
 
 import pytest
 
+
 class TestParallelDeadlineGroupComposition(MultiCompositionTestBase):
     def compose(self, *members: commands2.Command):
         return commands2.ParallelDeadlineGroup(members[0], *members[1:])
+
 
 def test_parallelDeadlineSchedule(scheduler: commands2.CommandScheduler):
     command1 = commands2.Command()
@@ -36,21 +40,21 @@ def test_parallelDeadlineSchedule(scheduler: commands2.CommandScheduler):
 
     assert not scheduler.isScheduled(group)
 
-    assert command2.initialize.times_called == 1
-    assert command2.execute.times_called == 1
-    assert command2.end.called_with(interrupted=False)
-    assert not command2.end.called_with(interrupted=True)
+    verify(command2).initialize()
+    verify(command2).execute()
+    verify(command2).end(False)
+    verify(command2, never()).end(True)
 
-    assert command1.initialize.times_called == 1
-    assert command1.execute.times_called == 2
-    assert command1.end.called_with(interrupted=False)
-    assert not command1.end.called_with(interrupted=True)
+    verify(command1).initialize()
+    verify(command1, times(2)).execute()
+    verify(command1).end(False)
+    verify(command1, never()).end(True)
 
-    assert command3.initialize.times_called == 1
-    assert command3.execute.times_called == 2
+    verify(command3).initialize()
+    verify(command3, times(2)).execute()
+    verify(command3, never()).end(False)
+    verify(command3).end(True)
 
-    assert not command3.end.called_with(interrupted=False)
-    assert command3.end.called_with(interrupted=True)
 
 def test_parallelDeadlineInterrupt(scheduler: commands2.CommandScheduler):
     command1 = commands2.Command()
@@ -68,15 +72,16 @@ def test_parallelDeadlineInterrupt(scheduler: commands2.CommandScheduler):
     scheduler.run()
     scheduler.cancel(group)
 
-    assert command1.execute.times_called == 2
-    assert not command1.end.called_with(interrupted=False)
-    assert command1.end.called_with(interrupted=True)
+    verify(command1, times(2)).execute()
+    verify(command1, never()).end(False)
+    verify(command1).end(True)
 
-    assert command2.execute.times_called == 1
-    assert command2.end.called_with(interrupted=False)
-    assert not command2.end.called_with(interrupted=True)
+    verify(command2).execute()
+    verify(command2).end(False)
+    verify(command2, never()).end(True)
 
     assert not scheduler.isScheduled(group)
+
 
 def test_parallelDeadlineRequirement(scheduler: commands2.CommandScheduler):
     system1 = commands2.Subsystem()
@@ -98,6 +103,7 @@ def test_parallelDeadlineRequirement(scheduler: commands2.CommandScheduler):
 
     assert not scheduler.isScheduled(group)
     assert scheduler.isScheduled(command3)
+
 
 def test_parallelDeadlineRequirementError(scheduler: commands2.CommandScheduler):
     system1 = commands2.Subsystem()

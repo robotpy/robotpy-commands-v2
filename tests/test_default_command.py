@@ -1,11 +1,13 @@
-import commands2
-
-from util import * # type: ignore
 from typing import TYPE_CHECKING
+
+import commands2
+from util import *  # type: ignore
+
 if TYPE_CHECKING:
     from .util import *
 
 import pytest
+
 
 def test_defaultCommandSchedule(scheduler: commands2.CommandScheduler):
     hasDefaultCommand = commands2.Subsystem()
@@ -17,6 +19,7 @@ def test_defaultCommandSchedule(scheduler: commands2.CommandScheduler):
     scheduler.run()
 
     assert scheduler.isScheduled(defaultCommand)
+
 
 def test_defaultCommandInterruptResume(scheduler: commands2.CommandScheduler):
     hasDefaultCommand = commands2.Subsystem()
@@ -40,6 +43,7 @@ def test_defaultCommandInterruptResume(scheduler: commands2.CommandScheduler):
     assert scheduler.isScheduled(defaultCommand)
     assert not scheduler.isScheduled(interrupter)
 
+
 def test_defaultCommandDisableResume(scheduler: commands2.CommandScheduler):
     hasDefaultCommand = commands2.Subsystem()
 
@@ -48,7 +52,7 @@ def test_defaultCommandDisableResume(scheduler: commands2.CommandScheduler):
     defaultCommand.runsWhenDisabled = lambda: False
 
     start_spying_on(defaultCommand)
-    
+
     scheduler.setDefaultCommand(hasDefaultCommand, defaultCommand)
     scheduler.run()
 
@@ -67,4 +71,3 @@ def test_defaultCommandDisableResume(scheduler: commands2.CommandScheduler):
     assert scheduler.isScheduled(defaultCommand)
 
     assert defaultCommand.end.called_with(interrupted=True)
-

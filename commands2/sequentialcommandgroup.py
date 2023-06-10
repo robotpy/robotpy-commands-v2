@@ -68,8 +68,6 @@ class SequentialCommandGroup(CommandGroup):
                 self._commands[self._currentCommandIndex].initialize()
 
     def end(self, interrupted: bool):
-        self._currentCommandIndex = -1
-
         if not interrupted:
             return
         if not self._commands:
@@ -80,6 +78,7 @@ class SequentialCommandGroup(CommandGroup):
             return
 
         self._commands[self._currentCommandIndex].end(True)
+        self._currentCommandIndex = -1
 
     def isFinished(self) -> bool:
         return self._currentCommandIndex == len(self._commands)

@@ -1,11 +1,13 @@
-import commands2
-
-from util import * # type: ignore
 from typing import TYPE_CHECKING
+
+import commands2
+from util import *  # type: ignore
+
 if TYPE_CHECKING:
     from .util import *
 
 import pytest
+
 
 def test_proxyCommandSchedule(scheduler: commands2.CommandScheduler):
     command1 = commands2.Command()
@@ -15,7 +17,8 @@ def test_proxyCommandSchedule(scheduler: commands2.CommandScheduler):
 
     scheduler.schedule(scheduleCommand)
 
-    assert command1.schedule.times_called == 1
+    verify(command1).schedule()
+
 
 def test_proxyCommandEnd(scheduler: commands2.CommandScheduler):
     cond = OOBoolean()

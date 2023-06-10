@@ -1,11 +1,12 @@
-import commands2
+from typing import TYPE_CHECKING
 
+import commands2
+from util import *  # type: ignore
 from wpilib.simulation import stepTiming
 
-from util import * # type: ignore
-from typing import TYPE_CHECKING
 if TYPE_CHECKING:
     from .util import *
+
 
 def test_onTrue(scheduler: commands2.CommandScheduler):
     finished = OOBoolean(False)
@@ -23,6 +24,7 @@ def test_onTrue(scheduler: commands2.CommandScheduler):
     scheduler.run()
     assert not command1.isScheduled()
 
+
 def test_onFalse(scheduler: commands2.CommandScheduler):
     finished = OOBoolean(False)
     command1 = commands2.WaitUntilCommand(finished)
@@ -38,6 +40,7 @@ def test_onFalse(scheduler: commands2.CommandScheduler):
     finished.set(True)
     scheduler.run()
     assert not command1.isScheduled()
+
 
 def test_whileTrueRepeatedly(scheduler: commands2.CommandScheduler):
     inits = OOInteger(0)
@@ -66,6 +69,7 @@ def test_whileTrueRepeatedly(scheduler: commands2.CommandScheduler):
     scheduler.run()
     assert inits == 2
 
+
 def test_whileTrueLambdaRunCommand(scheduler: commands2.CommandScheduler):
     counter = OOInteger(0)
 
@@ -85,11 +89,14 @@ def test_whileTrueLambdaRunCommand(scheduler: commands2.CommandScheduler):
     scheduler.run()
     assert counter == 2
 
+
 def test_whileTrueOnce(scheduler: commands2.CommandScheduler):
     startCounter = OOInteger(0)
     endCounter = OOInteger(0)
 
-    command1 = commands2.StartEndCommand(startCounter.incrementAndGet, endCounter.incrementAndGet)
+    command1 = commands2.StartEndCommand(
+        startCounter.incrementAndGet, endCounter.incrementAndGet
+    )
 
     button = InternalButton()
     button.setPressed(False)
@@ -112,7 +119,9 @@ def test_toggleOnTrue(scheduler: commands2.CommandScheduler):
     startCounter = OOInteger(0)
     endCounter = OOInteger(0)
 
-    command1 = commands2.StartEndCommand(startCounter.incrementAndGet, endCounter.incrementAndGet)
+    command1 = commands2.StartEndCommand(
+        startCounter.incrementAndGet, endCounter.incrementAndGet
+    )
 
     button = InternalButton()
     button.setPressed(False)
@@ -140,7 +149,9 @@ def test_cancelWhenActive(scheduler: commands2.CommandScheduler):
     endCounter = OOInteger(0)
 
     button = InternalButton()
-    command1 = commands2.StartEndCommand(startCounter.incrementAndGet, endCounter.incrementAndGet).until(button)
+    command1 = commands2.StartEndCommand(
+        startCounter.incrementAndGet, endCounter.incrementAndGet
+    ).until(button)
 
     button.setPressed(False)
     command1.schedule()
@@ -154,6 +165,7 @@ def test_cancelWhenActive(scheduler: commands2.CommandScheduler):
     scheduler.run()
     assert startCounter == 1
     assert endCounter == 1
+
 
 def test_triggerComposition():
     button1 = InternalButton()
@@ -177,6 +189,7 @@ def test_triggerCompositionSupplier():
     assert button1.and_(supplier)() == False
     assert button1.or_(supplier)() == True
 
+
 def test_debounce(scheduler: commands2.CommandScheduler):
     command = commands2.Command()
     start_spying_on(command)
@@ -188,21 +201,19 @@ def test_debounce(scheduler: commands2.CommandScheduler):
 
     button.setPressed(True)
     scheduler.run()
-    
+
     verify(command, never()).schedule()
 
     stepTiming(0.3)
 
     button.setPressed(True)
     scheduler.run()
-    assert command.schedule.times_called == 1
+    verify(command).schedule()
 
 
 def test_booleanSupplier():
     button = InternalButton()
-    
+
     assert button() == False
     button.setPressed(True)
     assert button() == True
-
-

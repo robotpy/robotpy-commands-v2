@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import Callable, Dict, Iterable, List, Optional, Set, Union
+from typing import Any, Callable, Dict, Iterable, List, Optional, Set, Union
 
 import hal
 from typing_extensions import Self
@@ -382,7 +382,7 @@ class CommandScheduler:
         """Enables the command scheduler."""
         self._disabled = False
 
-    def onCommandInitialize(self, action: Callable[[Command], None]) -> None:
+    def onCommandInitialize(self, action: Callable[[Command], Any]) -> None:
         """
         Adds an action to perform on the initialization of any command by the scheduler.
 
@@ -390,7 +390,7 @@ class CommandScheduler:
         """
         self._initActions.append(action)
 
-    def onCommandExecute(self, action: Callable[[Command], None]) -> None:
+    def onCommandExecute(self, action: Callable[[Command], Any]) -> None:
         """
         Adds an action to perform on the execution of any command by the scheduler.
 
@@ -398,7 +398,7 @@ class CommandScheduler:
         """
         self._executeActions.append(action)
 
-    def onCommandInterrupt(self, action: Callable[[Command], None]) -> None:
+    def onCommandInterrupt(self, action: Callable[[Command], Any]) -> None:
         """
         Adds an action to perform on the interruption of any command by the scheduler.
 
@@ -406,7 +406,7 @@ class CommandScheduler:
         """
         self._interruptActions.append(action)
 
-    def onCommandFinish(self, action: Callable[[Command], None]) -> None:
+    def onCommandFinish(self, action: Callable[[Command], Any]) -> None:
         """
         Adds an action to perform on the finishing of any command by the scheduler.
 

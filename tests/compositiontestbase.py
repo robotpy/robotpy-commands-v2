@@ -1,20 +1,28 @@
+from typing import Generic, TypeVar
+
 import commands2
-from typing import TypeVar, Generic
+import pytest
+
 # T = TypeVar("T", bound=commands2.Command)
 # T = commands2.Command
 
-import pytest
-
 
 class SingleCompositionTestBase:
-
     def composeSingle(self, member: commands2.Command):
         raise NotImplementedError
 
-    @pytest.mark.parametrize("interruptionBehavior", [commands2.InterruptionBehavior.kCancelSelf, commands2.InterruptionBehavior.kCancelIncoming])
+    @pytest.mark.parametrize(
+        "interruptionBehavior",
+        [
+            commands2.InterruptionBehavior.kCancelSelf,
+            commands2.InterruptionBehavior.kCancelIncoming,
+        ],
+    )
     def test_interruptible(self, interruptionBehavior: commands2.InterruptionBehavior):
         command = self.composeSingle(
-            commands2.WaitUntilCommand(lambda: False).withInterruptBehavior(interruptionBehavior)
+            commands2.WaitUntilCommand(lambda: False).withInterruptBehavior(
+                interruptionBehavior
+            )
         )
         assert command.getInterruptionBehavior() == interruptionBehavior
 
@@ -25,55 +33,67 @@ class SingleCompositionTestBase:
         )
         assert command.runsWhenDisabled() == runsWhenDisabled
 
-class MultiCompositionTestBase(SingleCompositionTestBase):
 
+class MultiCompositionTestBase(SingleCompositionTestBase):
     def compose(self, *members: commands2.Command):
         raise NotImplementedError
-    
+
     def composeSingle(self, member: commands2.Command):
         return self.compose(member)
-    
+
     @pytest.mark.parametrize(
         "expected,command1,command2,command3",
         [
             pytest.param(
                 commands2.InterruptionBehavior.kCancelSelf,
-                commands2.WaitUntilCommand(lambda: False)
-                    .withInterruptBehavior(commands2.InterruptionBehavior.kCancelSelf),
-                            commands2.WaitUntilCommand(lambda: False)
-                    .withInterruptBehavior(commands2.InterruptionBehavior.kCancelSelf),
-                            commands2.WaitUntilCommand(lambda: False)
-                    .withInterruptBehavior(commands2.InterruptionBehavior.kCancelSelf),
+                commands2.WaitUntilCommand(lambda: False).withInterruptBehavior(
+                    commands2.InterruptionBehavior.kCancelSelf
+                ),
+                commands2.WaitUntilCommand(lambda: False).withInterruptBehavior(
+                    commands2.InterruptionBehavior.kCancelSelf
+                ),
+                commands2.WaitUntilCommand(lambda: False).withInterruptBehavior(
+                    commands2.InterruptionBehavior.kCancelSelf
+                ),
                 id="AllCancelSelf",
             ),
             pytest.param(
                 commands2.InterruptionBehavior.kCancelIncoming,
-                commands2.WaitUntilCommand(lambda: False)
-                    .withInterruptBehavior(commands2.InterruptionBehavior.kCancelIncoming),
-                            commands2.WaitUntilCommand(lambda: False)
-                    .withInterruptBehavior(commands2.InterruptionBehavior.kCancelIncoming),
-                            commands2.WaitUntilCommand(lambda: False)
-                    .withInterruptBehavior(commands2.InterruptionBehavior.kCancelIncoming),
+                commands2.WaitUntilCommand(lambda: False).withInterruptBehavior(
+                    commands2.InterruptionBehavior.kCancelIncoming
+                ),
+                commands2.WaitUntilCommand(lambda: False).withInterruptBehavior(
+                    commands2.InterruptionBehavior.kCancelIncoming
+                ),
+                commands2.WaitUntilCommand(lambda: False).withInterruptBehavior(
+                    commands2.InterruptionBehavior.kCancelIncoming
+                ),
                 id="AllCancelIncoming",
             ),
             pytest.param(
                 commands2.InterruptionBehavior.kCancelSelf,
-                commands2.WaitUntilCommand(lambda: False)
-                    .withInterruptBehavior(commands2.InterruptionBehavior.kCancelSelf),
-                            commands2.WaitUntilCommand(lambda: False)
-                    .withInterruptBehavior(commands2.InterruptionBehavior.kCancelSelf),
-                            commands2.WaitUntilCommand(lambda: False)
-                    .withInterruptBehavior(commands2.InterruptionBehavior.kCancelIncoming),
+                commands2.WaitUntilCommand(lambda: False).withInterruptBehavior(
+                    commands2.InterruptionBehavior.kCancelSelf
+                ),
+                commands2.WaitUntilCommand(lambda: False).withInterruptBehavior(
+                    commands2.InterruptionBehavior.kCancelSelf
+                ),
+                commands2.WaitUntilCommand(lambda: False).withInterruptBehavior(
+                    commands2.InterruptionBehavior.kCancelIncoming
+                ),
                 id="TwoCancelSelfOneIncoming",
             ),
             pytest.param(
                 commands2.InterruptionBehavior.kCancelSelf,
-                commands2.WaitUntilCommand(lambda: False)
-                    .withInterruptBehavior(commands2.InterruptionBehavior.kCancelIncoming),
-                            commands2.WaitUntilCommand(lambda: False)
-                    .withInterruptBehavior(commands2.InterruptionBehavior.kCancelIncoming),
-                            commands2.WaitUntilCommand(lambda: False)
-                    .withInterruptBehavior(commands2.InterruptionBehavior.kCancelSelf),
+                commands2.WaitUntilCommand(lambda: False).withInterruptBehavior(
+                    commands2.InterruptionBehavior.kCancelIncoming
+                ),
+                commands2.WaitUntilCommand(lambda: False).withInterruptBehavior(
+                    commands2.InterruptionBehavior.kCancelIncoming
+                ),
+                commands2.WaitUntilCommand(lambda: False).withInterruptBehavior(
+                    commands2.InterruptionBehavior.kCancelSelf
+                ),
                 id="TwoCancelIncomingOneSelf",
             ),
         ],
@@ -118,4 +138,3 @@ class MultiCompositionTestBase(SingleCompositionTestBase):
     def test_runWhenDisabled(self, expected, command1, command2, command3):
         command = self.compose(command1, command2, command3)
         assert command.runsWhenDisabled() == expected
-

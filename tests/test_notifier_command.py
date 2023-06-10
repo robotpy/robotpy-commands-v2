@@ -1,11 +1,13 @@
-import commands2
-
-from util import * # type: ignore
 from typing import TYPE_CHECKING
+
+import commands2
+from util import *  # type: ignore
+
 if TYPE_CHECKING:
     from .util import *
 
 import pytest
+
 
 @pytest.mark.skip(reason="NotifierCommand is broken")
 def test_notifierCommandScheduler(scheduler: commands2.CommandScheduler):

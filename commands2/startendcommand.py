@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import Callable, Any
+from typing import Any, Callable
 
 from .commandgroup import *
 from .functionalcommand import FunctionalCommand
@@ -28,4 +28,6 @@ class StartEndCommand(FunctionalCommand):
         :param onInit: the Runnable to run on command init
         :param onEnd: the Runnable to run on command end
         :param requirements: the subsystems required by this command"""
-        super().__init__(onInit, lambda: None, lambda _: onEnd(), lambda: False, *requirements)
+        super().__init__(
+            onInit, lambda: None, lambda _: onEnd(), lambda: False, *requirements
+        )

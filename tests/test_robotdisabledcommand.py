@@ -1,13 +1,14 @@
-import commands2
-
-from util import * # type: ignore
 from typing import TYPE_CHECKING
+
+import commands2
+from util import *  # type: ignore
+
 if TYPE_CHECKING:
     from .util import *
 
 import pytest
-
 from wpilib import RobotState
+
 
 def test_robotDisabledCommandCancel(scheduler: commands2.CommandScheduler):
     command = commands2.Command()
@@ -19,6 +20,7 @@ def test_robotDisabledCommandCancel(scheduler: commands2.CommandScheduler):
     assert not scheduler.isScheduled(command)
     DriverStationSim.setEnabled(True)
     DriverStationSim.notifyNewData()
+
 
 def test_runWhenDisabled(scheduler: commands2.CommandScheduler):
     command = commands2.Command()
@@ -34,6 +36,7 @@ def test_runWhenDisabled(scheduler: commands2.CommandScheduler):
     scheduler.run()
 
     assert scheduler.isScheduled(command)
+
 
 def test_sequentialGroupRunWhenDisabled(scheduler: commands2.CommandScheduler):
     command1 = commands2.Command()
@@ -59,6 +62,7 @@ def test_sequentialGroupRunWhenDisabled(scheduler: commands2.CommandScheduler):
     assert scheduler.isScheduled(runWhenDisabled)
     assert not scheduler.isScheduled(dontRunWhenDisabled)
 
+
 def test_parallelGroupRunWhenDisabled(scheduler: commands2.CommandScheduler):
     command1 = commands2.Command()
     command1.runsWhenDisabled = lambda: True
@@ -83,10 +87,11 @@ def test_parallelGroupRunWhenDisabled(scheduler: commands2.CommandScheduler):
     assert scheduler.isScheduled(runWhenDisabled)
     assert not scheduler.isScheduled(dontRunWhenDisabled)
 
+
 def test_conditionalRunWhenDisabled(scheduler: commands2.CommandScheduler):
     DriverStationSim.setEnabled(False)
     DriverStationSim.notifyNewData()
-    
+
     command1 = commands2.Command()
     command1.runsWhenDisabled = lambda: True
     command2 = commands2.Command()
@@ -103,6 +108,7 @@ def test_conditionalRunWhenDisabled(scheduler: commands2.CommandScheduler):
 
     assert scheduler.isScheduled(runWhenDisabled)
     assert not scheduler.isScheduled(dontRunWhenDisabled)
+
 
 def test_selectRunWhenDisabled(scheduler: commands2.CommandScheduler):
     DriverStationSim.setEnabled(False)
@@ -124,10 +130,11 @@ def test_selectRunWhenDisabled(scheduler: commands2.CommandScheduler):
     assert scheduler.isScheduled(runWhenDisabled)
     assert not scheduler.isScheduled(dontRunWhenDisabled)
 
+
 def test_parallelConditionalRunWhenDisabledTest(scheduler: commands2.CommandScheduler):
     DriverStationSim.setEnabled(False)
     DriverStationSim.notifyNewData()
-    
+
     command1 = commands2.Command()
     command1.runsWhenDisabled = lambda: True
     command2 = commands2.Command()
@@ -145,5 +152,3 @@ def test_parallelConditionalRunWhenDisabledTest(scheduler: commands2.CommandSche
     scheduler.schedule(parallel)
 
     assert not scheduler.isScheduled(runWhenDisabled)
-
-

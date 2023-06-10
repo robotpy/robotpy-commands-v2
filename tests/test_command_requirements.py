@@ -1,11 +1,13 @@
-import commands2
-
-from util import * # type: ignore
 from typing import TYPE_CHECKING
+
+import commands2
+from util import *  # type: ignore
+
 if TYPE_CHECKING:
     from .util import *
 
 import pytest
+
 
 def test_requirementInterrupt(scheduler: commands2.CommandScheduler):
     requirement = commands2.Subsystem()
@@ -21,19 +23,22 @@ def test_requirementInterrupt(scheduler: commands2.CommandScheduler):
     scheduler.schedule(interrupter)
     scheduler.run()
 
-    assert interrupted.initialize.times_called == 1
-    assert interrupted.execute.times_called == 1
-    assert interrupted.end.called_with(interrupted=True)
+    verify(interrupted).initialize()
+    verify(interrupted).execute()
+    verify(interrupted).end(True)
 
-    assert interrupter.initialize.times_called == 1
-    assert interrupter.execute.times_called == 1
+    verify(interrupter).initialize()
+    verify(interrupter).execute()
 
     assert not interrupted.isScheduled()
     assert interrupter.isScheduled()
 
+
 def test_requirementUninterruptible(scheduler: commands2.CommandScheduler):
     requirement = commands2.Subsystem()
-    notInterrupted = commands2.RunCommand(lambda: None, requirement).withInterruptBehavior(commands2.InterruptionBehavior.kCancelIncoming)
+    notInterrupted = commands2.RunCommand(
+        lambda: None, requirement
+    ).withInterruptBehavior(commands2.InterruptionBehavior.kCancelIncoming)
     interrupter = commands2.Command()
     interrupter.addRequirements(requirement)
     start_spying_on(notInterrupted)
@@ -43,6 +48,7 @@ def test_requirementUninterruptible(scheduler: commands2.CommandScheduler):
 
     assert scheduler.isScheduled(notInterrupted)
     assert not scheduler.isScheduled(interrupter)
+
 
 def test_defaultCommandRequirementError(scheduler: commands2.CommandScheduler):
     system = commands2.Subsystem()

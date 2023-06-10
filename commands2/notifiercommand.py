@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from typing import Callable, Any
+from typing import Any, Callable
 
 from wpilib import Notifier
 

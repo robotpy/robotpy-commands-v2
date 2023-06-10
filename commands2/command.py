@@ -4,7 +4,7 @@
 from __future__ import annotations
 
 from enum import Enum
-from typing import TYPE_CHECKING, Callable, Set, Any
+from typing import TYPE_CHECKING, Any, Callable, Set
 
 from typing_extensions import Self
 

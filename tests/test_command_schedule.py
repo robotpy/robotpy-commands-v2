@@ -1,11 +1,13 @@
-import commands2
-
-from util import * # type: ignore
 from typing import TYPE_CHECKING
+
+import commands2
+from util import *  # type: ignore
+
 if TYPE_CHECKING:
     from .util import *
 
 import pytest
+
 
 def test_instantSchedule(scheduler: commands2.CommandScheduler):
     command = commands2.Command()
@@ -14,12 +16,14 @@ def test_instantSchedule(scheduler: commands2.CommandScheduler):
 
     scheduler.schedule(command)
     assert scheduler.isScheduled(command)
-    assert command.initialize.times_called == 1
+    verify(command).initialize()
+
     scheduler.run()
-    assert command.execute.times_called == 1
-    assert command.end.times_called == 1
-    assert command.end.called_with(interrupted=False)
+
+    verify(command).execute()
+    verify(command).end(False)
     assert not scheduler.isScheduled(command)
+
 
 def test_singleIterationSchedule(scheduler: commands2.CommandScheduler):
     command = commands2.Command()
@@ -32,10 +36,11 @@ def test_singleIterationSchedule(scheduler: commands2.CommandScheduler):
     command.isFinished = lambda: True
     scheduler.run()
 
-    assert command.initialize.times_called == 1
-    assert command.execute.times_called == 2
-    assert command.end.called_with(interrupted=False)
+    verify(command).initialize()
+    verify(command, times(2)).execute()
+    verify(command).end(False)
     assert not scheduler.isScheduled(command)
+
 
 def test_multiSchedule(scheduler: commands2.CommandScheduler):
     command1 = commands2.Command()
@@ -61,23 +66,25 @@ def test_multiSchedule(scheduler: commands2.CommandScheduler):
     scheduler.run()
     assert not scheduler.isScheduled(command1, command2, command3)
 
+
 def test_schedulerCancel(scheduler: commands2.CommandScheduler):
     command = commands2.Command()
     start_spying_on(command)
 
     scheduler.schedule(command)
-    
+
     scheduler.run()
     scheduler.cancel(command)
     scheduler.run()
 
-    assert command.execute.times_called == 1
-    assert command.end.called_with(interrupted=True)
-    assert not command.end.called_with(interrupted=False)
+    verify(command).execute()
+    verify(command).end(True)
+    verify(command, never()).end(False)
 
     assert not scheduler.isScheduled(command)
 
+
 def test_notScheduledCancel(scheduler: commands2.CommandScheduler):
     command = commands2.Command()
-    
+
     scheduler.cancel(command)

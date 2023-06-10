@@ -1,4 +1,4 @@
-from typing import Callable, Dict, Hashable
+from typing import Any, Callable, Dict, Hashable
 
 from .command import Command
 from .conditionalcommand import ConditionalCommand
@@ -28,7 +28,7 @@ def none() -> Command:
     return InstantCommand()
 
 
-def runOnce(action: Callable[[], None], *requirements: Subsystem) -> Command:
+def runOnce(action: Callable[[], Any], *requirements: Subsystem) -> Command:
     """
     Constructs a command that runs an action once and finishes.
 
@@ -39,7 +39,7 @@ def runOnce(action: Callable[[], None], *requirements: Subsystem) -> Command:
     return InstantCommand(action, *requirements)
 
 
-def run(action: Callable[[], None], *requirements: Subsystem) -> Command:
+def run(action: Callable[[], Any], *requirements: Subsystem) -> Command:
     """
     Constructs a command that runs an action every iteration until interrupted.
 
@@ -51,7 +51,7 @@ def run(action: Callable[[], None], *requirements: Subsystem) -> Command:
 
 
 def startEnd(
-    run: Callable[[], None], end: Callable[[], None], *requirements: Subsystem
+    run: Callable[[], Any], end: Callable[[], Any], *requirements: Subsystem
 ) -> Command:
     """
     Constructs a command that runs an action once and another action when the command is
@@ -66,7 +66,7 @@ def startEnd(
 
 
 def runEnd(
-    run: Callable[[], None], end: Callable[[], None], *requirements: Subsystem
+    run: Callable[[], Any], end: Callable[[], Any], *requirements: Subsystem
 ) -> Command:
     """
     Constructs a command that runs an action every iteration until interrupted, and then runs a
