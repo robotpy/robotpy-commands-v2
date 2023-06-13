@@ -1,25 +1,12 @@
 #!/usr/bin/env python3
 
-import subprocess
-
 import setuptools
-
-try:
-    ret = subprocess.check_output(
-        "git describe --tags --abbrev=0",
-        shell=True,
-    )
-    version = ret.decode("utf-8").strip()
-except:
-    version = "main"
-
-with open("README.md", "r", encoding="utf-8") as readme:
-    long_description = readme.read()
-
 
 setuptools.setup(
     name="robotpy-commands-v2",
     version=version,
+    use_scm_version=True,
+    setup_requires=['setuptools_scm'],
     author="RobotPy Development Team",
     author_email="robotpy@googlegroups.com",
     description="WPILib command framework v2",
