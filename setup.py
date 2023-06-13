@@ -5,7 +5,7 @@ import setuptools
 setuptools.setup(
     name="robotpy-commands-v2",
     use_scm_version=True,
-    setup_requires=['setuptools_scm'],
+    setup_requires=["setuptools_scm"],
     author="RobotPy Development Team",
     author_email="robotpy@googlegroups.com",
     description="WPILib command framework v2",
