@@ -4,7 +4,6 @@ import setuptools
 
 setuptools.setup(
     name="robotpy-commands-v2",
-    version=version,
     use_scm_version=True,
     setup_requires=['setuptools_scm'],
     author="RobotPy Development Team",
