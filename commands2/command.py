@@ -12,7 +12,7 @@ if TYPE_CHECKING:
     from .instantcommand import InstantCommand
     from .subsystem import Subsystem
 
-from wpiutil import Sendable, SendableRegistry
+from wpiutil import Sendable, SendableRegistry, SendableBuilder
 
 
 class InterruptionBehavior(Enum):
