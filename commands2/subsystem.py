@@ -98,7 +98,7 @@ class Subsystem:
 
         :param action: the action to run
         :return: the command"""
-        from .commandfactories import runOnce
+        from .cmd import runOnce
 
         return runOnce(action, self)
 
@@ -109,7 +109,7 @@ class Subsystem:
 
         :param action: the action to run
         :returns: the command"""
-        from .commandfactories import run
+        from .cmd import run
 
         return run(action, self)
 
@@ -121,7 +121,7 @@ class Subsystem:
         :param start: the action to run on start
         :param end: the action to run on interrupt
         :returns: the command"""
-        from .commandfactories import startEnd
+        from .cmd import startEnd
 
         return startEnd(start, end, self)
 
@@ -133,6 +133,6 @@ class Subsystem:
         :param run: the action to run every iteration
         :param end: the action to run on interrupt
         :returns: the command"""
-        from .commandfactories import runEnd
+        from .cmd import runEnd
 
         return runEnd(run, end, self)
