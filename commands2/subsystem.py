@@ -8,8 +8,10 @@ if TYPE_CHECKING:
     from .command import Command
     from .commandscheduler import CommandScheduler
 
+from wpiutil import Sendable, SendableBuilder, SendableRegistry
 
-class Subsystem:
+
+class Subsystem(Sendable):
     """
     A robot subsystem. Subsystems are the basic unit of robot organization in the Command-based
     framework; they encapsulate low-level hardware objects (motor controllers, sensors, etc.) and
@@ -28,6 +30,8 @@ class Subsystem:
 
     def __new__(cls, *arg, **kwargs) -> "Subsystem":
         instance = super().__new__(cls)
+        super().__init__(instance)
+        SendableRegistry.addLW(instance, cls.__name__, cls.__name__)
         # add to the scheduler
         from .commandscheduler import CommandScheduler
 
@@ -136,3 +140,41 @@ class Subsystem:
         from .cmd import runEnd
 
         return runEnd(run, end, self)
+
+    def getName(self) -> str:
+        return SendableRegistry.getName(self)
+
+    def setName(self, name: str) -> None:
+        SendableRegistry.setName(self, name)
+
+    def getSubsystem(self) -> str:
+        return SendableRegistry.getSubsystem(self)
+
+    def addChild(self, name: str, child: Sendable) -> None:
+        SendableRegistry.addLW(child, self.getSubsystem(), name)
+
+    def initSendable(self, builder: SendableBuilder) -> None:
+        builder.setSmartDashboardType("Subsystem")
+
+        builder.addBooleanProperty(
+            ".hasDefault", lambda: self.getDefaultCommand() is not None, lambda _: None
+        )
+
+        def get_default():
+            command = self.getDefaultCommand()
+            if command is not None:
+                return command.getName()
+            return "none"
+
+        builder.addStringProperty(".default", get_default, lambda _: None)
+        builder.addBooleanProperty(
+            ".hasCommand", lambda: self.getCurrentCommand() is not None, lambda _: None
+        )
+
+        def get_current():
+            command = self.getCurrentCommand()
+            if command is not None:
+                return command.getName()
+            return "none"
+
+        builder.addStringProperty(".command", get_current, lambda _: None)

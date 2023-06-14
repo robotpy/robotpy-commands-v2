@@ -208,6 +208,8 @@ def test_handleInterrupt(scheduler: commands2.CommandScheduler):
     assert second == 2
 
 
-@pytest.mark.skip
 def test_withName(scheduler: commands2.CommandScheduler):
-    ...
+    command = commands2.InstantCommand()
+    name = "Named"
+    named = command.withName(name)
+    assert named.getName() == name

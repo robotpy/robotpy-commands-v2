@@ -12,6 +12,8 @@ if TYPE_CHECKING:
     from .instantcommand import InstantCommand
     from .subsystem import Subsystem
 
+from wpiutil import Sendable, SendableRegistry
+
 
 class InterruptionBehavior(Enum):
     """
@@ -30,7 +32,7 @@ class InterruptionBehavior(Enum):
     """ This command continues, and the incoming command is not scheduled."""
 
 
-class Command:
+class Command(Sendable):
     """
     A state machine representing a complete action to be performed by the robot. Commands are run by
     the CommandScheduler, and can be composed into CommandGroups to allow users to build
@@ -42,13 +44,17 @@ class Command:
     This class is provided by the NewCommands VendorDep
     """
 
+    InterruptionBehavior = InterruptionBehavior  # type alias for 2023 location
+
     requirements: Set[Subsystem]
 
     def __new__(cls, *args, **kwargs) -> Self:
         instance = super().__new__(
             cls,
         )
+        super().__init__(instance)
         instance.requirements = set()
+        SendableRegistry.add(instance, cls.__name__)
         return instance
 
     def __init__(self):
@@ -469,3 +475,71 @@ class Command:
         :returns: the decorated command
         """
         return self.finallyDo(lambda interrupted: handler() if interrupted else None)
+
+    def getName(self) -> str:
+        """
+        Gets the name of this Command.
+
+        :returns: Name
+        """
+        return SendableRegistry.getName(self)
+
+    def setName(self, name: str):
+        """
+        Sets the name of this Command.
+
+        :param name: Name
+        """
+        SendableRegistry.setName(self, name)
+
+    def withName(self, name: str) -> Command:
+        """
+        Decorates this command with a name.
+
+        :param name: the name of the command
+        :returns: the decorated command
+        """
+        from .wrappercommand import WrapperCommand
+
+        wrapper = WrapperCommand(self)
+        wrapper.setName(name)
+        return wrapper
+
+    def initSendable(self, builder: SendableBuilder) -> None:
+        from .commandscheduler import CommandScheduler
+
+        builder.setSmartDashboardType("Command")
+        builder.addStringProperty(
+            ".name",
+            self.getName,
+            lambda _: None,
+        )
+
+        def on_set(value: bool) -> None:
+            if value:
+                if not self.isScheduled():
+                    self.schedule()
+            else:
+                if self.isScheduled():
+                    self.cancel()
+
+        builder.addBooleanProperty(
+            "running",
+            self.isScheduled,
+            on_set,
+        )
+        builder.addBooleanProperty(
+            ".isParented",
+            lambda: CommandScheduler.getInstance().isComposed(self),
+            lambda _: None,
+        )
+        builder.addStringProperty(
+            "interruptBehavior",
+            lambda: self.getInterruptionBehavior().name,
+            lambda _: None,
+        )
+        builder.addBooleanProperty(
+            "runsWhenDisabled",
+            self.runsWhenDisabled,
+            lambda _: None,
+        )
