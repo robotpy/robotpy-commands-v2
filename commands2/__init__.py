@@ -1,4 +1,4 @@
-from . import button
+from .button import Trigger
 from .command import Command, InterruptionBehavior
 from .commandfactories import (
     deadline,
@@ -37,12 +37,12 @@ from .selectcommand import SelectCommand
 from .sequentialcommandgroup import SequentialCommandGroup
 from .startendcommand import StartEndCommand
 from .subsystem import Subsystem
+from .timedcommandrobot import TimedCommandRobot
 from .waitcommand import WaitCommand
 from .waituntilcommand import WaitUntilCommand
 from .wrappercommand import WrapperCommand
 
 __all__ = [
-    "button",
     "Command",
     "CommandGroup",
     "CommandScheduler",
@@ -66,6 +66,7 @@ __all__ = [
     "SequentialCommandGroup",
     "StartEndCommand",
     "Subsystem",
+    "TimedCommandRobot",
     "WaitCommand",
     "WaitUntilCommand",
     "WrapperCommand",
@@ -84,4 +85,5 @@ __all__ = [
     "parallel",
     "race",
     "deadline",
+    "Trigger",  # was here in 2023
 ]
