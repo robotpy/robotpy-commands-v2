@@ -59,7 +59,7 @@ def test_schedulerCancelAll(scheduler: commands2.CommandScheduler):
 def test_scheduleScheduledNoOp(scheduler: commands2.CommandScheduler):
     counter = OOInteger()
 
-    command = commands2.startEnd(counter.incrementAndGet, lambda: None)
+    command = commands2.cmd.startEnd(counter.incrementAndGet, lambda: None)
 
     scheduler.schedule(command)
     scheduler.schedule(command)

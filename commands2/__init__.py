@@ -1,5 +1,7 @@
 from .button import Trigger
 from .command import Command, InterruptionBehavior
+
+from . import cmd
 # from .cmd import (
 #     deadline,
 #     either,
@@ -43,6 +45,8 @@ from .waituntilcommand import WaitUntilCommand
 from .wrappercommand import WrapperCommand
 
 __all__ = [
+    "cmd",
+
     "Command",
     "CommandGroup",
     "CommandScheduler",

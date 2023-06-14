@@ -147,7 +147,7 @@ def test_parallelConditionalRunWhenDisabledTest(scheduler: commands2.CommandSche
     runWhenDisabled = commands2.ConditionalCommand(command1, command2, lambda: True)
     dontRunWhenDisabled = commands2.ConditionalCommand(command3, command4, lambda: True)
 
-    parallel = commands2.parallel(runWhenDisabled, dontRunWhenDisabled)
+    parallel = commands2.cmd.parallel(runWhenDisabled, dontRunWhenDisabled)
 
     scheduler.schedule(parallel)
 
