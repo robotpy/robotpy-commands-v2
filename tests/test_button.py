@@ -2,6 +2,7 @@ import commands2
 import commands2.button
 
 from util import Counter
+import pytest
 
 
 class MyButton(commands2.button.Button):

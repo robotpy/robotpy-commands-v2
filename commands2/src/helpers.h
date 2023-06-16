@@ -17,3 +17,16 @@ std::shared_ptr<T> convertToSharedPtrHack(T *orig) {
     py::object pyo = py::cast(orig);
     return py::cast<std::shared_ptr<T>>(pyo);
 }
+
+class CommandIterator {
+    public:
+        std::shared_ptr<frc2::Command> cmd;
+        bool called_initialize = false;
+        explicit CommandIterator(std::shared_ptr<frc2::Command> cmd);
+        std::shared_ptr<frc2::Command> operator*() const;
+        CommandIterator& operator++();
+};
+
+class CommandIteratorSentinel {};
+
+bool operator==(const CommandIterator& it, const CommandIteratorSentinel&);

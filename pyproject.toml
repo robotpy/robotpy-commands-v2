@@ -124,14 +124,14 @@ WaitUntilCommand = "frc2/command/WaitUntilCommand.h"
 # WrapperCommand = "frc2/command/WrapperCommand.h"
 
 # frc2/command/button
-Button = "frc2/command/button/Button.h"
+# Button = "frc2/command/button/Button.h"
 CommandGenericHID = "frc2/command/button/CommandGenericHID.h"
 CommandJoystick = "frc2/command/button/CommandJoystick.h"
 CommandPS4Controller = "frc2/command/button/CommandPS4Controller.h"
 CommandXboxController = "frc2/command/button/CommandXboxController.h"
-JoystickButton = "frc2/command/button/JoystickButton.h"
-NetworkButton = "frc2/command/button/NetworkButton.h"
-POVButton = "frc2/command/button/POVButton.h"
+# JoystickButton = "frc2/command/button/JoystickButton.h"
+# NetworkButton = "frc2/command/button/NetworkButton.h"
+# POVButton = "frc2/command/button/POVButton.h"
 Trigger = "frc2/command/button/Trigger.h"
 
 # custom stuff

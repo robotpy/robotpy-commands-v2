@@ -5,6 +5,7 @@ extra_includes:
 
 classes:
   Trigger:
+    rename: "_Trigger"
     methods:
       Trigger:
         overloads:
