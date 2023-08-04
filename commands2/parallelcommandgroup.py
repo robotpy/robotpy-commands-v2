@@ -32,9 +32,6 @@ class ParallelCommandGroup(CommandGroup):
         self.addCommands(*commands)
 
     def addCommands(self, *commands: Command):
-        # breakpoint()
-        # __import__('code').interact(local={**locals(), **globals()})
-
         commands = flatten_args_commands(commands)
         if True in self._commands.values():
             raise IllegalCommandUse(
