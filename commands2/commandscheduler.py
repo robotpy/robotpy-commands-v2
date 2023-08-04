@@ -53,7 +53,7 @@ class CommandScheduler:
             return
         CommandScheduler._instance = self
         self._composedCommands: Set[Command] = set()
-        self._scheduledCommands: Set[Command] = set()
+        self._scheduledCommands: Dict[Command, None] = {}
         self._requirements: Dict[Subsystem, Command] = {}
         self._subsystems: Dict[Subsystem, Optional[Command]] = {}
 
@@ -68,8 +68,8 @@ class CommandScheduler:
         self._finishActions: List[Callable[[Command], None]] = []
 
         self._inRunLoop = False
-        self._toSchedule: Set[Command] = set()
-        self._toCancel: Set[Command] = set()
+        self._toSchedule: Dict[Command, None] = {}
+        self._toCancel: Dict[Command, None] = {}
 
         self._watchdog = Watchdog(TimedRobot.kDefaultPeriod, lambda: None)
 
@@ -118,7 +118,7 @@ class CommandScheduler:
         :param command: The command to initialize
         :param requirements: The command requirements
         """
-        self._scheduledCommands.add(command)
+        self._scheduledCommands[command] = None
         for requirement in requirements:
             self._requirements[requirement] = command
         command.initialize()
@@ -147,7 +147,7 @@ class CommandScheduler:
             return
 
         if self._inRunLoop:
-            self._toSchedule.add(command)
+            self._toSchedule[command] = None
             return
 
         if command in self.getComposedCommands():
@@ -223,7 +223,7 @@ class CommandScheduler:
                     action(command)
                 for requirement in command.getRequirements():
                     self._requirements.pop(requirement)
-                self._scheduledCommands.remove(command)
+                self._scheduledCommands.pop(command)
                 continue
 
             command.execute()
@@ -234,7 +234,7 @@ class CommandScheduler:
                 command.end(False)
                 for action in self._finishActions:
                     action(command)
-                self._scheduledCommands.remove(command)
+                self._scheduledCommands.pop(command)
                 for requirement in command.getRequirements():
                     self._requirements.pop(requirement)
 
@@ -334,14 +334,15 @@ class CommandScheduler:
         :param commands: the commands to cancel
         """
         if self._inRunLoop:
-            self._toCancel.update(commands)
+            for command in commands:
+                self._toCancel[command] = None
             return
 
         for command in commands:
             if not self.isScheduled(command):
                 continue
 
-            self._scheduledCommands.remove(command)
+            self._scheduledCommands.pop(command)
             for requirement in command.getRequirements():
                 del self._requirements[requirement]
             command.end(True)
@@ -363,7 +364,7 @@ class CommandScheduler:
         """
         return all(command in self._scheduledCommands for command in commands)
 
-    def requiring(self, subsystem: Subsystem) -> Union[None, Command]:
+    def requiring(self, subsystem: Subsystem) -> Optional[Command]:
         """
         Returns the command currently requiring a given subsystem. None if no command is currently
         requiring the subsystem

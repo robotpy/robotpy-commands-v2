@@ -1,8 +1,68 @@
-from typing import Any, Dict, TypeVar
+from typing import Any, Dict, TypeVar, Type
+
+import inspect
 
 import commands2
 from wpilib.simulation import DriverStationSim, pauseTiming, resumeTiming, stepTiming
 
+
+Y = TypeVar("Y")
+def full_subclass_of(cls: Type[Y]) -> Type[Y]:
+    # Pybind classes can't be monkeypatched.
+    # This generates a subclass with every method filled out
+    # so that it can be monkeypatched.
+    retlist = []
+    clsname = cls.__name__ #+ "_Subclass"
+    classdef = f"class {clsname}(cls):\n"
+    for name in dir(cls):
+    # for name in set(dir(cls)):
+        value = getattr(cls, name)
+        if callable(value) and not inspect.isclass(value) and not name.startswith("_"):
+            classdef += f"  def {name}(self, *args, **kwargs):\n"
+            classdef += f"    return super().{name}(*args, **kwargs)\n"
+    classdef += "  ...\n"
+    classdef += f"retlist.append({clsname})\n"
+    print(classdef)
+    exec(classdef, globals(), locals())
+    return retlist[0]
+
+
+###################
+# Compat for wrapped commands
+IS_OLD_COMMANDS = False
+try:
+    if commands2.__version__ == "2023.4.3.0": # type: ignore
+        IS_OLD_COMMANDS = True
+except AttributeError:
+    pass
+
+if IS_OLD_COMMANDS:
+
+    # not needed for pure but works in pure
+    import commands2.button
+
+    # In Java, Trigger is in the same package as Button
+    # I did rexport it in commands so using
+    # the incorrect `commands2.Trigger` instead of `commands2.button.Trigger` works
+    commands2.button.Trigger = commands2.Trigger
+
+    # I moved this so its not a nested Enum.
+    # The old one is still there for compat
+    commands2.InterruptionBehavior = commands2.Command.InterruptionBehavior
+
+    commands2.Command = commands2.CommandBase
+
+    for name in dir(commands2):
+        if name == "CommandScheduler":
+            continue
+        value = getattr(commands2, name)
+        if inspect.isclass(value):
+            setattr(commands2, name, full_subclass_of(value))
+
+    commands2.IllegalCommandUse = RuntimeError
+
+
+###################
 
 class ManualSimTime:
     def __enter__(self) -> "ManualSimTime":
@@ -14,42 +74,6 @@ class ManualSimTime:
 
     def step(self, delta: float):
         stepTiming(delta)
-
-
-# class CommandTestHelper:
-#     def __init__(self) -> None:
-#         self.scheduler = commands2.CommandScheduler.getInstance()
-
-#     def __enter__(self):
-#         commands2.CommandScheduler.resetInstance()
-#         DriverStationSim.setEnabled(True)
-#         return self
-
-#     def __exit__(self, *args):
-#         pass
-
-
-# class Counter:
-#     def __init__(self) -> None:
-#         self.value = 0
-
-#     def increment(self):
-#         self.value += 1
-
-
-# class ConditionHolder:
-#     def __init__(self, cond: bool = False) -> None:
-#         self.cond = cond
-
-#     def getCondition(self) -> bool:
-#         return self.cond
-
-#     def setTrue(self):
-#         self.cond = True
-
-
-# class TestSubsystem(commands2.Subsystem):
-#     pass
 
 
 class OOInteger:
@@ -110,6 +134,9 @@ class InternalButton(commands2.button.Trigger):
 
     def setPressed(self, value: bool):
         self.pressed = value
+    
+    def __call__(self) -> bool:
+        return self.pressed
 
 
 ##########################################
@@ -117,20 +144,30 @@ class InternalButton(commands2.button.Trigger):
 
 
 def _get_all_args_as_kwargs(method, *args, **kwargs) -> Dict[str, Any]:
-    import inspect
-
-    method_args = inspect.getcallargs(method, *args, **kwargs)
-
-    method_arg_names = list(inspect.signature(method).parameters.keys())
-
-    for idx, arg in enumerate(args):
-        method_args[method_arg_names[idx]] = arg
-
     try:
-        del method_args["self"]
-    except KeyError:
-        pass
-    return method_args
+        import inspect
+
+        method_args = inspect.getcallargs(method, *args, **kwargs)
+
+        method_arg_names = list(inspect.signature(method).parameters.keys())
+
+        for idx, arg in enumerate(args):
+            method_args[method_arg_names[idx]] = arg
+
+        try:
+            del method_args["self"]
+        except KeyError:
+            pass
+        return method_args
+    except TypeError:
+        # Pybind methods can't be inspected
+        # The exact args/kwargs that are passed in are checked instead
+        r = {}
+        for idx, arg in enumerate(args):
+            r[idx] = arg
+        r.update(kwargs)
+        return r
+
 
 
 class MethodWrapper:
@@ -173,7 +210,7 @@ def start_spying_on(obj: Any) -> None:
 
     for name in dir(obj):
         value = getattr(obj, name)
-        if callable(value) and not name.startswith("_"):
+        if callable(value) and not inspect.isclass(value) and not name.startswith("_"):
             setattr(obj, name, MethodWrapper(value))
 
     if not hasattr(obj.__class__, "_is_being_spied_on"):

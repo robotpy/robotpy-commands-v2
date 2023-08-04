@@ -51,5 +51,5 @@ def test_conditionalCommandRequirement(scheduler: commands2.CommandScheduler):
 
     assert not scheduler.isScheduled(conditionalCommand)
 
-    assert command1.end.called_with(interrupted=True)
-    assert not command2.end.called_with(interrupted=True)
+    assert command1.end.called_with(True)
+    assert not command2.end.called_with(True)

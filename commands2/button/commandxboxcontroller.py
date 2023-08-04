@@ -39,7 +39,7 @@ class CommandXboxController(CommandGenericHID):
             loop.
         """
         if loop is None:
-            loop = CommandScheduler().getDefaultButtonLoop()
+            loop = CommandScheduler.getInstance().getDefaultButtonLoop()
         return Trigger(loop, lambda: self._hid.getLeftBumper())
 
     def rightBumper(self, loop: Optional[EventLoop] = None) -> Trigger:
@@ -51,7 +51,7 @@ class CommandXboxController(CommandGenericHID):
             loop.
         """
         if loop is None:
-            loop = CommandScheduler().getDefaultButtonLoop()
+            loop = CommandScheduler.getInstance().getDefaultButtonLoop()
         return Trigger(loop, lambda: self._hid.getRightBumper())
 
     def leftStick(self, loop: Optional[EventLoop] = None) -> Trigger:
@@ -63,7 +63,7 @@ class CommandXboxController(CommandGenericHID):
             given loop.
         """
         if loop is None:
-            loop = CommandScheduler().getDefaultButtonLoop()
+            loop = CommandScheduler.getInstance().getDefaultButtonLoop()
         return Trigger(loop, lambda: self._hid.getLeftStickButton())
 
     def rightStick(self, loop: Optional[EventLoop] = None) -> Trigger:
@@ -75,7 +75,7 @@ class CommandXboxController(CommandGenericHID):
             given loop.
         """
         if loop is None:
-            loop = CommandScheduler().getDefaultButtonLoop()
+            loop = CommandScheduler.getInstance().getDefaultButtonLoop()
         return Trigger(loop, lambda: self._hid.getRightStickButton())
 
     def a(self, loop: Optional[EventLoop] = None) -> Trigger:
@@ -87,7 +87,7 @@ class CommandXboxController(CommandGenericHID):
             loop.
         """
         if loop is None:
-            loop = CommandScheduler().getDefaultButtonLoop()
+            loop = CommandScheduler.getInstance().getDefaultButtonLoop()
         return Trigger(loop, lambda: self._hid.getAButton())
 
     def b(self, loop: Optional[EventLoop] = None) -> Trigger:
@@ -99,7 +99,7 @@ class CommandXboxController(CommandGenericHID):
             loop.
         """
         if loop is None:
-            loop = CommandScheduler().getDefaultButtonLoop()
+            loop = CommandScheduler.getInstance().getDefaultButtonLoop()
         return Trigger(loop, lambda: self._hid.getBButton())
 
     def x(self, loop: Optional[EventLoop] = None) -> Trigger:
@@ -111,7 +111,7 @@ class CommandXboxController(CommandGenericHID):
             loop.
         """
         if loop is None:
-            loop = CommandScheduler().getDefaultButtonLoop()
+            loop = CommandScheduler.getInstance().getDefaultButtonLoop()
         return Trigger(loop, lambda: self._hid.getXButton())
 
     def y(self, loop: Optional[EventLoop] = None) -> Trigger:
@@ -123,7 +123,7 @@ class CommandXboxController(CommandGenericHID):
             loop.
         """
         if loop is None:
-            loop = CommandScheduler().getDefaultButtonLoop()
+            loop = CommandScheduler.getInstance().getDefaultButtonLoop()
         return Trigger(loop, lambda: self._hid.getYButton())
 
     def start(self, loop: Optional[EventLoop] = None) -> Trigger:
@@ -135,7 +135,7 @@ class CommandXboxController(CommandGenericHID):
             loop.
         """
         if loop is None:
-            loop = CommandScheduler().getDefaultButtonLoop()
+            loop = CommandScheduler.getInstance().getDefaultButtonLoop()
         return Trigger(loop, lambda: self._hid.getStartButton())
 
     def back(self, loop: Optional[EventLoop] = None) -> Trigger:
@@ -147,7 +147,7 @@ class CommandXboxController(CommandGenericHID):
             loop.
         """
         if loop is None:
-            loop = CommandScheduler().getDefaultButtonLoop()
+            loop = CommandScheduler.getInstance().getDefaultButtonLoop()
         return Trigger(loop, lambda: self._hid.getBackButton())
 
     def leftTrigger(
@@ -164,7 +164,7 @@ class CommandXboxController(CommandGenericHID):
             threshold, attached to the given event loop
         """
         if loop is None:
-            loop = CommandScheduler().getDefaultButtonLoop()
+            loop = CommandScheduler.getInstance().getDefaultButtonLoop()
         return Trigger(loop, lambda: self._hid.getLeftTriggerAxis() > threshold)
 
     def rightTrigger(
@@ -181,7 +181,7 @@ class CommandXboxController(CommandGenericHID):
             threshold, attached to the given event loop
         """
         if loop is None:
-            loop = CommandScheduler().getDefaultButtonLoop()
+            loop = CommandScheduler.getInstance().getDefaultButtonLoop()
         return Trigger(loop, lambda: self._hid.getRightTriggerAxis() > threshold)
 
     def getLeftX(self) -> float:

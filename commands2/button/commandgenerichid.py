@@ -34,7 +34,7 @@ class CommandGenericHID:
         :param loop: the event loop instance to attache the event to.
         """
         if loop is None:
-            loop = CommandScheduler().getDefaultButtonLoop()
+            loop = CommandScheduler.getInstance().getDefaultButtonLoop()
         return Trigger(loop, lambda: self._hid.getRawButtonPressed(button))
 
     def pov(
@@ -53,7 +53,7 @@ class CommandGenericHID:
         :returns: a Trigger instance based around this angle of a POV on the HID.
         """
         if loop is None:
-            loop = CommandScheduler().getDefaultButtonLoop()
+            loop = CommandScheduler.getInstance().getDefaultButtonLoop()
         return Trigger(loop, lambda: self._hid.getPOV(pov) == angle)
 
     def povUp(self) -> Trigger:
@@ -160,7 +160,7 @@ class CommandGenericHID:
             threshold.
         """
         if loop is None:
-            loop = CommandScheduler().getDefaultButtonLoop()
+            loop = CommandScheduler.getInstance().getDefaultButtonLoop()
         return Trigger(loop, lambda: self._hid.getRawAxis(axis) < threshold)
 
     def axisGreaterThan(
@@ -177,7 +177,7 @@ class CommandGenericHID:
             threshold.
         """
         if loop is None:
-            loop = CommandScheduler().getDefaultButtonLoop()
+            loop = CommandScheduler.getInstance().getDefaultButtonLoop()
         return Trigger(loop, lambda: self._hid.getRawAxis(axis) > threshold)
 
     def getRawAxis(self, axis: int) -> float:

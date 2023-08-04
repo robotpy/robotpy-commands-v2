@@ -40,7 +40,7 @@ class CommandJoystick(CommandGenericHID):
             given loop.
         """
         if loop is None:
-            loop = CommandScheduler().getDefaultButtonLoop()
+            loop = CommandScheduler.getInstance().getDefaultButtonLoop()
         return Trigger(loop, lambda: self._hid.getTrigger())
 
     def top(self, loop: Optional[EventLoop] = None) -> Trigger:
@@ -52,7 +52,7 @@ class CommandJoystick(CommandGenericHID):
             loop.
         """
         if loop is None:
-            loop = CommandScheduler().getDefaultButtonLoop()
+            loop = CommandScheduler.getInstance().getDefaultButtonLoop()
         return Trigger(loop, lambda: self._hid.getTop())
 
     def setXChannel(self, channel: int):

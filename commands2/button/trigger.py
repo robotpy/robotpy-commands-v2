@@ -48,7 +48,7 @@ class Trigger:
             self._condition = condition
 
         def init_condition(condition: Callable[[], bool]):
-            init_loop_condition(CommandScheduler().getDefaultButtonLoop(), condition)
+            init_loop_condition(CommandScheduler.getInstance().getDefaultButtonLoop(), condition)
 
         num_args = len(args) + len(kwargs)
 
@@ -82,7 +82,7 @@ Invoked with: {format_args_kwargs(self, *args, **kwargs)}
 
     def onTrue(self, command: Command) -> Self:
         """
-        Starts the given command whenever the condition changes from `false` to `true`.
+        Starts the given command whenever the condition changes from `False` to `True`.
 
         :param command: the command to start
         :returns: this trigger, so calls can be chained
@@ -99,7 +99,7 @@ Invoked with: {format_args_kwargs(self, *args, **kwargs)}
 
     def onFalse(self, command: Command) -> Self:
         """
-        Starts the given command whenever the condition changes from `true` to `false`.
+        Starts the given command whenever the condition changes from `True` to `False`.
 
         :param command: the command to start
         :returns: this trigger, so calls can be chained
@@ -116,11 +116,11 @@ Invoked with: {format_args_kwargs(self, *args, **kwargs)}
 
     def whileTrue(self, command: Command) -> Self:
         """
-        Starts the given command when the condition changes to `true` and cancels it when the condition
-        changes to `false`.
+        Starts the given command when the condition changes to `True` and cancels it when the condition
+        changes to `False`.
 
-        Doesn't re-start the command if it ends while the condition is still `true`. If the command
-        should restart, see edu.wpi.first.wpilibj2.command.RepeatCommand.
+        Doesn't re-start the command if it ends while the condition is still `True`. If the command
+        should restart, see RepeatCommand.
 
         :param command: the command to start
         :returns: this trigger, so calls can be chained
@@ -139,11 +139,11 @@ Invoked with: {format_args_kwargs(self, *args, **kwargs)}
 
     def whileFalse(self, command: Command) -> Self:
         """
-        Starts the given command when the condition changes to `false` and cancels it when the
-        condition changes to `true`.
+        Starts the given command when the condition changes to `False` and cancels it when the
+        condition changes to `True`.
 
-        Doesn't re-start the command if it ends while the condition is still `false`. If the command
-        should restart, see edu.wpi.first.wpilibj2.command.RepeatCommand.
+        Doesn't re-start the command if it ends while the condition is still `False`. If the command
+        should restart, see RepeatCommand.
 
         :param command: the command to start
         :returns: this trigger, so calls can be chained
@@ -162,7 +162,7 @@ Invoked with: {format_args_kwargs(self, *args, **kwargs)}
 
     def toggleOnTrue(self, command: Command) -> Self:
         """
-        Toggles a command when the condition changes from `false` to `true`.
+        Toggles a command when the condition changes from `False` to `True`.
 
         :param command: the command to toggle
         :returns: this trigger, so calls can be chained
@@ -182,7 +182,7 @@ Invoked with: {format_args_kwargs(self, *args, **kwargs)}
 
     def toggleOnFalse(self, command: Command) -> Self:
         """
-        Toggles a command when the condition changes from `true` to `false`.
+        Toggles a command when the condition changes from `True` to `False`.
 
         :param command: the command to toggle
         :returns: this trigger, so calls can be chained

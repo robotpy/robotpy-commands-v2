@@ -70,4 +70,4 @@ def test_defaultCommandDisableResume(scheduler: commands2.CommandScheduler):
 
     assert scheduler.isScheduled(defaultCommand)
 
-    assert defaultCommand.end.called_with(interrupted=True)
+    assert defaultCommand.end.called_with(True)

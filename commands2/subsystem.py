@@ -74,7 +74,7 @@ class Subsystem(Sendable):
         """
         Removes the default command for the subsystem. This will not cancel the default command if it
         is currently running."""
-        CommandScheduler().removeDefaultCommand(self)
+        CommandScheduler.getInstance().removeDefaultCommand(self)
 
     def getDefaultCommand(self) -> Optional[Command]:
         """

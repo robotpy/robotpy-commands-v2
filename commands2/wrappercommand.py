@@ -24,7 +24,7 @@ class WrapperCommand(Command):
             a composition will throw an exception."""
         super().__init__()
 
-        CommandScheduler().registerComposedCommands([command])
+        CommandScheduler.getInstance().registerComposedCommands([command])
         self._command = command
 
     def initialize(self):

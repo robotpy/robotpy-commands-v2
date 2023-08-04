@@ -39,7 +39,7 @@ class CommandPS4Controller(CommandGenericHID):
             loop.
         """
         if loop is None:
-            loop = CommandScheduler().getDefaultButtonLoop()
+            loop = CommandScheduler.getInstance().getDefaultButtonLoop()
         return Trigger(loop, lambda: self._hid.getL2Button())
 
     def R2(self, loop: Optional[EventLoop] = None) -> Trigger:
@@ -51,7 +51,7 @@ class CommandPS4Controller(CommandGenericHID):
             loop.
         """
         if loop is None:
-            loop = CommandScheduler().getDefaultButtonLoop()
+            loop = CommandScheduler.getInstance().getDefaultButtonLoop()
         return Trigger(loop, lambda: self._hid.getR2Button())
 
     def L1(self, loop: Optional[EventLoop] = None) -> Trigger:
@@ -63,7 +63,7 @@ class CommandPS4Controller(CommandGenericHID):
             loop.
         """
         if loop is None:
-            loop = CommandScheduler().getDefaultButtonLoop()
+            loop = CommandScheduler.getInstance().getDefaultButtonLoop()
         return Trigger(loop, lambda: self._hid.getL1Button())
 
     def R1(self, loop: Optional[EventLoop] = None) -> Trigger:
@@ -75,7 +75,7 @@ class CommandPS4Controller(CommandGenericHID):
             loop.
         """
         if loop is None:
-            loop = CommandScheduler().getDefaultButtonLoop()
+            loop = CommandScheduler.getInstance().getDefaultButtonLoop()
         return Trigger(loop, lambda: self._hid.getR1Button())
 
     def L3(self, loop: Optional[EventLoop] = None) -> Trigger:
@@ -87,7 +87,7 @@ class CommandPS4Controller(CommandGenericHID):
             loop.
         """
         if loop is None:
-            loop = CommandScheduler().getDefaultButtonLoop()
+            loop = CommandScheduler.getInstance().getDefaultButtonLoop()
         return Trigger(loop, lambda: self._hid.getL3Button())
 
     def R3(self, loop: Optional[EventLoop] = None) -> Trigger:
@@ -99,7 +99,7 @@ class CommandPS4Controller(CommandGenericHID):
             loop.
         """
         if loop is None:
-            loop = CommandScheduler().getDefaultButtonLoop()
+            loop = CommandScheduler.getInstance().getDefaultButtonLoop()
         return Trigger(loop, lambda: self._hid.getR3Button())
 
     def square(self, loop: Optional[EventLoop] = None) -> Trigger:
@@ -111,7 +111,7 @@ class CommandPS4Controller(CommandGenericHID):
             loop.
         """
         if loop is None:
-            loop = CommandScheduler().getDefaultButtonLoop()
+            loop = CommandScheduler.getInstance().getDefaultButtonLoop()
         return Trigger(loop, lambda: self._hid.getSquareButton())
 
     def cross(self, loop: Optional[EventLoop] = None) -> Trigger:
@@ -123,7 +123,7 @@ class CommandPS4Controller(CommandGenericHID):
             loop.
         """
         if loop is None:
-            loop = CommandScheduler().getDefaultButtonLoop()
+            loop = CommandScheduler.getInstance().getDefaultButtonLoop()
         return Trigger(loop, lambda: self._hid.getCrossButton())
 
     def triangle(self, loop: Optional[EventLoop] = None) -> Trigger:
@@ -135,7 +135,7 @@ class CommandPS4Controller(CommandGenericHID):
             given loop.
         """
         if loop is None:
-            loop = CommandScheduler().getDefaultButtonLoop()
+            loop = CommandScheduler.getInstance().getDefaultButtonLoop()
         return Trigger(loop, lambda: self._hid.getTriangleButton())
 
     def circle(self, loop: Optional[EventLoop] = None) -> Trigger:
@@ -147,7 +147,7 @@ class CommandPS4Controller(CommandGenericHID):
             loop.
         """
         if loop is None:
-            loop = CommandScheduler().getDefaultButtonLoop()
+            loop = CommandScheduler.getInstance().getDefaultButtonLoop()
         return Trigger(loop, lambda: self._hid.getCircleButton())
 
     def share(self, loop: Optional[EventLoop] = None) -> Trigger:
@@ -159,7 +159,7 @@ class CommandPS4Controller(CommandGenericHID):
             loop.
         """
         if loop is None:
-            loop = CommandScheduler().getDefaultButtonLoop()
+            loop = CommandScheduler.getInstance().getDefaultButtonLoop()
         return Trigger(loop, lambda: self._hid.getShareButton())
 
     def PS(self, loop: Optional[EventLoop] = None) -> Trigger:
@@ -171,7 +171,7 @@ class CommandPS4Controller(CommandGenericHID):
             loop.
         """
         if loop is None:
-            loop = CommandScheduler().getDefaultButtonLoop()
+            loop = CommandScheduler.getInstance().getDefaultButtonLoop()
         return Trigger(loop, lambda: self._hid.getPSButton())
 
     def options(self, loop: Optional[EventLoop] = None) -> Trigger:
@@ -183,7 +183,7 @@ class CommandPS4Controller(CommandGenericHID):
             given loop.
         """
         if loop is None:
-            loop = CommandScheduler().getDefaultButtonLoop()
+            loop = CommandScheduler.getInstance().getDefaultButtonLoop()
         return Trigger(loop, lambda: self._hid.getOptionsButton())
 
     def touchpad(self, loop: Optional[EventLoop] = None) -> Trigger:
@@ -195,7 +195,7 @@ class CommandPS4Controller(CommandGenericHID):
             loop.
         """
         if loop is None:
-            loop = CommandScheduler().getDefaultButtonLoop()
+            loop = CommandScheduler.getInstance().getDefaultButtonLoop()
         return Trigger(loop, lambda: self._hid.getTouchpad())
 
     def getLeftX(self) -> float:

@@ -11,6 +11,15 @@ from typing_extensions import Self
 if TYPE_CHECKING:
     from .instantcommand import InstantCommand
     from .subsystem import Subsystem
+    from .parallelracegroup import ParallelRaceGroup
+    from .sequentialcommandgroup import SequentialCommandGroup
+    from .paralleldeadlinegroup import ParallelDeadlineGroup
+    from .parallelcommandgroup import ParallelCommandGroup
+    from .perpetualcommand import PerpetualCommand
+    from .repeatcommand import RepeatCommand
+    from .proxycommand import ProxyCommand
+    from .conditionalcommand import ConditionalCommand
+    from .wrappercommand import WrapperCommand
 
 from wpiutil import Sendable, SendableRegistry, SendableBuilder
 
@@ -28,6 +37,7 @@ class InterruptionBehavior(Enum):
 
     This is the default behavior.
     """
+
     kCancelSelf = 1
     """ This command continues, and the incoming command is not scheduled."""
 
@@ -52,9 +62,9 @@ class Command(Sendable):
         instance = super().__new__(
             cls,
         )
-        super().__init__(instance)
         instance.requirements = set()
         SendableRegistry.add(instance, cls.__name__)
+        super().__init__(instance)
         return instance
 
     def __init__(self):
@@ -167,7 +177,7 @@ class Command(Sendable):
         """
         return InterruptionBehavior.kCancelSelf
 
-    def withTimeout(self, seconds: float) -> Command:
+    def withTimeout(self, seconds: float) -> ParallelRaceGroup:
         """
         Decorates this command with a timeout. If the specified timeout is exceeded before the command
         finishes normally, the command will be interrupted and un-scheduled. Note that the timeout only
@@ -186,7 +196,7 @@ class Command(Sendable):
 
         return self.raceWith(WaitCommand(seconds))
 
-    def until(self, condition: Callable[[], bool]) -> Command:
+    def until(self, condition: Callable[[], bool]) -> ParallelRaceGroup:
         """
         Decorates this command with an interrupt condition. If the specified condition becomes true
         before the command finishes normally, the command will be interrupted and un-scheduled.
@@ -204,7 +214,7 @@ class Command(Sendable):
 
         return self.raceWith(WaitUntilCommand(condition))
 
-    def onlyWhile(self, condition: Callable[[], bool]) -> Command:
+    def onlyWhile(self, condition: Callable[[], bool]) -> ParallelRaceGroup:
         """
         Decorates this command with a run condition. If the specified condition becomes false before
         the command finishes normally, the command will be interrupted and un-scheduled.
@@ -220,7 +230,7 @@ class Command(Sendable):
         """
         return self.until(lambda: not condition())
 
-    def withInterrupt(self, condition: Callable[[], bool]) -> Command:
+    def withInterrupt(self, condition: Callable[[], bool]) -> ParallelRaceGroup:
         """
         Decorates this command with an interrupt condition. If the specified condition becomes true
         before the command finishes normally, the command will be interrupted and un-scheduled. Note
@@ -239,7 +249,7 @@ class Command(Sendable):
         """
         return self.until(condition)
 
-    def beforeStarting(self, before: Command) -> Command:
+    def beforeStarting(self, before: Command) -> SequentialCommandGroup:
         """
         Decorates this command with another command to run before this command starts.
 
@@ -256,7 +266,7 @@ class Command(Sendable):
 
         return SequentialCommandGroup(before, self)
 
-    def andThen(self, *next: Command) -> Command:
+    def andThen(self, *next: Command) -> SequentialCommandGroup:
         """
         Decorates this command with a set of commands to run after it in sequence. Often more
         convenient/less-verbose than constructing a new SequentialCommandGroup explicitly.
@@ -274,7 +284,7 @@ class Command(Sendable):
 
         return SequentialCommandGroup(self, *next)
 
-    def deadlineWith(self, *parallel: Command) -> Command:
+    def deadlineWith(self, *parallel: Command) -> ParallelDeadlineGroup:
         """
         Decorates this command with a set of commands to run parallel to it, ending when the calling
         command ends and interrupting all the others. Often more convenient/less-verbose than
@@ -293,7 +303,7 @@ class Command(Sendable):
 
         return ParallelDeadlineGroup(self, *parallel)
 
-    def alongWith(self, *parallel: Command) -> Command:
+    def alongWith(self, *parallel: Command) -> ParallelCommandGroup:
         """
         Decorates this command with a set of commands to run parallel to it, ending when the last
         command ends. Often more convenient/less-verbose than constructing a new {@link
@@ -312,7 +322,7 @@ class Command(Sendable):
 
         return ParallelCommandGroup(self, *parallel)
 
-    def raceWith(self, *parallel: Command) -> Command:
+    def raceWith(self, *parallel: Command) -> ParallelRaceGroup:
         """
         Decorates this command with a set of commands to run parallel to it, ending when the first
         command ends. Often more convenient/less-verbose than constructing a new {@link
@@ -331,7 +341,7 @@ class Command(Sendable):
 
         return ParallelRaceGroup(self, *parallel)
 
-    def perpetually(self) -> Command:
+    def perpetually(self) -> PerpetualCommand:
         """
         Decorates this command to run perpetually, ignoring its ordinary end conditions. The decorated
         command can still be interrupted or canceled.
@@ -352,7 +362,7 @@ class Command(Sendable):
 
         return PerpetualCommand(self)
 
-    def repeatedly(self) -> Command:
+    def repeatedly(self) -> RepeatCommand:
         """
         Decorates this command to run repeatedly, restarting it when it ends, until this command is
         interrupted. The decorated command can still be canceled.
@@ -369,7 +379,7 @@ class Command(Sendable):
 
         return RepeatCommand(self)
 
-    def asProxy(self) -> Command:
+    def asProxy(self) -> ProxyCommand:
         """
         Decorates this command to run "by proxy" by wrapping it in a ProxyCommand. This is
         useful for "forking off" from command compositions when the user does not wish to extend the
@@ -381,7 +391,7 @@ class Command(Sendable):
 
         return ProxyCommand(self)
 
-    def unless(self, condition: Callable[[], bool]) -> Command:
+    def unless(self, condition: Callable[[], bool]) -> ConditionalCommand:
         """
         Decorates this command to only run if this condition is not met. If the command is already
         running and the condition changes to true, the command will not stop running. The requirements
@@ -401,7 +411,7 @@ class Command(Sendable):
 
         return ConditionalCommand(InstantCommand(), self, condition)
 
-    def onlyIf(self, condition: Callable[[], bool]) -> Command:
+    def onlyIf(self, condition: Callable[[], bool]) -> ConditionalCommand:
         """
         Decorates this command to only run if this condition is met. If the command is already running
         and the condition changes to false, the command will not stop running. The requirements of this
@@ -418,7 +428,7 @@ class Command(Sendable):
         """
         return self.unless(lambda: not condition())
 
-    def ignoringDisable(self, doesRunWhenDisabled: bool) -> Command:
+    def ignoringDisable(self, doesRunWhenDisabled: bool) -> WrapperCommand:
         """
         Decorates this command to run or stop when disabled.
 
@@ -433,7 +443,7 @@ class Command(Sendable):
 
         return W(self)
 
-    def withInterruptBehavior(self, behavior: InterruptionBehavior) -> Command:
+    def withInterruptBehavior(self, behavior: InterruptionBehavior) -> WrapperCommand:
         """
         Decorates this command to have a different InterruptionBehavior interruption behavior.
 
@@ -448,7 +458,7 @@ class Command(Sendable):
 
         return W(self)
 
-    def finallyDo(self, end: Callable[[bool], Any]) -> Command:
+    def finallyDo(self, end: Callable[[bool], Any]) -> WrapperCommand:
         """
         Decorates this command with a lambda to call on interrupt or end, following the command's
         inherent #end(boolean) method.
@@ -466,7 +476,7 @@ class Command(Sendable):
 
         return W(self)
 
-    def handleInterrupt(self, handler: Callable[[], Any]) -> Command:
+    def handleInterrupt(self, handler: Callable[[], Any]) -> WrapperCommand:
         """
         Decorates this command with a lambda to call on interrupt, following the command's inherent
         #end(boolean) method.
@@ -492,7 +502,7 @@ class Command(Sendable):
         """
         SendableRegistry.setName(self, name)
 
-    def withName(self, name: str) -> Command:
+    def withName(self, name: str) -> WrapperCommand:
         """
         Decorates this command with a name.
 

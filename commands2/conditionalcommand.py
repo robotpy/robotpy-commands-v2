@@ -31,7 +31,7 @@ class ConditionalCommand(Command):
         :param condition: the condition to determine which command to run"""
         super().__init__()
 
-        CommandScheduler().registerComposedCommands([onTrue, onFalse])
+        CommandScheduler.getInstance().registerComposedCommands([onTrue, onFalse])
 
         self.onTrue = onTrue
         self.onFalse = onFalse
