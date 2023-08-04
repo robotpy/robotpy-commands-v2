@@ -14,7 +14,7 @@ if __name__ == "__main__":
 
     print("---------------------------------")
     print("Testing with C++ Wrapped Commands")
-    subprocess.check_call([sys.executable, "-m", "pip", "uninstall", "-y", "robotpy-commmands-v2"])
-    subprocess.check_call([sys.executable, "-m", "pip", "install", "robotpy-commmands-v2"])
+    subprocess.check_call([sys.executable, "-m", "pip", "uninstall", "-y", "robotpy-commands-v2"])
+    subprocess.check_call([sys.executable, "-m", "pip", "install", "robotpy-commands-v2"])
 
     subprocess.check_call([sys.executable, "-m", "pytest"])
