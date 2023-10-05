@@ -24,7 +24,7 @@ classes:
       SequentialCommandGroup:
         overloads:
           std::vector<std::shared_ptr<Command>>&&:
-          Types ...&&:
+          Types&&...:
             cpp_code: |
               [](py::args cmds) {
                 return std::make_shared<SequentialCommandGroup_Trampoline>(std::move(pyargs2cmdList(cmds)));
@@ -35,7 +35,7 @@ classes:
       AddCommands:
         overloads:
           std::vector<std::shared_ptr<Command>>&&:
-          Types ...&&:
+          Types&&...:
             ignore: true
       Initialize:
       Execute:

@@ -11,20 +11,20 @@ classes:
     methods:
       Button:
         overloads:
-          std::function<bool ( )>:
+          std::function<bool ()>:
           "":
       WhenPressed:
         overloads:
           std::shared_ptr<Command>:
           T&&:
             ignore: true
-          std::function<void ( )>, std::span<std::shared_ptr<Subsystem>>:
+          std::function<void ()>, std::span<std::shared_ptr<Subsystem>>:
       WhileHeld:
         overloads:
           std::shared_ptr<Command>:
           T&&:
             ignore: true
-          std::function<void ( )>, std::span<std::shared_ptr<Subsystem>>:
+          std::function<void ()>, std::span<std::shared_ptr<Subsystem>>:
       WhenHeld:
         overloads:
           std::shared_ptr<Command>:
@@ -35,7 +35,7 @@ classes:
           std::shared_ptr<Command>:
           T&&:
             ignore: true
-          std::function<void ( )>, std::span<std::shared_ptr<Subsystem>>:
+          std::function<void ()>, std::span<std::shared_ptr<Subsystem>>:
       ToggleWhenPressed:
         overloads:
           std::shared_ptr<Command>:

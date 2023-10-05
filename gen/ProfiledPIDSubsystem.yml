@@ -9,13 +9,14 @@ classes:
     - Distance_t = units::unit_t<Distance>
     attributes:
       m_controller:
+      m_enabled:
     methods:
       ProfiledPIDSubsystem:
       Periodic:
       SetGoal:
         overloads:
-          'typename frc::TrapezoidProfile<Distance>::State':
-          units::unit_t<Distance>:
+          State:
+          Distance_t:
       Enable:
       Disable:
       IsEnabled:

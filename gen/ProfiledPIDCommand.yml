@@ -13,34 +13,40 @@ classes:
     - Distance_t = units::unit_t<Distance>
     - State = typename frc::TrapezoidProfile<Distance>::State
     attributes:
+      m_measurement:
+        rename: _measurement
+      m_goal:
+        rename: _goal
+      m_useOutput:
+        rename: _useOutput
       m_controller:
         rename: _controller
     methods:
       ProfiledPIDCommand:
         overloads:
-          ? frc::ProfiledPIDController<Distance>, std::function<Distance_t ( )>, std::function<State
-            ( )>, std::function<void ( double, State )>, std::initializer_list<std::shared_ptr<Subsystem>>
+          ? frc::ProfiledPIDController<Distance>, std::function<Distance_t ()>, std::function<State
+            ()>, std::function<void (double, State)>, std::initializer_list<std::shared_ptr<Subsystem>>
           : ignore: true
-          ? frc::ProfiledPIDController<Distance>, std::function<Distance_t ( )>, std::function<State
-            ( )>, std::function<void ( double, State )>, std::span<std::shared_ptr<Subsystem>>
+          ? frc::ProfiledPIDController<Distance>, std::function<Distance_t ()>, std::function<State
+            ()>, std::function<void (double, State)>, std::span<std::shared_ptr<Subsystem>>
           :
-          ? frc::ProfiledPIDController<Distance>, std::function<Distance_t ( )>, std::function<Distance_t
-            ( )>, std::function<void ( double, State )>, std::initializer_list<std::shared_ptr<Subsystem>>
+          ? frc::ProfiledPIDController<Distance>, std::function<Distance_t ()>, std::function<Distance_t
+            ()>, std::function<void (double, State)>, std::initializer_list<std::shared_ptr<Subsystem>>
           : ignore: true
-          ? frc::ProfiledPIDController<Distance>, std::function<Distance_t ( )>, std::function<Distance_t
-            ( )>, std::function<void ( double, State )>, std::span<std::shared_ptr<Subsystem>>
+          ? frc::ProfiledPIDController<Distance>, std::function<Distance_t ()>, std::function<Distance_t
+            ()>, std::function<void (double, State)>, std::span<std::shared_ptr<Subsystem>>
           :
-          ? frc::ProfiledPIDController<Distance>, std::function<Distance_t ( )>, typename frc::TrapezoidProfile<Distance>::State,
-            std::function<void ( double, State )>, std::initializer_list<std::shared_ptr<Subsystem>>
+          ? frc::ProfiledPIDController<Distance>, std::function<Distance_t ()>, State,
+            std::function<void (double, State)>, std::initializer_list<std::shared_ptr<Subsystem>>
           : ignore: true
-          ? frc::ProfiledPIDController<Distance>, std::function<Distance_t ( )>, typename frc::TrapezoidProfile<Distance>::State,
-            std::function<void ( double, State )>, std::span<std::shared_ptr<Subsystem>>
+          ? frc::ProfiledPIDController<Distance>, std::function<Distance_t ()>, State,
+            std::function<void (double, State)>, std::span<std::shared_ptr<Subsystem>>
           :
-          ? frc::ProfiledPIDController<Distance>, std::function<Distance_t ( )>, units::unit_t<Distance>,
-            std::function<void ( double, State )>, std::initializer_list<std::shared_ptr<Subsystem>>
+          ? frc::ProfiledPIDController<Distance>, std::function<Distance_t ()>, Distance_t,
+            std::function<void (double, State)>, std::initializer_list<std::shared_ptr<Subsystem>>
           : ignore: true
-          ? frc::ProfiledPIDController<Distance>, std::function<Distance_t ( )>, units::unit_t<Distance>,
-            std::function<void ( double, State )>, std::span<std::shared_ptr<Subsystem>>
+          ? frc::ProfiledPIDController<Distance>, std::function<Distance_t ()>, Distance_t,
+            std::function<void (double, State)>, std::span<std::shared_ptr<Subsystem>>
           :
       Initialize:
       Execute:
@@ -55,17 +61,17 @@ classes:
       
     # workarounds for CppHeaderParser limitations
 
-    template_inline_code: |
-      cls_ProfiledPIDCommand
-        .def_readwrite("_measurement", &ProfiledPIDCommand_Trampoline::m_measurement)
-        .def_readwrite("_goal", &ProfiledPIDCommand_Trampoline::m_goal)
-        .def_readwrite("_useOutput", &ProfiledPIDCommand_Trampoline::m_useOutput)
-      ;
+    # template_inline_code: |
+    #   cls_ProfiledPIDCommand
+    #     .def_readwrite("_measurement", &ProfiledPIDCommand_Trampoline::m_measurement)
+    #     .def_readwrite("_goal", &ProfiledPIDCommand_Trampoline::m_goal)
+    #     .def_readwrite("_useOutput", &ProfiledPIDCommand_Trampoline::m_useOutput)
+    #   ;
 
-    trampoline_inline_code: |
-      using frc2::ProfiledPIDCommand<Distance>::m_measurement;
-      using frc2::ProfiledPIDCommand<Distance>::m_goal;
-      using frc2::ProfiledPIDCommand<Distance>::m_useOutput;
+    # trampoline_inline_code: |
+    #   using frc2::ProfiledPIDCommand<Distance>::m_measurement;
+    #   using frc2::ProfiledPIDCommand<Distance>::m_goal;
+    #   using frc2::ProfiledPIDCommand<Distance>::m_useOutput;
 
 
 templates:

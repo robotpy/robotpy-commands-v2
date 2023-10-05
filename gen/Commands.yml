@@ -16,27 +16,27 @@ functions:
     subpackage: cmd
   RunOnce:
     overloads:
-      std::function<void ( )>, std::initializer_list<std::shared_ptr<Subsystem>>:
+      std::function<void ()>, std::initializer_list<std::shared_ptr<Subsystem>>:
         ignore: true
-      std::function<void ( )>, std::span<std::shared_ptr<Subsystem>>:
+      std::function<void ()>, std::span<std::shared_ptr<Subsystem>>:
         subpackage: cmd
   Run:
     overloads:
-      std::function<void ( )>, std::initializer_list<std::shared_ptr<Subsystem>>:
+      std::function<void ()>, std::initializer_list<std::shared_ptr<Subsystem>>:
         ignore: true
-      std::function<void ( )>, std::span<std::shared_ptr<Subsystem>>:
+      std::function<void ()>, std::span<std::shared_ptr<Subsystem>>:
         subpackage: cmd
   StartEnd:
     overloads:
-      std::function<void ( )>, std::function<void ( )>, std::initializer_list<std::shared_ptr<Subsystem>>:
+      std::function<void ()>, std::function<void ()>, std::initializer_list<std::shared_ptr<Subsystem>>:
         ignore: true
-      std::function<void ( )>, std::function<void ( )>, std::span<std::shared_ptr<Subsystem>>:
+      std::function<void ()>, std::function<void ()>, std::span<std::shared_ptr<Subsystem>>:
         subpackage: cmd
   RunEnd:
     overloads:
-      std::function<void ( )>, std::function<void ( )>, std::initializer_list<std::shared_ptr<Subsystem>>:
+      std::function<void ()>, std::function<void ()>, std::initializer_list<std::shared_ptr<Subsystem>>:
         ignore: true
-      std::function<void ( )>, std::function<void ( )>, std::span<std::shared_ptr<Subsystem>>:
+      std::function<void ()>, std::function<void ()>, std::span<std::shared_ptr<Subsystem>>:
         subpackage: cmd
   Print:
     subpackage: cmd

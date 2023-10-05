@@ -12,41 +12,41 @@ classes:
     methods:
       SwerveControllerCommand:
         overloads:
-          ? frc::Trajectory, std::function<frc::Pose2d ( )>, frc::SwerveDriveKinematics<NumModules>,
+          ? frc::Trajectory, std::function<frc::Pose2d ()>, frc::SwerveDriveKinematics<NumModules>,
             frc2::PIDController, frc2::PIDController, frc::ProfiledPIDController<units::radians>,
-            std::function<frc::Rotation2d ( )>, std::function<void ( std::array<frc::SwerveModuleState,
-            NumModules> )>, std::initializer_list<std::shared_ptr<Subsystem>>
+            std::function<frc::Rotation2d ()>, std::function<void (std::array<frc::SwerveModuleState,
+            NumModules>)>, std::initializer_list<std::shared_ptr<Subsystem>>
           : ignore: true
-          ? frc::Trajectory, std::function<frc::Pose2d ( )>, frc::SwerveDriveKinematics<NumModules>,
+          ? frc::Trajectory, std::function<frc::Pose2d ()>, frc::SwerveDriveKinematics<NumModules>,
             frc2::PIDController, frc2::PIDController, frc::ProfiledPIDController<units::radians>,
-            std::function<void ( std::array<frc::SwerveModuleState, NumModules> )>,
+            std::function<void (std::array<frc::SwerveModuleState, NumModules>)>,
             std::initializer_list<std::shared_ptr<Subsystem>>
           : ignore: true
-          ? frc::Trajectory, std::function<frc::Pose2d ( )>, frc::SwerveDriveKinematics<NumModules>,
+          ? frc::Trajectory, std::function<frc::Pose2d ()>, frc::SwerveDriveKinematics<NumModules>,
             frc2::PIDController, frc2::PIDController, frc::ProfiledPIDController<units::radians>,
-            std::function<frc::Rotation2d ( )>, std::function<void ( std::array<frc::SwerveModuleState,
-            NumModules> )>, std::span<std::shared_ptr<Subsystem>>
+            std::function<frc::Rotation2d ()>, std::function<void (std::array<frc::SwerveModuleState,
+            NumModules>)>, std::span<std::shared_ptr<Subsystem>>
           :
-          ? frc::Trajectory, std::function<frc::Pose2d ( )>, frc::SwerveDriveKinematics<NumModules>,
+          ? frc::Trajectory, std::function<frc::Pose2d ()>, frc::SwerveDriveKinematics<NumModules>,
             frc2::PIDController, frc2::PIDController, frc::ProfiledPIDController<units::radians>,
-            std::function<void ( std::array<frc::SwerveModuleState, NumModules> )>,
+            std::function<void (std::array<frc::SwerveModuleState, NumModules>)>,
             std::span<std::shared_ptr<Subsystem>>
           :
-          ? frc::Trajectory, std::function<frc::Pose2d ( )>, frc::SwerveDriveKinematics<NumModules>,
-            frc::HolonomicDriveController, std::function<frc::Rotation2d ( )>, std::function<void
-            ( std::array<frc::SwerveModuleState, NumModules> )>, std::initializer_list<std::shared_ptr<Subsystem>>
+          ? frc::Trajectory, std::function<frc::Pose2d ()>, frc::SwerveDriveKinematics<NumModules>,
+            frc::HolonomicDriveController, std::function<frc::Rotation2d ()>, std::function<void
+            (std::array<frc::SwerveModuleState, NumModules>)>, std::initializer_list<std::shared_ptr<Subsystem>>
           : ignore: true
-          ? frc::Trajectory, std::function<frc::Pose2d ( )>, frc::SwerveDriveKinematics<NumModules>,
-            frc::HolonomicDriveController, std::function<void ( std::array<frc::SwerveModuleState,
-            NumModules> )>, std::initializer_list<std::shared_ptr<Subsystem>>
+          ? frc::Trajectory, std::function<frc::Pose2d ()>, frc::SwerveDriveKinematics<NumModules>,
+            frc::HolonomicDriveController, std::function<void (std::array<frc::SwerveModuleState,
+            NumModules>)>, std::initializer_list<std::shared_ptr<Subsystem>>
           : ignore: true
-          ? frc::Trajectory, std::function<frc::Pose2d ( )>, frc::SwerveDriveKinematics<NumModules>,
-            frc::HolonomicDriveController, std::function<frc::Rotation2d ( )>, std::function<void
-            ( std::array<frc::SwerveModuleState, NumModules> )>, std::span<std::shared_ptr<Subsystem>>
+          ? frc::Trajectory, std::function<frc::Pose2d ()>, frc::SwerveDriveKinematics<NumModules>,
+            frc::HolonomicDriveController, std::function<frc::Rotation2d ()>, std::function<void
+            (std::array<frc::SwerveModuleState, NumModules>)>, std::span<std::shared_ptr<Subsystem>>
           :
-          ? frc::Trajectory, std::function<frc::Pose2d ( )>, frc::SwerveDriveKinematics<NumModules>,
-            frc::HolonomicDriveController, std::function<void ( std::array<frc::SwerveModuleState,
-            NumModules> )>, std::span<std::shared_ptr<Subsystem>>
+          ? frc::Trajectory, std::function<frc::Pose2d ()>, frc::SwerveDriveKinematics<NumModules>,
+            frc::HolonomicDriveController, std::function<void (std::array<frc::SwerveModuleState,
+            NumModules>)>, std::span<std::shared_ptr<Subsystem>>
           :
       Initialize:
       Execute:

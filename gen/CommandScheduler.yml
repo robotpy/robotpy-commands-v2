@@ -31,16 +31,16 @@ classes:
       Run:
       RegisterSubsystem:
         overloads:
-          frc2::Subsystem*:
-          std::initializer_list<Subsystem *>:
+          Subsystem*:
+          std::initializer_list<Subsystem*>:
             ignore: true
-          std::span<Subsystem *>:
+          std::span<Subsystem*>:
       UnregisterSubsystem:
         overloads:
-          frc2::Subsystem*:
-          std::initializer_list<Subsystem *>:
+          Subsystem*:
+          std::initializer_list<Subsystem*>:
             ignore: true
-          std::span<Subsystem *>:
+          std::span<Subsystem*>:
       RemoveDefaultCommand:
       SetDefaultCommand:
         template_impls:
@@ -49,7 +49,7 @@ classes:
       Cancel:
         overloads:
           std::shared_ptr<Command>:
-          frc2::Command*:
+          Command*:
             ignore: true
           frc2::CommandPtr&:
             ignore: true
@@ -63,14 +63,14 @@ classes:
           std::initializer_list<const std::shared_ptr<Command>> [const]:
             ignore: true
           std::shared_ptr<Command> [const]:
-          frc2::Command* [const]:
+          const Command* [const]:
             ignore: true
           frc2::CommandPtr& [const]:
             ignore: true
       Requiring:
         overloads:
-          std::shared_ptr<Subsystem> [const]:
-          frc2::Subsystem* [const]:
+          const std::shared_ptr<Subsystem> [const]:
+          const Subsystem* [const]:
             ignore: true
       Disable:
       Enable:

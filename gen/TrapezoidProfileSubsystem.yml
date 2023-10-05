@@ -15,8 +15,8 @@ classes:
       Periodic:
       SetGoal:
         overloads:
-          'typename frc::TrapezoidProfile<Distance>::State':
-          units::unit_t<Distance>:
+          State:
+          Distance_t:
       UseState:
       Enable:
       Disable:

@@ -10,9 +10,9 @@ classes:
     methods:
       ConditionalCommand:
         overloads:
-          T1&&, T2&&, std::function<bool ( )>:
+          T1&&, T2&&, std::function<bool ()>:
             ignore: true
-          std::shared_ptr<Command>, std::shared_ptr<Command>, std::function<bool ( )>:
+          std::shared_ptr<Command>, std::shared_ptr<Command>, std::function<bool ()>:
       Initialize:
       Execute:
       End:

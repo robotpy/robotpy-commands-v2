@@ -11,9 +11,9 @@ classes:
     methods:
       InstantCommand:
         overloads:
-          std::function<void ( )>, std::initializer_list<std::shared_ptr<Subsystem>>:
+          std::function<void ()>, std::initializer_list<std::shared_ptr<Subsystem>>:
             ignore: true
-          std::function<void ( )>, std::span<std::shared_ptr<Subsystem>>:
+          std::function<void ()>, std::span<std::shared_ptr<Subsystem>>:
           "":
       Initialize:
       IsFinished:

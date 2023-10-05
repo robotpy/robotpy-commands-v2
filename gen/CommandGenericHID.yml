@@ -10,8 +10,8 @@ classes:
       Button:
       POV:
         overloads:
-          int, std::optional<frc::EventLoop *> [const]:
-          int, int, std::optional<frc::EventLoop *> [const]:
+          int, std::optional<frc::EventLoop*> [const]:
+          int, int, std::optional<frc::EventLoop*> [const]:
       POVUp:
       POVUpRight:
       POVRight:

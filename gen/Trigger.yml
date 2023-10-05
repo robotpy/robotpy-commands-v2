@@ -8,8 +8,8 @@ classes:
     methods:
       Trigger:
         overloads:
-          std::function<bool ( )>:
-          frc::EventLoop*, std::function<bool ( )>:
+          std::function<bool ()>:
+          frc::EventLoop*, std::function<bool ()>:
           "":
       OnTrue:
         overloads:
@@ -46,13 +46,13 @@ classes:
           std::shared_ptr<Command>:
           T&&:
             ignore: true
-          std::function<void ( )>, std::span<std::shared_ptr<Subsystem>>:
+          std::function<void ()>, std::span<std::shared_ptr<Subsystem>>:
       WhileActiveContinous:
         overloads:
           std::shared_ptr<Command>:
           T&&:
             ignore: true
-          std::function<void ( )>, std::span<std::shared_ptr<Subsystem>>:
+          std::function<void ()>, std::span<std::shared_ptr<Subsystem>>:
       WhileActiveOnce:
         overloads:
           std::shared_ptr<Command>:
@@ -63,7 +63,7 @@ classes:
           std::shared_ptr<Command>:
           T&&:
             ignore: true
-          std::function<void ( )>, std::span<std::shared_ptr<Subsystem>>:
+          std::function<void ()>, std::span<std::shared_ptr<Subsystem>>:
       ToggleWhenActive:
         overloads:
           std::shared_ptr<Command>:

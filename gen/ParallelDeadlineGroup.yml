@@ -12,7 +12,7 @@ classes:
       ParallelDeadlineGroup:
         overloads:
           std::shared_ptr<Command>, std::vector<std::shared_ptr<Command>>&&:
-          T&&, Types ...&&:
+          T&&, Types&&...:
             cpp_code: |
               [](std::shared_ptr<Command> cmd, py::args cmds) {
                 return std::make_shared<ParallelDeadlineGroup_Trampoline>(cmd, std::move(pyargs2cmdList(cmds)));
@@ -22,7 +22,7 @@ classes:
                 ignore: true
       AddCommands:
         overloads:
-          Types ...&&:
+          Types&&...:
             ignore: true
           std::vector<std::shared_ptr<Command>>&&:
       Initialize:

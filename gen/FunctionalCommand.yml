@@ -11,11 +11,11 @@ classes:
     methods:
       FunctionalCommand:
         overloads:
-          ? std::function<void ( )>, std::function<void ( )>, std::function<void (
-            bool )>, std::function<bool ( )>, std::initializer_list<std::shared_ptr<Subsystem>>
+          ? std::function<void ()>, std::function<void ()>, std::function<void (bool)>,
+            std::function<bool ()>, std::initializer_list<std::shared_ptr<Subsystem>>
           : ignore: true
-          ? std::function<void ( )>, std::function<void ( )>, std::function<void (
-            bool )>, std::function<bool ( )>, std::span<std::shared_ptr<Subsystem>>
+          ? std::function<void ()>, std::function<void ()>, std::function<void (bool)>,
+            std::function<bool ()>, std::span<std::shared_ptr<Subsystem>>
           :
       Initialize:
       Execute:

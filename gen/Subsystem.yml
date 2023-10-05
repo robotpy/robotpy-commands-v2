@@ -11,6 +11,7 @@ classes:
       Periodic:
       SimulationPeriodic:
       SetDefaultCommand:
+      RemoveDefaultCommand:
       GetDefaultCommand:
       GetCurrentCommand:
       Register:

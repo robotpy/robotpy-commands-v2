@@ -5,7 +5,7 @@ classes:
     methods:
       ProxyCommand:
         overloads:
-          std::function<std::shared_ptr<Command> ( )>:
+          std::function<std::shared_ptr<Command> ()>:
           std::shared_ptr<Command>:
       Initialize:
       End:

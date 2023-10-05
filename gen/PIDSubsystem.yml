@@ -5,6 +5,7 @@ classes:
     shared_ptr: true
     attributes:
       m_controller:
+      m_enabled:
     methods:
       PIDSubsystem:
       Periodic:
