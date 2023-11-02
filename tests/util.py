@@ -1,4 +1,4 @@
-from typing import Any, Dict, TypeVar, Type
+from typing import Any, Dict, TypeVar, Type, Union
 
 import inspect
 
@@ -253,6 +253,23 @@ class times:
 
 def never() -> times:
     return times(0)
+
+
+# class only: ...
+
+# class atLeast:
+#     def __init__(self, times: int) -> None:
+#         self.times = times
+
+# def atLeastOnce() -> atLeast:
+#     return atLeast(1)
+
+# class atMost:
+#     def __init__(self, times: int) -> None:
+#         self.times = times
+
+# def atMostOnce() -> atMost:
+#     return atMost(1)
 
 
 class _verify:

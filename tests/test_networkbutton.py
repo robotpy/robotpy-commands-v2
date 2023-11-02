@@ -11,7 +11,6 @@ if TYPE_CHECKING:
 def test_networkbutton(
     scheduler: commands2.CommandScheduler, nt_instance: NetworkTableInstance
 ):
-    # command = commands2.Command()
     command = commands2.Command()
     start_spying_on(command)
 

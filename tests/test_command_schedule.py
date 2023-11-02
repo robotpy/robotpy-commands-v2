@@ -6,6 +6,9 @@ from util import *  # type: ignore
 if TYPE_CHECKING:
     from .util import *
 
+from ntcore import NetworkTableInstance
+from wpilib import SmartDashboard
+
 import pytest
 
 
@@ -88,3 +91,22 @@ def test_notScheduledCancel(scheduler: commands2.CommandScheduler):
     command = commands2.Command()
 
     scheduler.cancel(command)
+
+
+def test_smartDashboardCancelTest(
+    scheduler: commands2.CommandScheduler, nt_instance: NetworkTableInstance
+):
+    SmartDashboard.putData("Scheduler", scheduler)
+    SmartDashboard.updateValues()
+
+    command = commands2.Command()
+    scheduler.schedule(command)
+    scheduler.run()
+    SmartDashboard.updateValues()
+    assert scheduler.isScheduled(command)
+
+    table = nt_instance.getTable("SmartDashboard")
+    table.getEntry("Scheduler/Cancel").setIntegerArray([id(command)])
+    SmartDashboard.updateValues()
+    scheduler.run()
+    assert not scheduler.isScheduled(command)

@@ -11,8 +11,8 @@ setuptools.setup(
     description="WPILib command framework v2",
     url="https://github.com/robotpy/robotpy-commands-v2",
     packages=["commands2"],
-    install_requires=["wpilib<2025,>=2024.0.0b2", "typing_extensions>=4.1.0,<5"],
     license="BSD-3-Clause",
+    install_requires=["wpilib<2025,>=2024.0.0b2", "typing_extensions>=4.1.0,<5"],
     python_requires=">=3.8",
     include_package_data=True,
 )
