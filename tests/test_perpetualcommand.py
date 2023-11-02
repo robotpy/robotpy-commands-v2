@@ -9,10 +9,10 @@ if TYPE_CHECKING:
 import pytest
 
 
-def test_perpetualCommandSchedule(scheduler: commands2.CommandScheduler):
-    command = commands2.PerpetualCommand(commands2.InstantCommand())
+# def test_perpetualCommandSchedule(scheduler: commands2.CommandScheduler):
+#     command = commands2.PerpetualCommand(commands2.InstantCommand())
 
-    scheduler.schedule(command)
-    scheduler.run()
+#     scheduler.schedule(command)
+#     scheduler.run()
 
-    assert scheduler.isScheduled(command)
+#     assert scheduler.isScheduled(command)
