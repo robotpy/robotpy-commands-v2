@@ -48,7 +48,9 @@ class RamseteCommandTestDataFixtures:
         self.kMaxMetersPerSecond = 3.0
         self.kMaxAccelerationMetersPerSecondSquared = 1.0
         self.kEncoderCPR = 1024
-        self.kEncoderDistancePerPulse = (self.kWheelDiameterMeters * math.pi) / self.kEncoderCPR
+        self.kEncoderDistancePerPulse = (
+            self.kWheelDiameterMeters * math.pi
+        ) / self.kEncoderCPR
 
         self.command_kinematics: kinematics.DifferentialDriveKinematics = (
             kinematics.DifferentialDriveKinematics(self.kTrackWidth)
@@ -56,19 +58,21 @@ class RamseteCommandTestDataFixtures:
 
         self.command_voltage_constraint: constraints.DifferentialDriveVoltageConstraint = constraints.DifferentialDriveVoltageConstraint(
             controller.SimpleMotorFeedforwardMeters(
-                self.ksVolts, 
+                self.ksVolts,
                 self.kvVoltSecondsPerMeter,
-                self.kaVoltSecondsSquaredPerMeter
-            ), 
-            self.command_kinematics, 
-            10
+                self.kaVoltSecondsSquaredPerMeter,
+            ),
+            self.command_kinematics,
+            10,
         )
 
-        self.command_odometry: kinematics.DifferentialDriveOdometry = kinematics.DifferentialDriveOdometry(
-            self.angle,
-            self.leftDistance,
-            self.rightDistance,
-            geometry.Pose2d(0, 0, geometry.Rotation2d(0))
+        self.command_odometry: kinematics.DifferentialDriveOdometry = (
+            kinematics.DifferentialDriveOdometry(
+                self.angle,
+                self.leftDistance,
+                self.rightDistance,
+                geometry.Pose2d(0, 0, geometry.Rotation2d(0)),
+            )
         )
 
     def setWheelSpeeds(self, leftspeed: float, rightspeed: float) -> None:
@@ -84,7 +88,7 @@ class RamseteCommandTestDataFixtures:
 
     def getRobotPose(self) -> geometry.Pose2d:
         positions = self.getCurrentWheelDistances()
-        self.command_odometry.update(self.angle, positions.left,positions.right)
+        self.command_odometry.update(self.angle, positions.left, positions.right)
         return self.command_odometry.getPose()
 
 
@@ -111,12 +115,14 @@ def test_ramseteCommand(
         end_state = new_trajectory.sample(new_trajectory.totalTime())
 
         command = commands2.RamseteCommand(
-            new_trajectory, 
+            new_trajectory,
             fixture_data.getRobotPose,
-            controller.RamseteController(fixture_data.kRamseteB, fixture_data.kRamseteZeta),
+            controller.RamseteController(
+                fixture_data.kRamseteB, fixture_data.kRamseteZeta
+            ),
             fixture_data.command_kinematics,
             fixture_data.setWheelSpeeds,
-            subsystem
+            subsystem,
         )
 
         fixture_data.timer.restart()

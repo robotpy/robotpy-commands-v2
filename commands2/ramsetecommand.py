@@ -4,9 +4,17 @@
 from __future__ import annotations
 
 from typing import Callable, Union
-from wpimath.controller import PIDController, RamseteController, SimpleMotorFeedforwardMeters
+from wpimath.controller import (
+    PIDController,
+    RamseteController,
+    SimpleMotorFeedforwardMeters,
+)
 from wpimath.geometry import Pose2d
-from wpimath.kinematics import ChassisSpeeds, DifferentialDriveKinematics, DifferentialDriveWheelSpeeds
+from wpimath.kinematics import (
+    ChassisSpeeds,
+    DifferentialDriveKinematics,
+    DifferentialDriveWheelSpeeds,
+)
 from wpimath.trajectory import Trajectory
 from wpiutil import SendableBuilder
 from wpilib import Timer
@@ -14,6 +22,7 @@ from wpilib import Timer
 
 from .command import Command
 from .subsystem import Subsystem
+
 
 class RamseteCommand(Command):
     """
@@ -62,7 +71,7 @@ class RamseteCommand(Command):
 
         OPTIONAL PARAMETERS
         When the following optional parameters are provided, when executed, the RamseteCommand will follow
-        provided trajectory. PID control and feedforward are handled internally, and the outputs are scaled 
+        provided trajectory. PID control and feedforward are handled internally, and the outputs are scaled
         from -12 to 12 representing units of volts. If any one of the optional parameters are provided, each
         other optional parameter becomes required.
         :param feedforward      The feedforward to use for the drive
@@ -90,11 +99,11 @@ class RamseteCommand(Command):
         # requirements become required.
         if feedforward or leftController or rightController or wheelSpeeds is not None:
             if feedforward or leftController or rightController or wheelSpeeds is None:
-                raise RuntimeError(f'Failed to instantiate RamseteCommand, not all optional arguments were provided.\n \
-                                    Feedforward - {feedforward}, LeftController - {leftController}, RightController - {rightController}, WheelSpeeds - {wheelSpeeds} '
+                raise RuntimeError(
+                    f"Failed to instantiate RamseteCommand, not all optional arguments were provided.\n \
+                                    Feedforward - {feedforward}, LeftController - {leftController}, RightController - {rightController}, WheelSpeeds - {wheelSpeeds} "
                 )
-            
-        
+
             self.leftController: PIDController = leftController
             self.rightController: PIDController = rightController
             self.wheelspeeds: Callable[[], DifferentialDriveWheelSpeeds] = wheelSpeeds
@@ -109,7 +118,11 @@ class RamseteCommand(Command):
         self.prevTime = -1
         initial_state = self.trajectory.sample(0)
         initial_speeds = self.kinematics.toWheelSpeeds(
-            ChassisSpeeds( initial_state.velocity, 0, initial_state.curvature * initial_state.velocity )
+            ChassisSpeeds(
+                initial_state.velocity,
+                0,
+                initial_state.curvature * initial_state.velocity,
+            )
         )
         self.prevSpeeds = initial_speeds
         self.timer.restart()
@@ -135,29 +148,20 @@ class RamseteCommand(Command):
 
         if self.usePID:
             left_feedforward = self.feedforward.calculate(
-                left_speed_setpoint,
-                (left_speed_setpoint - self.prevSpeeds.left) / dt
+                left_speed_setpoint, (left_speed_setpoint - self.prevSpeeds.left) / dt
             )
 
             right_feedforward = self.feedforward.calculate(
                 right_speed_setpoint,
-                (right_speed_setpoint - self.prevSpeeds.right) / dt
+                (right_speed_setpoint - self.prevSpeeds.right) / dt,
             )
 
-            left_output = (
-                left_feedforward
-                + self.leftController.calculate(
-                    self.wheelspeeds().left,
-                    left_speed_setpoint
-                )
+            left_output = left_feedforward + self.leftController.calculate(
+                self.wheelspeeds().left, left_speed_setpoint
             )
 
-            right_output = (
-                right_feedforward
-                + self.rightController.calculate(
-                    self.wheelspeeds().right,
-                    right_speed_setpoint
-                )
+            right_output = right_feedforward + self.rightController.calculate(
+                self.wheelspeeds().right, right_speed_setpoint
             )
         else:
             left_output = left_speed_setpoint
