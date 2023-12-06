@@ -34,6 +34,7 @@ from .pidcommand import PIDCommand
 from .printcommand import PrintCommand
 from .proxycommand import ProxyCommand
 from .proxyschedulecommand import ProxyScheduleCommand
+from .ramsetecommand import RamseteCommand
 from .repeatcommand import RepeatCommand
 from .runcommand import RunCommand
 from .schedulecommand import ScheduleCommand
@@ -65,6 +66,7 @@ __all__ = [
     "PrintCommand",
     "ProxyCommand",
     "ProxyScheduleCommand",
+    "RamseteCommand",
     "RepeatCommand",
     "RunCommand",
     "ScheduleCommand",
