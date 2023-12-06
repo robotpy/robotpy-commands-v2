@@ -58,7 +58,7 @@ class Command(Sendable):
         InterruptionBehavior  # type alias for 2023 location
     )
 
-    requirements: Set[Subsystem]
+    requirements: Set[Command]
 
     def __new__(cls, *args, **kwargs) -> Self:
         instance = super().__new__(
