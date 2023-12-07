@@ -100,10 +100,10 @@ class RamseteCommand(Command):
                                     Feedforward - {feedforward}, LeftController - {leftController}, RightController - {rightController}, WheelSpeeds - {wheelSpeeds} "
                 )
 
-            self.leftController: PIDController = leftController
-            self.rightController: PIDController = rightController
-            self.wheelspeeds: Callable[[], DifferentialDriveWheelSpeeds] = wheelSpeeds
-            self.feedforward: SimpleMotorFeedforwardMeters = feedforward
+            self.leftController = leftController
+            self.rightController = rightController
+            self.wheelspeeds = wheelSpeeds
+            self.feedforward = feedforward
             self.usePID = True
         self._prevSpeeds = DifferentialDriveWheelSpeeds()
         self._prevTime = -1.0
