@@ -3,7 +3,7 @@
 # the WPILib BSD license file in the root directory of this project.
 from __future__ import annotations
 
-from typing import Callable, Union
+from typing import Callable, Union, Optional
 from wpimath.controller import (
     PIDController,
     RamseteController,
@@ -48,10 +48,10 @@ class RamseteCommand(Command):
         kinematics: DifferentialDriveKinematics,
         outputVolts: Callable[[float, float], None],
         *requirements: Subsystem,
-        feedforward: SimpleMotorFeedforwardMeters | None = None,
-        leftController: PIDController | None = None,
-        rightController: PIDController | None = None,
-        wheelSpeeds: Callable[[], DifferentialDriveWheelSpeeds] | None = None,
+        feedforward: Optional[SimpleMotorFeedforwardMeters],
+        leftController: Optional[PIDController],
+        rightController: Optional[PIDController],
+        wheelSpeeds: Optional[Callable[[], DifferentialDriveWheelSpeeds]],
     ):
         """Constructs a new RamseteCommand that, when executed, will follow the provided trajectory. PID
         control and feedforward are handled internally, and outputs are scaled -12 to 12 representing
@@ -82,20 +82,16 @@ class RamseteCommand(Command):
         """
         super().__init__()
 
-        self.timer = Timer()
+        self._timer = Timer()
 
         # Store all the requirements that are required
-        self.trajectory: Trajectory = trajectory
+        self.trajectory = trajectory
         self.pose = pose
-        self.follower: RamseteController = controller
+        self.follower = controller
         self.kinematics = kinematics
-        self.output: Callable[[float, float], None] = outputVolts
-        self.leftController = None
-        self.rightController = None
-        self.feedforward = None
-        self.wheelspeeds = None
+        self.output =  outputVolts
         self.usePID = False
-        # Optional requirements checks. If any one of the optionl parameters are not None, then all the optional
+        # Optional requirements checks. If any one of the optional parameters are not None, then all the optional
         # requirements become required.
         if feedforward or leftController or rightController or wheelSpeeds is not None:
             if feedforward or leftController or rightController or wheelSpeeds is None:
@@ -109,78 +105,77 @@ class RamseteCommand(Command):
             self.wheelspeeds: Callable[[], DifferentialDriveWheelSpeeds] = wheelSpeeds
             self.feedforward: SimpleMotorFeedforwardMeters = feedforward
             self.usePID = True
-        self.prevSpeeds = DifferentialDriveWheelSpeeds()
-        self.prevTime = -1.0
+        self._prevSpeeds = DifferentialDriveWheelSpeeds()
+        self._prevTime = -1.0
 
         self.addRequirements(*requirements)
 
     def initialize(self):
-        self.prevTime = -1
+        self._prevTime = -1
         initial_state = self.trajectory.sample(0)
-        initial_speeds = self.kinematics.toWheelSpeeds(
+        self._prevSpeeds = self.kinematics.toWheelSpeeds(
             ChassisSpeeds(
                 initial_state.velocity,
                 0,
                 initial_state.curvature * initial_state.velocity,
             )
         )
-        self.prevSpeeds = initial_speeds
-        self.timer.restart()
+        self._timer.restart()
         if self.usePID:
             self.leftController.reset()
             self.rightController.reset()
 
     def execute(self):
-        cur_time = self.timer.get()
-        dt = cur_time - self.prevTime
+        curTime = self._timer.get()
+        dt = curTime - self._prevTime
 
-        if self.prevTime < 0:
+        if self._prevTime < 0:
             self.output(0.0, 0.0)
-            self.prevTime = cur_time
+            self._prevTime = curTime
             return
 
-        target_wheel_speeds = self.kinematics.toWheelSpeeds(
-            self.follower.calculate(self.pose(), self.trajectory.sample(cur_time))
+        targetWheelSpeeds = self.kinematics.toWheelSpeeds(
+            self.follower.calculate(self.pose(), self.trajectory.sample(curTime))
         )
 
-        left_speed_setpoint = target_wheel_speeds.left
-        right_speed_setpoint = target_wheel_speeds.right
+        leftSpeedSetpoint = targetWheelSpeeds.left
+        rightSpeedSetpoint = targetWheelSpeeds.right
 
         if self.usePID:
-            left_feedforward = self.feedforward.calculate(
-                left_speed_setpoint, (left_speed_setpoint - self.prevSpeeds.left) / dt
+            leftFeedforward = self.feedforward.calculate(
+                leftSpeedSetpoint, (leftSpeedSetpoint - self._prevSpeeds.left) / dt
             )
 
-            right_feedforward = self.feedforward.calculate(
-                right_speed_setpoint,
-                (right_speed_setpoint - self.prevSpeeds.right) / dt,
+            rightFeedforward = self.feedforward.calculate(
+                rightSpeedSetpoint,
+                (rightSpeedSetpoint - self._prevSpeeds.right) / dt,
             )
 
-            left_output = left_feedforward + self.leftController.calculate(
-                self.wheelspeeds().left, left_speed_setpoint
+            leftOutput = leftFeedforward + self.leftController.calculate(
+                self.wheelspeeds().left, leftSpeedSetpoint
             )
 
-            right_output = right_feedforward + self.rightController.calculate(
-                self.wheelspeeds().right, right_speed_setpoint
+            rightOutput = rightFeedforward + self.rightController.calculate(
+                self.wheelspeeds().right, rightSpeedSetpoint
             )
         else:
-            left_output = left_speed_setpoint
-            right_output = right_speed_setpoint
+            leftOutput = leftSpeedSetpoint
+            rightOutput = rightSpeedSetpoint
 
-        self.output(left_output, right_output)
-        self.prevSpeeds = target_wheel_speeds
-        self.prevTime = cur_time
+        self.output(leftOutput, rightOutput)
+        self._prevSpeeds = targetWheelSpeeds
+        self._prevTime = curTime
 
-    def end(self, interrupted):
-        self.timer.stop()
+    def end(self, interrupted: bool):
+        self._timer.stop()
 
         if interrupted:
             self.output(0.0, 0.0)
 
     def isFinished(self):
-        return self.timer.hasElapsed(self.trajectory.totalTime())
+        return self._timer.hasElapsed(self.trajectory.totalTime())
 
     def initSendable(self, builder: SendableBuilder):
         super().initSendable(builder)
-        builder.addDoubleProperty("leftVelocity", lambda: self.prevSpeeds.left, None)
-        builder.addDoubleProperty("rightVelocity", lambda: self.prevSpeeds.right, None)
+        builder.addDoubleProperty("leftVelocity", lambda: self._prevSpeeds.left, lambda *float: None)
+        builder.addDoubleProperty("rightVelocity", lambda: self._prevSpeeds.right, lambda *float: None)
