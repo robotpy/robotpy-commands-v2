@@ -89,7 +89,7 @@ class RamseteCommand(Command):
         self.pose = pose
         self.follower = controller
         self.kinematics = kinematics
-        self.output =  outputVolts
+        self.output = outputVolts
         self.usePID = False
         # Optional requirements checks. If any one of the optional parameters are not None, then all the optional
         # requirements become required.
@@ -177,5 +177,9 @@ class RamseteCommand(Command):
 
     def initSendable(self, builder: SendableBuilder):
         super().initSendable(builder)
-        builder.addDoubleProperty("leftVelocity", lambda: self._prevSpeeds.left, lambda *float: None)
-        builder.addDoubleProperty("rightVelocity", lambda: self._prevSpeeds.right, lambda *float: None)
+        builder.addDoubleProperty(
+            "leftVelocity", lambda: self._prevSpeeds.left, lambda *float: None
+        )
+        builder.addDoubleProperty(
+            "rightVelocity", lambda: self._prevSpeeds.right, lambda *float: None
+        )
