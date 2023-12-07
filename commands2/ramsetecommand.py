@@ -48,10 +48,10 @@ class RamseteCommand(Command):
         kinematics: DifferentialDriveKinematics,
         outputVolts: Callable[[float, float], None],
         *requirements: Subsystem,
-        feedforward: Optional[SimpleMotorFeedforwardMeters],
-        leftController: Optional[PIDController],
-        rightController: Optional[PIDController],
-        wheelSpeeds: Optional[Callable[[], DifferentialDriveWheelSpeeds]],
+        feedforward: Optional[SimpleMotorFeedforwardMeters] = None,
+        leftController: Optional[PIDController] = None,
+        rightController: Optional[PIDController] = None,
+        wheelSpeeds: Optional[Callable[[], DifferentialDriveWheelSpeeds]] = None,
     ):
         """Constructs a new RamseteCommand that, when executed, will follow the provided trajectory. PID
         control and feedforward are handled internally, and outputs are scaled -12 to 12 representing
