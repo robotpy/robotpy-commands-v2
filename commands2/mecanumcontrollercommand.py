@@ -2,7 +2,7 @@
 # Open Source Software; you can modify and/or share it under the terms of
 # the WPILib BSD license file in the root directory of this project.
 from __future__ import annotations
-from typing import Set, Callable, Union, List
+from typing import Set, Callable, Union, List, Optional
 
 from wpimath.controller import (
     HolonomicDriveController,
@@ -40,11 +40,6 @@ class MecanumControllerCommand(Command):
     to the angle given in the final state of the trajectory.
     """
 
-    __FRONT_LEFT_INDEX = 0
-    __REAR_LEFT_INDEX = 1
-    __FRONT_RIGHT_INDEX = 2
-    __REAR_RIGHT_INDEX = 3
-
     def __init__(
         self,
         trajectory: Trajectory,
@@ -55,115 +50,108 @@ class MecanumControllerCommand(Command):
         thetaController: ProfiledPIDControllerRadians,
         # rotationSupplier: Callable[[], Rotation2d],
         maxWheelVelocityMetersPerSecond: float,
-        outputConsumer: Callable[[Union[List[float], MecanumDriveWheelSpeeds]], None],
+        outputConsumer: Callable[[MecanumDriveWheelSpeeds], None],
         *requirements: Subsystem,
-        feedforward: SimpleMotorFeedforwardMeters | None = None,
-        chassisWheelPIDControllers: List[PIDController] | None = None,
-        currentWheelSpeedsSupplier: Callable[[], MecanumDriveWheelSpeeds] | None = None,
+        feedforward: Optional[SimpleMotorFeedforwardMeters] = None,
+        frontLeftController: Optional[PIDController] = None,
+        rearLeftController: Optional[PIDController] = None,
+        frontRightController: Optional[PIDController] = None,
+        rearRightController: Optional[PIDController] = None,
+        currentWheelSpeedsSupplier: Optional[
+            Callable[[], MecanumDriveWheelSpeeds]
+        ] = None,
     ):
         super().__init__()
 
-        self.trajectory: Trajectory = trajectory
-        self.pose = pose
-        self.kinematics = kinematics
-        self.controller = HolonomicDriveController(
+        self._trajectory: Trajectory = trajectory
+        self._pose = pose
+        self._kinematics = kinematics
+        self._controller = HolonomicDriveController(
             xController, yController, thetaController
         )
         # self.rotationSupplier = rotationSupplier
-        self.maxWheelVelocityMetersPerSecond = maxWheelVelocityMetersPerSecond
-        self.outputConsumer = outputConsumer
+        self._maxWheelVelocityMetersPerSecond = maxWheelVelocityMetersPerSecond
+        self._outputConsumer = outputConsumer
 
         # Member to track time of last loop execution
-        self.prevTime = 0
-        self.usePID = False
+        self._prevTime = 0
+        self._usePID = False
 
         # Optional requirements checks.  If any one of the feedforward, pidcontrollers, or wheelspeedsuppliers
         # are not None, then all should be non-null.  Raise RuntimeError if they are. The List of PID controllers
         # should be equal to each corner of the robot being commanded.
         if (
             feedforward
-            or chassisWheelPIDControllers
+            or frontLeftController
+            or rearLeftController
+            or frontRightController
+            or rearRightController
             or currentWheelSpeedsSupplier is not None
         ):
             if (
                 feedforward
-                or chassisWheelPIDControllers
+                or frontLeftController
+                or rearLeftController
+                or frontRightController
+                or rearRightController
                 or currentWheelSpeedsSupplier is None
             ):
                 raise RuntimeError(
-                    f"Failed to instantiate MecanumControllerCommand, one of the arguments passed in was None: \n \
-                                   \t Feedforward: {feedforward} - chassisWheelPIDControllers: {chassisWheelPIDControllers} - wheelSpeedSupplier: {currentWheelSpeedsSupplier} "
+                    f"Failed to instantiate MecanumControllerCommand, one of the arguments passed in was None "
                 )
 
-            # check the length of the PID controllers
-            if len(chassisWheelPIDControllers != 4):
-                raise RuntimeError(
-                    f"Failed to instantiate MecanumControllerCommand, not enough PID controllers provided.\n \
-                                   \t Required: 4 - Provided: {len(chassisWheelPIDControllers)}"
-                )
-
-            self.frontLeftController = chassisWheelPIDControllers[
-                self.__FRONT_LEFT_INDEX
-            ]
-            self.rearLeftController = chassisWheelPIDControllers[self.__REAR_LEFT_INDEX]
-            self.frontRightController = chassisWheelPIDControllers[
-                self.__FRONT_RIGHT_INDEX
-            ]
-            self.rearRightController = chassisWheelPIDControllers[
-                self.__REAR_RIGHT_INDEX
-            ]
+            self._frontLeftController = frontLeftController
+            self._rearLeftController = rearLeftController
+            self._frontRightController = frontRightController
+            self._rearRightController = rearRightController
 
             if currentWheelSpeedsSupplier is None:
                 raise RuntimeError(
                     f"Failed to instantiate MecanumControllerCommand, no WheelSpeedSupplierProvided."
                 )
 
-            self.currentWheelSpeeds = currentWheelSpeedsSupplier
+            self._currentWheelSpeeds = currentWheelSpeedsSupplier
 
             if feedforward is None:
                 raise RuntimeError(
                     f"Failed to instantiate MecanumControllerCommand, no SimpleMotorFeedforwardMeters supplied."
                 )
 
-            self.feedforward: SimpleMotorFeedforwardMeters = feedforward
+            self._feedforward = feedforward
 
             # All the optional requirements verify, set usePid flag to True
-            self.usePID = True
+            self._usePID = True
 
         # Set the requirements for the command
         self.addRequirements(*requirements)
 
-        self.timer = Timer()
+        self._timer = Timer()
 
     def initialize(self):
-        initialState: Trajectory.State = self.trajectory.sample(0)
+        initialState = self._trajectory.sample(0)
         initialXVelocity = initialState.velocity * initialState.pose.rotation().cos()
         initialYVelocity = initialState.velocity * initialState.pose.rotation().sin()
-        self.m_prevSpeeds = self.kinematics.toWheelSpeeds(
+        self.m_prevSpeeds = self._kinematics.toWheelSpeeds(
             ChassisSpeeds(initialXVelocity, initialYVelocity, 0.0)
         )
-        self.timer.restart()
-        self.prevTime = 0
+        self._timer.restart()
 
     def execute(self):
-        curTime = self.timer.get()
-        dt = curTime - self.prevTime
-        desiredState: Trajectory.State = self.trajectory.sample(curTime)
-        targetChassisSpeeds = self.controller.calculate(
-            self.pose(),
-            desiredState,
-            desiredState.pose.rotation()
-            # self.pose.get(), desiredState, self.rotationSupplier.get()
+        curTime = self._timer.get()
+        dt = curTime - self._prevTime
+        desiredState = self._trajectory.sample(curTime)
+        targetChassisSpeeds = self._controller.calculate(
+            self._pose(), desiredState, desiredState.pose.rotation()
         )
-        targetWheelSpeeds = self.kinematics.toWheelSpeeds(targetChassisSpeeds)
-        targetWheelSpeeds.desaturate(self.maxWheelVelocityMetersPerSecond)
+        targetWheelSpeeds = self._kinematics.toWheelSpeeds(targetChassisSpeeds)
+        targetWheelSpeeds.desaturate(self._maxWheelVelocityMetersPerSecond)
         frontLeftSpeedSetpoint = targetWheelSpeeds.frontLeft
         rearLeftSpeedSetpoint = targetWheelSpeeds.rearLeft
         frontRightSpeedSetpoint = targetWheelSpeeds.frontRight
         rearRightSpeedSetpoint = targetWheelSpeeds.rearRight
 
-        if not self.usePID:
-            self.outputConsumer(
+        if not self._usePID:
+            self._outputConsumer(
                 MecanumDriveWheelSpeeds(
                     frontLeftSpeedSetpoint,
                     frontRightSpeedSetpoint,
@@ -172,51 +160,57 @@ class MecanumControllerCommand(Command):
                 )
             )
         else:
-            frontLeftFeedforward = self.feedforward.calculate(
+            frontLeftFeedforward = self._feedforward.calculate(
                 frontLeftSpeedSetpoint,
                 (frontLeftSpeedSetpoint - self.m_prevSpeeds.frontLeft) / dt,
             )
-            rearLeftFeedforward = self.feedforward.calculate(
+            rearLeftFeedforward = self._feedforward.calculate(
                 rearLeftSpeedSetpoint,
                 (rearLeftSpeedSetpoint - self.m_prevSpeeds.rearLeft) / dt,
             )
-            frontRightFeedforward = self.feedforward.calculate(
+            frontRightFeedforward = self._feedforward.calculate(
                 frontRightSpeedSetpoint,
                 (frontRightSpeedSetpoint - self.m_prevSpeeds.frontRight) / dt,
             )
-            rearRightFeedforward = self.feedforward.calculate(
+            rearRightFeedforward = self._feedforward.calculate(
                 rearRightSpeedSetpoint,
                 (rearRightSpeedSetpoint - self.m_prevSpeeds.rearRight) / dt,
             )
-            frontLeftOutput = frontLeftFeedforward + self.frontLeftController.calculate(
-                self.currentWheelSpeeds().frontLeft,
-                frontLeftSpeedSetpoint,
+            frontLeftOutput = (
+                frontLeftFeedforward
+                + self._frontLeftController.calculate(
+                    self._currentWheelSpeeds().frontLeft,
+                    frontLeftSpeedSetpoint,
+                )
             )
-            rearLeftOutput = rearLeftFeedforward + self.rearLeftController.calculate(
-                self.currentWheelSpeeds().rearLeft,
+            rearLeftOutput = rearLeftFeedforward + self._rearLeftController.calculate(
+                self._currentWheelSpeeds().rearLeft,
                 rearLeftSpeedSetpoint,
             )
             frontRightOutput = (
                 frontRightFeedforward
-                + self.frontRightController.calculate(
-                    self.currentWheelSpeeds().frontRight,
+                + self._frontRightController.calculate(
+                    self._currentWheelSpeeds().frontRight,
                     frontRightSpeedSetpoint,
                 )
             )
-            rearRightOutput = rearRightFeedforward + self.rearRightController.calculate(
-                self.currentWheelSpeeds().rearRight,
-                rearRightSpeedSetpoint,
+            rearRightOutput = (
+                rearRightFeedforward
+                + self._rearRightController.calculate(
+                    self._currentWheelSpeeds().rearRight,
+                    rearRightSpeedSetpoint,
+                )
             )
-            self.outputConsumer(
+            self._outputConsumer(
                 frontLeftOutput, frontRightOutput, rearLeftOutput, rearRightOutput
             )
 
         # Store current call information for next call
-        self.prevTime = curTime
+        self._prevTime = curTime
         self.m_prevSpeeds = targetWheelSpeeds
 
     def end(self, interrupted):
-        self.timer.stop()
+        self._timer.stop()
 
     def isFinished(self):
-        return self.timer.hasElapsed(self.trajectory.totalTime())
+        return self._timer.hasElapsed(self._trajectory.totalTime())
