@@ -7,7 +7,7 @@ from typing import Callable, Optional, Union
 from wpimath.controller import (
     HolonomicDriveController,
     PIDController,
-    ProfiledPIDController,
+    ProfiledPIDControllerRadians,
 )
 from wpimath.geometry import Pose2d, Rotation2d
 from wpimath.kinematics import (
@@ -54,8 +54,8 @@ class SwerveControllerCommand(Command):
         controller: Optional[HolonomicDriveController] = None,
         xController: Optional[PIDController] = None,
         yController: Optional[PIDController] = None,
-        thetaController: Optional[ProfiledPIDController] = None,
-        desiredRotation: Callable[[], Rotation2d] = None,
+        thetaController: Optional[ProfiledPIDControllerRadians] = None,
+        desiredRotation: Optional[Callable[[], Rotation2d]] = None,
     ):
         """Constructs a new SwerveControllerCommand that when executed will follow the provided
         trajectory. This command will not return output voltages but rather raw module states from the
@@ -110,9 +110,12 @@ class SwerveControllerCommand(Command):
                     f"Failed to instantiate the Swerve2ControllerCommand: Could not create HolonomicDriveController from PID requirements"
                 )
 
-            self._controller = HolonomicDriveController(
-                xController, yController, thetaController
-            )
+            # re-type variables to fix MyPy error:
+            # Argument 1 to "HolonomicDriveController" has incompatible type "PIDController | None"; expected "PIDController"  [arg-type]
+            x: PIDController = xController
+            y: PIDController = yController
+            theta: ProfiledPIDControllerRadians = thetaController
+            self._controller = HolonomicDriveController( x, y, theta )
 
         # If the desired rotation isn't provided, just take the final rotation from the trajectory
         if desiredRotation is not None:
