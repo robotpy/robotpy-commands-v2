@@ -110,12 +110,7 @@ class SwerveControllerCommand(Command):
                     f"Failed to instantiate the Swerve2ControllerCommand: Could not create HolonomicDriveController from PID requirements"
                 )
 
-            # re-type variables to fix MyPy error:
-            # Argument 1 to "HolonomicDriveController" has incompatible type "PIDController | None"; expected "PIDController"  [arg-type]
-            x: PIDController = xController
-            y: PIDController = yController
-            theta: ProfiledPIDControllerRadians = thetaController
-            self._controller = HolonomicDriveController( x, y, theta )
+            self._controller = HolonomicDriveController( xController, yController, thetaController )
 
         # If the desired rotation isn't provided, just take the final rotation from the trajectory
         if desiredRotation is not None:

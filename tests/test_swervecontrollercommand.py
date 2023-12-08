@@ -61,9 +61,16 @@ class SwerveControllerCommandTestDataFixtures:
             )
         else:
             self._xController = None
+            self._yController = controller.PIDController(0.6, 0, 0)
+            constraints = trajectory.TrapezoidProfileRadians.Constraints(
+                3 * math.pi, math.pi
+            )
+            self._rotationController = controller.ProfiledPIDControllerRadians(
+                1, 0, 0, constraints
+            )
             self._holonomic = None
 
-        if selector == TWO:
+        if (selector == TWO) or (selector == INCOMPLETE_PID_CLASSES):
             self._kinematics = kinematics.SwerveDrive2Kinematics(
                 geometry.Translation2d(self._kWheelBase / 2, self._kTrackWidth / 2),
                 geometry.Translation2d(self._kWheelBase / 2, -self._kTrackWidth / 2),
@@ -208,8 +215,7 @@ class SwerveControllerCommandTestDataFixtures:
                 self._modulePositions,
                 geometry.Pose2d(0, 0, geometry.Rotation2d(0)),
             )
-        else:
-            raise RuntimeError(f"Invalid SwerveKinematics selector: {selector}")
+
 
     def setModuleStates(self, states: List[kinematics.SwerveModuleState]) -> None:
         self._moduleStates = states
