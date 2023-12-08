@@ -112,9 +112,9 @@ class SwerveControllerCommand(Command):
 
             # Adding the mypy type error annotation since it incorrectly is giving an error that the type is:
             # PIDController | None expected PIDController
-            # The statement is true, but ignore the error because the None type check on above makes sure the 
+            # The statement is true, but ignore the error because the None type check on above makes sure the
             # typing is correct.
-            self._controller = HolonomicDriveController( xController, yController, thetaController ) # type: ignore
+            self._controller = HolonomicDriveController(xController, yController, thetaController)  # type: ignore
 
         # If the desired rotation isn't provided, just take the final rotation from the trajectory
         if desiredRotation is not None:

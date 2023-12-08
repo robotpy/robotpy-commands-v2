@@ -216,7 +216,6 @@ class SwerveControllerCommandTestDataFixtures:
                 geometry.Pose2d(0, 0, geometry.Rotation2d(0)),
             )
 
-
     def setModuleStates(self, states: List[kinematics.SwerveModuleState]) -> None:
         self._moduleStates = states
 
