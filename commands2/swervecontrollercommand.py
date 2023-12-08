@@ -52,7 +52,7 @@ class SwerveControllerCommand(Command):
         outputModuleStates: Callable[[SwerveModuleState], None],
         *requirements: Subsystem,
         controller: Optional[HolonomicDriveController] = None,
-        xController: Optional[PIDController] = None,
+        xController: Union[PIDController, None] = None,
         yController: Optional[PIDController] = None,
         thetaController: Optional[ProfiledPIDControllerRadians] = None,
         desiredRotation: Optional[Callable[[], Rotation2d]] = None,
