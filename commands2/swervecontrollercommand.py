@@ -52,7 +52,7 @@ class SwerveControllerCommand(Command):
         outputModuleStates: Callable[[SwerveModuleState], None],
         *requirements: Subsystem,
         controller: Optional[HolonomicDriveController] = None,
-        xController: Union[PIDController, None] = None,
+        xController: Optional[PIDController] = None,
         yController: Optional[PIDController] = None,
         thetaController: Optional[ProfiledPIDControllerRadians] = None,
         desiredRotation: Optional[Callable[[], Rotation2d]] = None,
@@ -110,7 +110,11 @@ class SwerveControllerCommand(Command):
                     f"Failed to instantiate the Swerve2ControllerCommand: Could not create HolonomicDriveController from PID requirements"
                 )
 
-            self._controller = HolonomicDriveController( xController, yController, thetaController )
+            # Adding the mypy type error annotation since it incorrectly is giving an error that the type is:
+            # PIDController | None expected PIDController
+            # The statement is true, but ignore the error because the None type check on above makes sure the 
+            # typing is correct.
+            self._controller = HolonomicDriveController( xController, yController, thetaController ) # type: ignore
 
         # If the desired rotation isn't provided, just take the final rotation from the trajectory
         if desiredRotation is not None:
