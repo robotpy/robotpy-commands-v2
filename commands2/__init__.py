@@ -41,6 +41,7 @@ from .selectcommand import SelectCommand
 from .sequentialcommandgroup import SequentialCommandGroup
 from .startendcommand import StartEndCommand
 from .subsystem import Subsystem
+from .swervecontrollercommand import SwerveControllerCommand
 from .timedcommandrobot import TimedCommandRobot
 from .waitcommand import WaitCommand
 from .waituntilcommand import WaitUntilCommand
@@ -72,6 +73,7 @@ __all__ = [
     "SequentialCommandGroup",
     "StartEndCommand",
     "Subsystem",
+    "SwerveControllerCommand",
     "TimedCommandRobot",
     "WaitCommand",
     "WaitUntilCommand",
