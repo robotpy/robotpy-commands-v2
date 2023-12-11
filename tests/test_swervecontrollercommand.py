@@ -264,6 +264,58 @@ def get_swerve_controller_data() -> SwerveControllerCommandTestDataFixtures:
     return _method
 
 
+def test_SwerveControllerMismatchedKinematicsAndOdometry(
+    scheduler: commands2.CommandScheduler, get_swerve_controller_data
+):
+    with ManualSimTime() as sim:
+        subsystem = commands2.Subsystem()
+        waypoints: List[geometry.Pose2d] = []
+        waypoints.append(geometry.Pose2d(0, 0, geometry.Rotation2d(0)))
+        waypoints.append(geometry.Pose2d(1, 5, geometry.Rotation2d(3)))
+        traj_config: trajectory.TrajectoryConfig = trajectory.TrajectoryConfig(8.8, 0.1)
+        new_trajectory: trajectory.Trajectory = (
+            trajectory.TrajectoryGenerator.generateTrajectory(waypoints, traj_config)
+        )
+        end_state = new_trajectory.sample(new_trajectory.totalTime())
+
+        with pytest.raises(TypeError):
+            fixture_data: SwerveControllerCommandTestDataFixtures = (
+                get_swerve_controller_data(MISMATCHED_KINEMATICS_AND_ODOMETRY)
+            )
+
+
+def test_SwerveControllerIncompletePID(
+    scheduler: commands2.CommandScheduler, get_swerve_controller_data
+):
+    with ManualSimTime() as sim:
+        subsystem = commands2.Subsystem()
+        waypoints: List[geometry.Pose2d] = []
+        waypoints.append(geometry.Pose2d(0, 0, geometry.Rotation2d(0)))
+        waypoints.append(geometry.Pose2d(1, 5, geometry.Rotation2d(3)))
+        traj_config: trajectory.TrajectoryConfig = trajectory.TrajectoryConfig(8.8, 0.1)
+        new_trajectory: trajectory.Trajectory = (
+            trajectory.TrajectoryGenerator.generateTrajectory(waypoints, traj_config)
+        )
+        end_state = new_trajectory.sample(new_trajectory.totalTime())
+
+        with pytest.raises(RuntimeError):
+            fixture_data: SwerveControllerCommandTestDataFixtures = (
+                get_swerve_controller_data(INCOMPLETE_PID_CLASSES)
+            )
+
+            command = commands2.SwerveControllerCommand(
+                new_trajectory,
+                fixture_data.getRobotPose,
+                fixture_data._kinematics,
+                fixture_data.setModuleStates,
+                subsystem,
+                xController=fixture_data._xController,
+                yController=fixture_data._yController,
+                thetaController=fixture_data._rotationController,
+                desiredRotation=fixture_data.getRotationHeadingZero,
+            )
+
+
 def test_SwerveControllerCommand2Holonomic(
     scheduler: commands2.CommandScheduler, get_swerve_controller_data
 ):
@@ -289,6 +341,69 @@ def test_SwerveControllerCommand2Holonomic(
             fixture_data.setModuleStates,
             subsystem,
             controller=fixture_data._holonomic,
+        )
+
+        fixture_data._timer.restart()
+
+        command.initialize()
+
+        while not command.isFinished():
+            command.execute()
+            fixture_data._angle = new_trajectory.sample(
+                fixture_data._timer.get()
+            ).pose.rotation()
+
+            for i in range(0, len(fixture_data._modulePositions)):
+                fixture_data._modulePositions[i].distance += (
+                    fixture_data._moduleStates[i].speed * 0.005
+                )
+                fixture_data._modulePositions[i].angle = fixture_data._moduleStates[
+                    i
+                ].angle
+
+            sim.step(0.005)
+
+        fixture_data._timer.stop()
+        command.end(True)
+
+        assert end_state.pose.X() == pytest.approx(
+            fixture_data.getRobotPose().X(), fixture_data._kxTolerance
+        )
+        assert end_state.pose.Y() == pytest.approx(
+            fixture_data.getRobotPose().Y(), fixture_data._kyTolerance
+        )
+        assert end_state.pose.rotation().radians() == pytest.approx(
+            fixture_data.getRobotPose().rotation().radians(),
+            fixture_data._kAngularTolerance,
+        )
+
+
+def test_SwerveControllerCommand2HolonomicWithRotation(
+    scheduler: commands2.CommandScheduler, get_swerve_controller_data
+):
+    with ManualSimTime() as sim:
+        subsystem = commands2.Subsystem()
+        waypoints: List[geometry.Pose2d] = []
+        waypoints.append(geometry.Pose2d(0, 0, geometry.Rotation2d(0)))
+        waypoints.append(geometry.Pose2d(1, 5, geometry.Rotation2d(3)))
+        traj_config: trajectory.TrajectoryConfig = trajectory.TrajectoryConfig(8.8, 0.1)
+        new_trajectory: trajectory.Trajectory = (
+            trajectory.TrajectoryGenerator.generateTrajectory(waypoints, traj_config)
+        )
+        end_state = new_trajectory.sample(new_trajectory.totalTime())
+
+        fixture_data: SwerveControllerCommandTestDataFixtures = (
+            get_swerve_controller_data(TWO)
+        )
+
+        command = commands2.SwerveControllerCommand(
+            new_trajectory,
+            fixture_data.getRobotPose,
+            fixture_data._kinematics,
+            fixture_data.setModuleStates,
+            subsystem,
+            controller=fixture_data._holonomic,
+            desiredRotation=fixture_data.getRotationHeadingZero,
         )
 
         fixture_data._timer.restart()
@@ -390,6 +505,71 @@ def test_SwerveControllerCommand2PID(
         )
 
 
+def test_SwerveControllerCommand2PIDWithRotation(
+    scheduler: commands2.CommandScheduler, get_swerve_controller_data
+):
+    with ManualSimTime() as sim:
+        subsystem = commands2.Subsystem()
+        waypoints: List[geometry.Pose2d] = []
+        waypoints.append(geometry.Pose2d(0, 0, geometry.Rotation2d(0)))
+        waypoints.append(geometry.Pose2d(1, 5, geometry.Rotation2d(3)))
+        traj_config: trajectory.TrajectoryConfig = trajectory.TrajectoryConfig(8.8, 0.1)
+        new_trajectory: trajectory.Trajectory = (
+            trajectory.TrajectoryGenerator.generateTrajectory(waypoints, traj_config)
+        )
+        end_state = new_trajectory.sample(new_trajectory.totalTime())
+
+        fixture_data: SwerveControllerCommandTestDataFixtures = (
+            get_swerve_controller_data(TWO)
+        )
+
+        command = commands2.SwerveControllerCommand(
+            new_trajectory,
+            fixture_data.getRobotPose,
+            fixture_data._kinematics,
+            fixture_data.setModuleStates,
+            subsystem,
+            xController=fixture_data._xController,
+            yController=fixture_data._yController,
+            thetaController=fixture_data._rotationController,
+            desiredRotation=fixture_data.getRotationHeadingZero,
+        )
+
+        fixture_data._timer.restart()
+
+        command.initialize()
+
+        while not command.isFinished():
+            command.execute()
+            fixture_data._angle = new_trajectory.sample(
+                fixture_data._timer.get()
+            ).pose.rotation()
+
+            for i in range(0, len(fixture_data._modulePositions)):
+                fixture_data._modulePositions[i].distance += (
+                    fixture_data._moduleStates[i].speed * 0.005
+                )
+                fixture_data._modulePositions[i].angle = fixture_data._moduleStates[
+                    i
+                ].angle
+
+            sim.step(0.005)
+
+        fixture_data._timer.stop()
+        command.end(True)
+
+        assert end_state.pose.X() == pytest.approx(
+            fixture_data.getRobotPose().X(), fixture_data._kxTolerance
+        )
+        assert end_state.pose.Y() == pytest.approx(
+            fixture_data.getRobotPose().Y(), fixture_data._kyTolerance
+        )
+        assert end_state.pose.rotation().radians() == pytest.approx(
+            fixture_data.getRobotPose().rotation().radians(),
+            fixture_data._kAngularTolerance,
+        )
+
+
 def test_SwerveControllerCommand3Holonomic(
     scheduler: commands2.CommandScheduler, get_swerve_controller_data
 ):
@@ -415,6 +595,69 @@ def test_SwerveControllerCommand3Holonomic(
             fixture_data.setModuleStates,
             subsystem,
             controller=fixture_data._holonomic,
+        )
+
+        fixture_data._timer.restart()
+
+        command.initialize()
+
+        while not command.isFinished():
+            command.execute()
+            fixture_data._angle = new_trajectory.sample(
+                fixture_data._timer.get()
+            ).pose.rotation()
+
+            for i in range(0, len(fixture_data._modulePositions)):
+                fixture_data._modulePositions[i].distance += (
+                    fixture_data._moduleStates[i].speed * 0.005
+                )
+                fixture_data._modulePositions[i].angle = fixture_data._moduleStates[
+                    i
+                ].angle
+
+            sim.step(0.005)
+
+        fixture_data._timer.stop()
+        command.end(True)
+
+        assert end_state.pose.X() == pytest.approx(
+            fixture_data.getRobotPose().X(), fixture_data._kxTolerance
+        )
+        assert end_state.pose.Y() == pytest.approx(
+            fixture_data.getRobotPose().Y(), fixture_data._kyTolerance
+        )
+        assert end_state.pose.rotation().radians() == pytest.approx(
+            fixture_data.getRobotPose().rotation().radians(),
+            fixture_data._kAngularTolerance,
+        )
+
+
+def test_SwerveControllerCommand3HolonomicWithRotation(
+    scheduler: commands2.CommandScheduler, get_swerve_controller_data
+):
+    with ManualSimTime() as sim:
+        subsystem = commands2.Subsystem()
+        waypoints: List[geometry.Pose2d] = []
+        waypoints.append(geometry.Pose2d(0, 0, geometry.Rotation2d(0)))
+        waypoints.append(geometry.Pose2d(1, 5, geometry.Rotation2d(3)))
+        traj_config: trajectory.TrajectoryConfig = trajectory.TrajectoryConfig(8.8, 0.1)
+        new_trajectory: trajectory.Trajectory = (
+            trajectory.TrajectoryGenerator.generateTrajectory(waypoints, traj_config)
+        )
+        end_state = new_trajectory.sample(new_trajectory.totalTime())
+
+        fixture_data: SwerveControllerCommandTestDataFixtures = (
+            get_swerve_controller_data(THREE)
+        )
+
+        command = commands2.SwerveControllerCommand(
+            new_trajectory,
+            fixture_data.getRobotPose,
+            fixture_data._kinematics,
+            fixture_data.setModuleStates,
+            subsystem,
+            controller=fixture_data._holonomic,
+            desiredRotation=fixture_data.getRotationHeadingZero,
         )
 
         fixture_data._timer.restart()
@@ -516,6 +759,71 @@ def test_SwerveControllerCommand3PID(
         )
 
 
+def test_SwerveControllerCommand3PIDWithRotation(
+    scheduler: commands2.CommandScheduler, get_swerve_controller_data
+):
+    with ManualSimTime() as sim:
+        subsystem = commands2.Subsystem()
+        waypoints: List[geometry.Pose2d] = []
+        waypoints.append(geometry.Pose2d(0, 0, geometry.Rotation2d(0)))
+        waypoints.append(geometry.Pose2d(1, 5, geometry.Rotation2d(3)))
+        traj_config: trajectory.TrajectoryConfig = trajectory.TrajectoryConfig(8.8, 0.1)
+        new_trajectory: trajectory.Trajectory = (
+            trajectory.TrajectoryGenerator.generateTrajectory(waypoints, traj_config)
+        )
+        end_state = new_trajectory.sample(new_trajectory.totalTime())
+
+        fixture_data: SwerveControllerCommandTestDataFixtures = (
+            get_swerve_controller_data(THREE)
+        )
+
+        command = commands2.SwerveControllerCommand(
+            new_trajectory,
+            fixture_data.getRobotPose,
+            fixture_data._kinematics,
+            fixture_data.setModuleStates,
+            subsystem,
+            xController=fixture_data._xController,
+            yController=fixture_data._yController,
+            thetaController=fixture_data._rotationController,
+            desiredRotation=fixture_data.getRotationHeadingZero,
+        )
+
+        fixture_data._timer.restart()
+
+        command.initialize()
+
+        while not command.isFinished():
+            command.execute()
+            fixture_data._angle = new_trajectory.sample(
+                fixture_data._timer.get()
+            ).pose.rotation()
+
+            for i in range(0, len(fixture_data._modulePositions)):
+                fixture_data._modulePositions[i].distance += (
+                    fixture_data._moduleStates[i].speed * 0.005
+                )
+                fixture_data._modulePositions[i].angle = fixture_data._moduleStates[
+                    i
+                ].angle
+
+            sim.step(0.005)
+
+        fixture_data._timer.stop()
+        command.end(True)
+
+        assert end_state.pose.X() == pytest.approx(
+            fixture_data.getRobotPose().X(), fixture_data._kxTolerance
+        )
+        assert end_state.pose.Y() == pytest.approx(
+            fixture_data.getRobotPose().Y(), fixture_data._kyTolerance
+        )
+        assert end_state.pose.rotation().radians() == pytest.approx(
+            fixture_data.getRobotPose().rotation().radians(),
+            fixture_data._kAngularTolerance,
+        )
+
+
 def test_SwerveControllerCommand4Holonomic(
     scheduler: commands2.CommandScheduler, get_swerve_controller_data
 ):
@@ -541,6 +849,69 @@ def test_SwerveControllerCommand4Holonomic(
             fixture_data.setModuleStates,
             subsystem,
             controller=fixture_data._holonomic,
+        )
+
+        fixture_data._timer.restart()
+
+        command.initialize()
+
+        while not command.isFinished():
+            command.execute()
+            fixture_data._angle = new_trajectory.sample(
+                fixture_data._timer.get()
+            ).pose.rotation()
+
+            for i in range(0, len(fixture_data._modulePositions)):
+                fixture_data._modulePositions[i].distance += (
+                    fixture_data._moduleStates[i].speed * 0.005
+                )
+                fixture_data._modulePositions[i].angle = fixture_data._moduleStates[
+                    i
+                ].angle
+
+            sim.step(0.005)
+
+        fixture_data._timer.stop()
+        command.end(True)
+
+        assert end_state.pose.X() == pytest.approx(
+            fixture_data.getRobotPose().X(), fixture_data._kxTolerance
+        )
+        assert end_state.pose.Y() == pytest.approx(
+            fixture_data.getRobotPose().Y(), fixture_data._kyTolerance
+        )
+        assert end_state.pose.rotation().radians() == pytest.approx(
+            fixture_data.getRobotPose().rotation().radians(),
+            fixture_data._kAngularTolerance,
+        )
+
+
+def test_SwerveControllerCommand4HolonomicWithRotation(
+    scheduler: commands2.CommandScheduler, get_swerve_controller_data
+):
+    with ManualSimTime() as sim:
+        subsystem = commands2.Subsystem()
+        waypoints: List[geometry.Pose2d] = []
+        waypoints.append(geometry.Pose2d(0, 0, geometry.Rotation2d(0)))
+        waypoints.append(geometry.Pose2d(1, 5, geometry.Rotation2d(3)))
+        traj_config: trajectory.TrajectoryConfig = trajectory.TrajectoryConfig(8.8, 0.1)
+        new_trajectory: trajectory.Trajectory = (
+            trajectory.TrajectoryGenerator.generateTrajectory(waypoints, traj_config)
+        )
+        end_state = new_trajectory.sample(new_trajectory.totalTime())
+
+        fixture_data: SwerveControllerCommandTestDataFixtures = (
+            get_swerve_controller_data(FOUR)
+        )
+
+        command = commands2.SwerveControllerCommand(
+            new_trajectory,
+            fixture_data.getRobotPose,
+            fixture_data._kinematics,
+            fixture_data.setModuleStates,
+            subsystem,
+            controller=fixture_data._holonomic,
+            desiredRotation=fixture_data.getRotationHeadingZero,
         )
 
         fixture_data._timer.restart()
@@ -642,6 +1013,71 @@ def test_SwerveControllerCommand4PID(
         )
 
 
+def test_SwerveControllerCommand4PIDWithRotation(
+    scheduler: commands2.CommandScheduler, get_swerve_controller_data
+):
+    with ManualSimTime() as sim:
+        subsystem = commands2.Subsystem()
+        waypoints: List[geometry.Pose2d] = []
+        waypoints.append(geometry.Pose2d(0, 0, geometry.Rotation2d(0)))
+        waypoints.append(geometry.Pose2d(1, 5, geometry.Rotation2d(3)))
+        traj_config: trajectory.TrajectoryConfig = trajectory.TrajectoryConfig(8.8, 0.1)
+        new_trajectory: trajectory.Trajectory = (
+            trajectory.TrajectoryGenerator.generateTrajectory(waypoints, traj_config)
+        )
+        end_state = new_trajectory.sample(new_trajectory.totalTime())
+
+        fixture_data: SwerveControllerCommandTestDataFixtures = (
+            get_swerve_controller_data(FOUR)
+        )
+
+        command = commands2.SwerveControllerCommand(
+            new_trajectory,
+            fixture_data.getRobotPose,
+            fixture_data._kinematics,
+            fixture_data.setModuleStates,
+            subsystem,
+            xController=fixture_data._xController,
+            yController=fixture_data._yController,
+            thetaController=fixture_data._rotationController,
+            desiredRotation=fixture_data.getRotationHeadingZero,
+        )
+
+        fixture_data._timer.restart()
+
+        command.initialize()
+
+        while not command.isFinished():
+            command.execute()
+            fixture_data._angle = new_trajectory.sample(
+                fixture_data._timer.get()
+            ).pose.rotation()
+
+            for i in range(0, len(fixture_data._modulePositions)):
+                fixture_data._modulePositions[i].distance += (
+                    fixture_data._moduleStates[i].speed * 0.005
+                )
+                fixture_data._modulePositions[i].angle = fixture_data._moduleStates[
+                    i
+                ].angle
+
+            sim.step(0.005)
+
+        fixture_data._timer.stop()
+        command.end(True)
+
+        assert end_state.pose.X() == pytest.approx(
+            fixture_data.getRobotPose().X(), fixture_data._kxTolerance
+        )
+        assert end_state.pose.Y() == pytest.approx(
+            fixture_data.getRobotPose().Y(), fixture_data._kyTolerance
+        )
+        assert end_state.pose.rotation().radians() == pytest.approx(
+            fixture_data.getRobotPose().rotation().radians(),
+            fixture_data._kAngularTolerance,
+        )
+
+
 def test_SwerveControllerCommand6Holonomic(
     scheduler: commands2.CommandScheduler, get_swerve_controller_data
 ):
@@ -667,6 +1103,69 @@ def test_SwerveControllerCommand6Holonomic(
             fixture_data.setModuleStates,
             subsystem,
             controller=fixture_data._holonomic,
+        )
+
+        fixture_data._timer.restart()
+
+        command.initialize()
+
+        while not command.isFinished():
+            command.execute()
+            fixture_data._angle = new_trajectory.sample(
+                fixture_data._timer.get()
+            ).pose.rotation()
+
+            for i in range(0, len(fixture_data._modulePositions)):
+                fixture_data._modulePositions[i].distance += (
+                    fixture_data._moduleStates[i].speed * 0.005
+                )
+                fixture_data._modulePositions[i].angle = fixture_data._moduleStates[
+                    i
+                ].angle
+
+            sim.step(0.005)
+
+        fixture_data._timer.stop()
+        command.end(True)
+
+        assert end_state.pose.X() == pytest.approx(
+            fixture_data.getRobotPose().X(), fixture_data._kxTolerance
+        )
+        assert end_state.pose.Y() == pytest.approx(
+            fixture_data.getRobotPose().Y(), fixture_data._kyTolerance
+        )
+        assert end_state.pose.rotation().radians() == pytest.approx(
+            fixture_data.getRobotPose().rotation().radians(),
+            fixture_data._kAngularTolerance,
+        )
+
+
+def test_SwerveControllerCommand6HolonomicWithRotation(
+    scheduler: commands2.CommandScheduler, get_swerve_controller_data
+):
+    with ManualSimTime() as sim:
+        subsystem = commands2.Subsystem()
+        waypoints: List[geometry.Pose2d] = []
+        waypoints.append(geometry.Pose2d(0, 0, geometry.Rotation2d(0)))
+        waypoints.append(geometry.Pose2d(1, 5, geometry.Rotation2d(3)))
+        traj_config: trajectory.TrajectoryConfig = trajectory.TrajectoryConfig(8.8, 0.1)
+        new_trajectory: trajectory.Trajectory = (
+            trajectory.TrajectoryGenerator.generateTrajectory(waypoints, traj_config)
+        )
+        end_state = new_trajectory.sample(new_trajectory.totalTime())
+
+        fixture_data: SwerveControllerCommandTestDataFixtures = (
+            get_swerve_controller_data(SIX)
+        )
+
+        command = commands2.SwerveControllerCommand(
+            new_trajectory,
+            fixture_data.getRobotPose,
+            fixture_data._kinematics,
+            fixture_data.setModuleStates,
+            subsystem,
+            controller=fixture_data._holonomic,
+            desiredRotation=fixture_data.getRotationHeadingZero,
         )
 
         fixture_data._timer.restart()
@@ -768,7 +1267,7 @@ def test_SwerveControllerCommand6PID(
         )
 
 
-def test_SwerveControllerDesiredRotationNonNull(
+def test_SwerveControllerCommand6PIDWithRotation(
     scheduler: commands2.CommandScheduler, get_swerve_controller_data
 ):
     with ManualSimTime() as sim:
@@ -831,55 +1330,3 @@ def test_SwerveControllerDesiredRotationNonNull(
             fixture_data.getRobotPose().rotation().radians(),
             fixture_data._kAngularTolerance,
         )
-
-
-def test_SwerveControllerMismatchedKinematicsAndOdometry(
-    scheduler: commands2.CommandScheduler, get_swerve_controller_data
-):
-    with ManualSimTime() as sim:
-        subsystem = commands2.Subsystem()
-        waypoints: List[geometry.Pose2d] = []
-        waypoints.append(geometry.Pose2d(0, 0, geometry.Rotation2d(0)))
-        waypoints.append(geometry.Pose2d(1, 5, geometry.Rotation2d(3)))
-        traj_config: trajectory.TrajectoryConfig = trajectory.TrajectoryConfig(8.8, 0.1)
-        new_trajectory: trajectory.Trajectory = (
-            trajectory.TrajectoryGenerator.generateTrajectory(waypoints, traj_config)
-        )
-        end_state = new_trajectory.sample(new_trajectory.totalTime())
-
-        with pytest.raises(TypeError):
-            fixture_data: SwerveControllerCommandTestDataFixtures = (
-                get_swerve_controller_data(MISMATCHED_KINEMATICS_AND_ODOMETRY)
-            )
-
-
-def test_SwerveControllerIncompletePID(
-    scheduler: commands2.CommandScheduler, get_swerve_controller_data
-):
-    with ManualSimTime() as sim:
-        subsystem = commands2.Subsystem()
-        waypoints: List[geometry.Pose2d] = []
-        waypoints.append(geometry.Pose2d(0, 0, geometry.Rotation2d(0)))
-        waypoints.append(geometry.Pose2d(1, 5, geometry.Rotation2d(3)))
-        traj_config: trajectory.TrajectoryConfig = trajectory.TrajectoryConfig(8.8, 0.1)
-        new_trajectory: trajectory.Trajectory = (
-            trajectory.TrajectoryGenerator.generateTrajectory(waypoints, traj_config)
-        )
-        end_state = new_trajectory.sample(new_trajectory.totalTime())
-
-        with pytest.raises(RuntimeError):
-            fixture_data: SwerveControllerCommandTestDataFixtures = (
-                get_swerve_controller_data(INCOMPLETE_PID_CLASSES)
-            )
-
-            command = commands2.SwerveControllerCommand(
-                new_trajectory,
-                fixture_data.getRobotPose,
-                fixture_data._kinematics,
-                fixture_data.setModuleStates,
-                subsystem,
-                xController=fixture_data._xController,
-                yController=fixture_data._yController,
-                thetaController=fixture_data._rotationController,
-                desiredRotation=fixture_data.getRotationHeadingZero,
-            )

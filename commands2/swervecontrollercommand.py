@@ -2,7 +2,7 @@
 # Open Source Software; you can modify and/or share it under the terms of
 # the WPILib BSD license file in the root directory of this project.
 from __future__ import annotations
-from typing import Callable, Optional, Union
+from typing import Callable, Optional, Union, overload, Tuple
 
 from wpimath.controller import (
     HolonomicDriveController,
@@ -39,6 +39,7 @@ class SwerveControllerCommand(Command):
     This class is provided by the NewCommands VendorDep
     """
 
+    @overload
     def __init__(
         self,
         trajectory: Trajectory,
@@ -50,32 +51,133 @@ class SwerveControllerCommand(Command):
             SwerveDrive6Kinematics,
         ],
         outputModuleStates: Callable[[SwerveModuleState], None],
-        *requirements: Subsystem,
-        controller: Optional[HolonomicDriveController] = None,
-        xController: Optional[PIDController] = None,
-        yController: Optional[PIDController] = None,
-        thetaController: Optional[ProfiledPIDControllerRadians] = None,
-        desiredRotation: Optional[Callable[[], Rotation2d]] = None,
-    ):
-        """Constructs a new SwerveControllerCommand that when executed will follow the provided
-        trajectory. This command will not return output voltages but rather raw module states from the
-        position controllers which need to be put into a velocity PID.
+        requirements: Tuple[Subsystem],
+        *,
+        xController: PIDController,
+        yController: PIDController,
+        thetaController: ProfiledPIDControllerRadians,
+        desiredRotation: Callable[[], Rotation2d],
+    ) -> None:
+        ...
 
-        Note: The controllers will *not* set the outputVolts to zero upon completion of the path.
-        This is left to the user since it is not appropriate for paths with nonstationary endstates.
+    @overload
+    def __init__(
+        self,
+        trajectory: Trajectory,
+        pose: Callable[[], Pose2d],
+        kinematics: Union[
+            SwerveDrive2Kinematics,
+            SwerveDrive3Kinematics,
+            SwerveDrive4Kinematics,
+            SwerveDrive6Kinematics,
+        ],
+        outputModuleStates: Callable[[SwerveModuleState], None],
+        requirements: Tuple[Subsystem],
+        *,
+        xController: PIDController,
+        yController: PIDController,
+        thetaController: ProfiledPIDControllerRadians,
+    ) -> None:
+        ...
 
-        Note 2: The final rotation of the robot will be set to the rotation of the final pose in the
-        trajectory. The robot will not follow the rotations from the poses at each timestep. If
-        alternate rotation behavior is desired, the other constructor with a supplier for rotation
-        should be used.
+    @overload
+    def __init__(
+        self,
+        trajectory: Trajectory,
+        pose: Callable[[], Pose2d],
+        kinematics: Union[
+            SwerveDrive2Kinematics,
+            SwerveDrive3Kinematics,
+            SwerveDrive4Kinematics,
+            SwerveDrive6Kinematics,
+        ],
+        outputModuleStates: Callable[[SwerveModuleState], None],
+        requirements: Tuple[Subsystem],
+        *,
+        controller: HolonomicDriveController,
+        desiredRotation: Callable[[], Rotation2d],
+    ) -> None:
+        ...
 
-        Note 3: The constructor requires 5 arguments: Trajectory, Pose, Kinematics, OutputConsumer, and
-        the Subsystem. For functionality, a sixth component is required: `HolonomicDriveController`. To satisfy
-        this sixth requirement, the caller can pass in a `HolonomicDriveController` object, or pass in the
-        combination of X, Y, Theta PID controllers with a Supplier of `Rotation2d` objects representing the
-        desired rotation at the end of the trajectory. If the caller doesn't supply a constructed controller
-        or PID controllers such that a `HolonomicDriveController` can be constructed a `RuntimeError` will
-        be raised.
+    @overload
+    def __init__(
+        self,
+        trajectory: Trajectory,
+        pose: Callable[[], Pose2d],
+        kinematics: Union[
+            SwerveDrive2Kinematics,
+            SwerveDrive3Kinematics,
+            SwerveDrive4Kinematics,
+            SwerveDrive6Kinematics,
+        ],
+        outputModuleStates: Callable[[SwerveModuleState], None],
+        requirements: Tuple[Subsystem],
+        *,
+        controller: HolonomicDriveController,
+    ) -> None:
+        ...
+        """
+        Constructs a new SwerveControllerCommand that when executed will follow the
+        provided trajectory. This command will not return output voltages but
+        rather raw module states from the position controllers which need to be put
+        into a velocity PID.
+
+        Note: The controllers will *not* set the outputVolts to zero upon
+        completion of the path- this is left to the user, since it is not
+        appropriate for paths with nonstationary endstates.
+        :param trajectory:         The trajectory to follow.
+        :param pose:               A function that supplies the robot pose - use one of the odometry classes to
+                                   provide this.
+        :param kinematics:         The kinematics for the robot drivetrain. Can be kinematics for 2/3/4/6
+                                   SwerveKinematics.
+        :param outputModuleStates: The raw output module states from the position controllers.
+        :param requirements:       The subsystems to require.      
+        :param xController:     The Trajectory Tracker PID controller
+                                for the robot's x position.
+        :param yController:     The Trajectory Tracker PID controller
+                                for the robot's y position.
+        :param thetaController: The Trajectory Tracker PID controller
+                                for angle for the robot.
+        :param desiredRotation: The angle that the drivetrain should be
+                                facing. This is sampled at each time step.
+
+
+        Constructs a new SwerveControllerCommand that when executed will follow the
+        provided trajectory. This command will not return output voltages but
+        rather raw module states from the position controllers which need to be put
+        into a velocity PID.
+
+        Note: The controllers will *not* set the outputVolts to zero upon
+        completion of the path- this is left to the user, since it is not
+        appropriate for paths with nonstationary endstates.
+
+        Note 2: The final rotation of the robot will be set to the rotation of
+        the final pose in the trajectory. The robot will not follow the rotations
+        from the poses at each timestep. If alternate rotation behavior is desired,
+        the other constructor with a supplier for rotation should be used.
+
+        :param trajectory:         The trajectory to follow.
+        :param pose:               A function that supplies the robot pose - use one of the odometry classes to
+                                   provide this.
+        :param kinematics:         The kinematics for the robot drivetrain. Can be kinematics for 2/3/4/6
+                                   SwerveKinematics.
+        :param outputModuleStates: The raw output module states from the position controllers.
+        :param requirements:       The subsystems to require.      
+        :param xController:     The Trajectory Tracker PID controller
+                                for the robot's x position.
+        :param yController:     The Trajectory Tracker PID controller
+                                for the robot's y position.
+        :param thetaController: The Trajectory Tracker PID controller
+                                for angle for the robot.
+
+        Constructs a new SwerveControllerCommand that when executed will follow the
+        provided trajectory. This command will not return output voltages but
+        rather raw module states from the position controllers which need to be put
+        into a velocity PID.
+
+        Note: The controllers will *not* set the outputVolts to zero upon
+        completion of the path- this is left to the user, since it is not
+        appropriate for paths with nonstationary endstates.
 
         :param trajectory:         The trajectory to follow.
         :param pose:               A function that supplies the robot pose - use one of the odometry classes to
@@ -84,15 +186,54 @@ class SwerveControllerCommand(Command):
                                    SwerveKinematics.
         :param outputModuleStates: The raw output module states from the position controllers.
         :param requirements:       The subsystems to require.
+        :param controller:         The HolonomicDriveController for the drivetrain.
+        :param desiredRotation:    The angle that the drivetrain should be
+                                   facing. This is sampled at each time step.
 
-        Optional Requirements
-        :param controller:          HolonomicDriveController for the drivetrain
-        :param xController:         Trajectory Tracker PID controller for the robot's x position
-        :param yController:         Trajectory Tracker PID controller for the robot's y position
-        :param thetaController:     Trajectory Tracker PID controller for the angle for the robot
-        :param desiredRotation:     The angle that the drivetrain should be facing. This is sampled at
-                                    each time step
+
+        Constructs a new SwerveControllerCommand that when executed will follow the
+        provided trajectory. This command will not return output voltages but
+        rather raw module states from the position controllers which need to be put
+        into a velocity PID.
+
+        Note: The controllers will *not* set the outputVolts to zero upon
+        completion of the path- this is left to the user, since it is not
+        appropriate for paths with nonstationary endstates.
+
+        Note 2: The final rotation of the robot will be set to the rotation of
+        the final pose in the trajectory. The robot will not follow the rotations
+        from the poses at each timestep. If alternate rotation behavior is desired,
+        the other constructor with a supplier for rotation should be used.
+
+        :param trajectory:         The trajectory to follow.
+        :param pose:               A function that supplies the robot pose - use one of the odometry classes to
+                                   provide this.
+        :param kinematics:         The kinematics for the robot drivetrain. Can be kinematics for 2/3/4/6
+                                   SwerveKinematics.
+        :param outputModuleStates: The raw output module states from the position controllers.
+        :param requirements:       The subsystems to require.
+        :param controller:         The HolonomicDriveController for the drivetrain.
         """
+
+    def __init__(
+        self,
+        trajectory: Trajectory,
+        pose: Callable[[], Pose2d],
+        kinematics: Union[
+            SwerveDrive2Kinematics,
+            SwerveDrive3Kinematics,
+            SwerveDrive4Kinematics,
+            SwerveDrive6Kinematics,
+        ],
+        outputModuleStates: Callable[[SwerveModuleState], None],
+        requirements: Tuple[Subsystem],
+        *,
+        controller: Optional[HolonomicDriveController] = None,
+        xController: Optional[PIDController] = None,
+        yController: Optional[PIDController] = None,
+        thetaController: Optional[ProfiledPIDControllerRadians] = None,
+        desiredRotation: Optional[Callable[[], Rotation2d]] = None,
+    ):
         super().__init__()
         self._trajectory = trajectory
         self._pose = pose
@@ -121,7 +262,11 @@ class SwerveControllerCommand(Command):
             self._desiredRotation = desiredRotation
         else:
             self._desiredRotation = self._trajectory.states()[-1].pose.rotation
-        self.addRequirements(*requirements)
+        self.addRequirements(
+            # Ignoring type due to mypy stating the addRequirements was expecting a Subsystem but got an iterable of a subsystem.
+            # The iterable of the subsystem was to be able to force optional kwargs for the users when overloading the constructor.
+            requirements,  # type: ignore
+        )
         self._timer = Timer()
 
     def initialize(self):
