@@ -35,8 +35,6 @@ class SwerveControllerCommand(Command):
 
     The robot angle controller does not follow the angle given by the trajectory but rather goes
     to the angle given in the final state of the trajectory.
-
-    This class is provided by the NewCommands VendorDep
     """
 
     @overload
