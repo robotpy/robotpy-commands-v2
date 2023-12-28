@@ -83,7 +83,7 @@ class RamseteCommandTestDataFixtures:
         self.rightSpeed = rightspeed
 
     def setWheelSpeedsVolts(
-        self, leftVolts: units.volt_seconds, rightVolts: units.volt_seconds
+        self, leftVolts: units.volts, rightVolts: units.volts
     ) -> None:
         self.leftSpeed = leftVolts
         self.rightSpeed = rightVolts
@@ -126,7 +126,7 @@ def test_rameseteRaisesNoOutputRaises(
         )
         end_state = new_trajectory.sample(new_trajectory.totalTime())
 
-        with pytest.raises(RuntimeError):
+        with pytest.raises(Exception):
             command = commands2.RamseteCommand(
                 new_trajectory,
                 fixture_data.getRobotPose,
@@ -135,37 +135,6 @@ def test_rameseteRaisesNoOutputRaises(
                 ),
                 fixture_data.command_kinematics,
                 subsystem,
-            )
-
-
-def test_rameseteRaisesBothOutputRaises(
-    scheduler: commands2.CommandScheduler, get_ramsete_command_data
-):
-    with ManualSimTime() as sim:
-        fixture_data = get_ramsete_command_data
-        subsystem = commands2.Subsystem()
-        waypoints: List[geometry.Pose2d] = []
-        waypoints.append(geometry.Pose2d(0, 0, geometry.Rotation2d(0)))
-        waypoints.append(geometry.Pose2d(3, 0, geometry.Rotation2d(0)))
-        traj_config: trajectory.TrajectoryConfig = trajectory.TrajectoryConfig(8.8, 0.1)
-        traj_config.setKinematics(fixture_data.command_kinematics)
-        traj_config.addConstraint(fixture_data.command_voltage_constraint)
-        new_trajectory: trajectory.Trajectory = (
-            trajectory.TrajectoryGenerator.generateTrajectory(waypoints, traj_config)
-        )
-        end_state = new_trajectory.sample(new_trajectory.totalTime())
-
-        with pytest.raises(RuntimeError):
-            command = commands2.RamseteCommand(
-                new_trajectory,
-                fixture_data.getRobotPose,
-                controller.RamseteController(
-                    fixture_data.kRamseteB, fixture_data.kRamseteZeta
-                ),
-                fixture_data.command_kinematics,
-                subsystem,
-                outputMPS=fixture_data.setWheelSpeedsMPS,
-                outputVolts=fixture_data.setWheelSpeedsVolts,
             )
 
 
@@ -193,7 +162,7 @@ def test_rameseteRaisesOnlyFeedForward(
             )
         )
 
-        with pytest.raises(RuntimeError):
+        with pytest.raises(Exception):
             command = commands2.RamseteCommand(
                 new_trajectory,
                 fixture_data.getRobotPose,
@@ -202,8 +171,8 @@ def test_rameseteRaisesOnlyFeedForward(
                 ),
                 fixture_data.command_kinematics,
                 subsystem,
-                outputMPS=fixture_data.setWheelSpeedsMPS,
-                feedforward=feedforward_var,
+                fixture_data.setWheelSpeedsMPS,
+                feedforward_var,
             )
 
 
@@ -232,7 +201,7 @@ def test_rameseteRaisesFeedForwardAndLeft(
         )
         left_pid: controller.PIDController = controller.PIDController(0.1, 0, 0)
 
-        with pytest.raises(RuntimeError):
+        with pytest.raises(Exception):
             command = commands2.RamseteCommand(
                 new_trajectory,
                 fixture_data.getRobotPose,
@@ -241,9 +210,9 @@ def test_rameseteRaisesFeedForwardAndLeft(
                 ),
                 fixture_data.command_kinematics,
                 subsystem,
-                outputMPS=fixture_data.setWheelSpeedsMPS,
-                feedforward=feedforward_var,
-                leftController=left_pid,
+                fixture_data.setWheelSpeedsMPS,
+                feedforward_var,
+                left_pid,
             )
 
 
@@ -271,9 +240,9 @@ def test_rameseteRaisesFeedForwardRightAndLeft(
             )
         )
         left_pid: controller.PIDController = controller.PIDController(0.1, 0, 0)
-        rightt_pid: controller.PIDController = controller.PIDController(0.1, 0, 0)
+        right_pid: controller.PIDController = controller.PIDController(0.1, 0, 0)
 
-        with pytest.raises(RuntimeError):
+        with pytest.raises(Exception):
             command = commands2.RamseteCommand(
                 new_trajectory,
                 fixture_data.getRobotPose,
@@ -282,10 +251,10 @@ def test_rameseteRaisesFeedForwardRightAndLeft(
                 ),
                 fixture_data.command_kinematics,
                 subsystem,
-                outputMPS=fixture_data.setWheelSpeedsMPS,
-                feedforward=feedforward_var,
-                leftController=left_pid,
-                rightController=rightt_pid,
+                fixture_data.setWheelSpeedsMPS,
+                feedforward_var,
+                left_pid,
+                right_pid,
             )
 
 
@@ -314,7 +283,7 @@ def test_ramseteCommandMPSReachesDestination(
             ),
             fixture_data.command_kinematics,
             subsystem,
-            outputMPS=fixture_data.setWheelSpeedsMPS,
+            fixture_data.setWheelSpeedsMPS,
         )
 
         fixture_data.timer.restart()
@@ -365,7 +334,7 @@ def test_ramseteCommandVoltsReachesDestination(
             ),
             fixture_data.command_kinematics,
             subsystem,
-            outputMPS=fixture_data.setWheelSpeedsVolts,
+            fixture_data.setWheelSpeedsVolts,
         )
 
         fixture_data.timer.restart()
@@ -416,6 +385,7 @@ def test_ramseteCommandPIDReachesDestination(
         )
         left_pid: controller.PIDController = controller.PIDController(0.001, 0, 0)
         rightt_pid: controller.PIDController = controller.PIDController(0.001, 0, 0)
+
         command = commands2.RamseteCommand(
             new_trajectory,
             fixture_data.getRobotPose,
@@ -424,11 +394,11 @@ def test_ramseteCommandPIDReachesDestination(
             ),
             fixture_data.command_kinematics,
             subsystem,
-            outputVolts=fixture_data.setWheelSpeedsVolts,
-            feedforward=feedforward_var,
-            leftController=left_pid,
-            rightController=rightt_pid,
-            wheelSpeeds=fixture_data.getWheelSpeeds,
+            fixture_data.setWheelSpeedsVolts,
+            feedforward_var,
+            left_pid,
+            rightt_pid,
+            fixture_data.getWheelSpeeds,
         )
 
         fixture_data.timer.restart()

@@ -4,6 +4,7 @@
 from __future__ import annotations
 
 from typing import Callable, Union, Optional, Tuple, overload
+from overtake import overtake
 from wpimath.controller import (
     PIDController,
     RamseteController,
@@ -47,44 +48,7 @@ class RamseteCommand(Command):
         controller: RamseteController,
         kinematics: DifferentialDriveKinematics,
         requirements: Tuple[Subsystem],
-        *,
-        outputMPS: Callable[[units.meters_per_second, units.meters_per_second], None],
-    ):
-        ...
-
-    @overload
-    def __init__(
-        self,
-        trajectory: Trajectory,
-        pose: Callable[[], Pose2d],
-        controller: RamseteController,
-        kinematics: DifferentialDriveKinematics,
-        requirements: Tuple[Subsystem],
-        *,
-        outputVolts: Callable[[units.volts, units.volts], None],
-        feedforward: SimpleMotorFeedforwardMeters,
-        leftController: PIDController,
-        rightController: PIDController,
-        wheelSpeeds: Callable[[], DifferentialDriveWheelSpeeds],
-    ):
-        ...
-
-    def __init__(
-        self,
-        trajectory: Trajectory,
-        pose: Callable[[], Pose2d],
-        controller: RamseteController,
-        kinematics: DifferentialDriveKinematics,
-        requirements: Tuple[Subsystem],
-        *,
-        outputMPS: Optional[
-            Callable[[units.meters_per_second, units.meters_per_second], None]
-        ] = None,
-        outputVolts: Optional[Callable[[units.volts, units.volts], None]] = None,
-        feedforward: Optional[SimpleMotorFeedforwardMeters] = None,
-        leftController: Optional[PIDController] = None,
-        rightController: Optional[PIDController] = None,
-        wheelSpeeds: Optional[Callable[[], DifferentialDriveWheelSpeeds]] = None,
+        output: Callable[[float, float], None],
     ):
         """Constructs a new RamseteCommand that, when executed, will follow the provided trajectory. PID
         control and feedforward are handled internally, and outputs are scaled -12 to 12 representing
@@ -99,17 +63,37 @@ class RamseteCommand(Command):
         :param controller:      The RAMSETE controller used to follow the trajectory.
         :param kinematics:      The kinematics for the robot drivetrain.
         :param requirements:    The subsystems to require.
+        :param output        A function that consumes the computed left and right outputs in `units.meters_per_second`
+        """
+        super().__init__()
 
-        REQUIRED KEYWORD PARAMETERS
-        Note: The output mode must be specified by the users of RamseteCommands. Users can specify ONE of
-        an output function that will supply the consumer with left and right speeds in `units.meters_per_second`
-        or in `units.volts`. If neither, or both, are supplied to the constructor a `RuntimeError` will be
-        raised.
-        :param outputVolts      A function that consumes the computed left and right outputs in `units.volts`
-        :param outputMPS        A function that consumes the computed left and right outputs in `units.meters_per_second`
+        self._timer = Timer()
+        self.trajectory = trajectory
+        self.pose = pose
+        self.follower = controller
+        self.kinematics = kinematics
+        self.output = output
+        self.usePID = False
+        # All the parameter checks pass, inform scheduler.  Type ignoring is set explictitly for the linter because this
+        # implementation declares the tuple explicitly, whereas the general implementations use the unpack operator (*)
+        # to pass the requirements to the scheduler.
+        self.addRequirements(requirements)  # type: ignore
 
-
-        Constructs a new RamseteCommand that, when executed, will follow the provided trajectory. PID
+    @overload
+    def __init__(
+        self,
+        trajectory: Trajectory,
+        pose: Callable[[], Pose2d],
+        controller: RamseteController,
+        kinematics: DifferentialDriveKinematics,
+        requirements: Tuple[Subsystem],
+        output: Callable[[float, float], None],
+        feedforward: SimpleMotorFeedforwardMeters,
+        leftController: PIDController,
+        rightController: PIDController,
+        wheelSpeeds: Callable[[], DifferentialDriveWheelSpeeds],
+    ):
+        """Constructs a new RamseteCommand that, when executed, will follow the provided trajectory. PID
         control and feedforward are handled internally, and outputs are scaled -12 to 12 representing
         units of volts.
 
@@ -122,20 +106,7 @@ class RamseteCommand(Command):
         :param controller:      The RAMSETE controller used to follow the trajectory.
         :param kinematics:      The kinematics for the robot drivetrain.
         :param requirements:    The subsystems to require.
-
-        REQUIRED KEYWORD PARAMETERS
-        Note: The output mode must be specified by the users of RamseteCommands. Users can specify ONE of
-        an output function that will supply the consumer with left and right speeds in `units.meters_per_second`
-        or in `units.volts`. If neither, or both, are supplied to the constructor a `RuntimeError` will be
-        raised.
-        :param outputVolts      A function that consumes the computed left and right outputs in `units.volts`
-        :param outputMPS        A function that consumes the computed left and right outputs in `units.meters_per_second`
-
-        OPTIONAL PARAMETERS
-        When the following optional parameters are provided, when executed, the RamseteCommand will follow
-        provided trajectory. PID control and feedforward are handled internally, and the outputs are scaled
-        from -12 to 12 representing units of volts. If any one of the optional parameters are provided, each
-        other optional parameter becomes required.
+        :param output      A function that consumes the computed left and right outputs in `units.volts`
         :param feedforward      The feedforward to use for the drive
         :param leftController:  The PIDController for the left side of the robot drive.
         :param rightController: The PIDController for the right side of the robot drive.
@@ -151,52 +122,35 @@ class RamseteCommand(Command):
         self.pose = pose
         self.follower = controller
         self.kinematics = kinematics
-        self.outputMPS = outputMPS
-        self.outputVolts = outputVolts
+        self.output = output
         self.leftController = leftController
         self.rightController = rightController
         self.wheelspeeds = wheelSpeeds
         self.feedforward = feedforward
         self._prevSpeeds = DifferentialDriveWheelSpeeds()
         self._prevTime = -1.0
-
-        # Required requirements check for output
-        if outputMPS is None and outputVolts is None:
-            raise RuntimeError(
-                f"Failed to instantiate RamseteCommand, no output consumer provided. Must provide either output in meters per second or volts."
-            )
-
-        if outputMPS is not None and outputVolts is not None:
-            raise RuntimeError(
-                f"Failed to instantiate RamseteCommand, too many consumers provided. Must provide either output in meters per second or volts but not both."
-            )
-
-        # Optional requirements checks. If any one of the optional parameters are not None, then all the optional
-        # requirements become required.
-        if (
-            feedforward is not None
-            or leftController is not None
-            or rightController is not None
-            or wheelSpeeds is not None
-        ):
-            if (
-                feedforward is None
-                or leftController is None
-                or rightController is None
-                or wheelSpeeds is None
-            ):
-                raise RuntimeError(
-                    f"Failed to instantiate RamseteCommand, not all optional arguments were provided.\n \
-                                    Feedforward - {feedforward}, LeftController - {leftController}, RightController - {rightController}, WheelSpeeds - {wheelSpeeds} "
-                )
-            self.usePID = True
-        else:
-            self.usePID = False
-
+        self.usePID = True
         # All the parameter checks pass, inform scheduler.  Type ignoring is set explictitly for the linter because this
         # implementation declares the tuple explicitly, whereas the general implementations use the unpack operator (*)
         # to pass the requirements to the scheduler.
         self.addRequirements(requirements)  # type: ignore
+
+    @overtake(runtime_type_checker="beartype")
+    def __init__(
+        self,
+        *,
+        trajectory: Trajectory,
+        pose: Callable[[], Pose2d],
+        controller: RamseteController,
+        kinematics: DifferentialDriveKinematics,
+        requirements: Tuple[Subsystem],
+        output: Callable[[float, float], None],
+        feedforward: Optional[SimpleMotorFeedforwardMeters] = None,
+        leftController: Optional[PIDController] = None,
+        rightController: Optional[PIDController] = None,
+        wheelSpeeds: Optional[Callable[[], DifferentialDriveWheelSpeeds]] = None,
+    ):
+        ...
 
     def initialize(self):
         self._prevTime = -1
@@ -218,10 +172,7 @@ class RamseteCommand(Command):
         dt = curTime - self._prevTime
 
         if self._prevTime < 0:
-            if self.outputVolts is not None:
-                self.outputVolts(0.0, 0.0)
-            if self.outputMPS is not None:
-                self.outputMPS(0.0, 0.0)
+            self.output(0.0, 0.0)
             self._prevTime = curTime
             return
 
@@ -249,11 +200,11 @@ class RamseteCommand(Command):
             rightOutput = rightFeedforward + self.rightController.calculate(
                 self.wheelspeeds().right, rightSpeedSetpoint
             )
-            self.outputVolts(leftOutput, rightOutput)
+            self.output(leftOutput, rightOutput)
         else:
             leftOutput = leftSpeedSetpoint
             rightOutput = rightSpeedSetpoint
-            self.outputMPS(leftOutput, rightOutput)
+            self.output(leftOutput, rightOutput)
 
         self._prevSpeeds = targetWheelSpeeds
         self._prevTime = curTime
@@ -262,10 +213,7 @@ class RamseteCommand(Command):
         self._timer.stop()
 
         if interrupted:
-            if self.outputVolts is not None:
-                self.outputVolts(0.0, 0.0)
-            if self.outputMPS is not None:
-                self.outputMPS(0.0, 0.0)
+            self.output(0.0, 0.0)
 
     def isFinished(self):
         return self._timer.hasElapsed(self.trajectory.totalTime())
