@@ -3,7 +3,8 @@
 # the WPILib BSD license file in the root directory of this project.
 from __future__ import annotations
 
-from typing import Callable, Union, Optional, Tuple, overload
+from typing import Callable, Union, Optional, Tuple
+from typing_extensions import overload
 from overtake import overtake
 from wpimath.controller import (
     PIDController,
