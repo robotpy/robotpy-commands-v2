@@ -220,7 +220,7 @@ class SwerveControllerCommandTestDataFixtures:
         self._moduleStates = states
 
     def getRobotPose(self) -> geometry.Pose2d:
-        self._odometry.update(self._angle, *self._modulePositions)
+        self._odometry.update(self._angle, self._modulePositions)
 
         return self._odometry.getPose()
 
