@@ -298,7 +298,7 @@ def test_SwerveControllerIncompletePID(
         )
         end_state = new_trajectory.sample(new_trajectory.totalTime())
 
-        with pytest.raises(RuntimeError):
+        with pytest.raises(Exception):
             fixture_data: SwerveControllerCommandTestDataFixtures = (
                 get_swerve_controller_data(INCOMPLETE_PID_CLASSES)
             )
@@ -308,11 +308,11 @@ def test_SwerveControllerIncompletePID(
                 fixture_data.getRobotPose,
                 fixture_data._kinematics,
                 fixture_data.setModuleStates,
+                fixture_data._xController,
+                fixture_data._yController,
+                fixture_data._rotationController,
+                fixture_data.getRotationHeadingZero,
                 subsystem,
-                xController=fixture_data._xController,
-                yController=fixture_data._yController,
-                thetaController=fixture_data._rotationController,
-                desiredRotation=fixture_data.getRotationHeadingZero,
             )
 
 
@@ -338,9 +338,9 @@ def test_SwerveControllerCommand2Holonomic(
             new_trajectory,
             fixture_data.getRobotPose,
             fixture_data._kinematics,
+            fixture_data._holonomic,
             fixture_data.setModuleStates,
             subsystem,
-            controller=fixture_data._holonomic,
         )
 
         fixture_data._timer.restart()
@@ -400,10 +400,10 @@ def test_SwerveControllerCommand2HolonomicWithRotation(
             new_trajectory,
             fixture_data.getRobotPose,
             fixture_data._kinematics,
+            fixture_data._holonomic,
+            fixture_data.getRotationHeadingZero,
             fixture_data.setModuleStates,
             subsystem,
-            controller=fixture_data._holonomic,
-            desiredRotation=fixture_data.getRotationHeadingZero,
         )
 
         fixture_data._timer.restart()
@@ -463,11 +463,11 @@ def test_SwerveControllerCommand2PID(
             new_trajectory,
             fixture_data.getRobotPose,
             fixture_data._kinematics,
+            fixture_data._xController,
+            fixture_data._yController,
+            fixture_data._rotationController,
             fixture_data.setModuleStates,
             subsystem,
-            xController=fixture_data._xController,
-            yController=fixture_data._yController,
-            thetaController=fixture_data._rotationController,
         )
 
         fixture_data._timer.restart()
@@ -527,12 +527,12 @@ def test_SwerveControllerCommand2PIDWithRotation(
             new_trajectory,
             fixture_data.getRobotPose,
             fixture_data._kinematics,
+            fixture_data._xController,
+            fixture_data._yController,
+            fixture_data._rotationController,
+            fixture_data.getRotationHeadingZero,
             fixture_data.setModuleStates,
             subsystem,
-            xController=fixture_data._xController,
-            yController=fixture_data._yController,
-            thetaController=fixture_data._rotationController,
-            desiredRotation=fixture_data.getRotationHeadingZero,
         )
 
         fixture_data._timer.restart()
@@ -592,9 +592,9 @@ def test_SwerveControllerCommand3Holonomic(
             new_trajectory,
             fixture_data.getRobotPose,
             fixture_data._kinematics,
+            fixture_data._holonomic,
             fixture_data.setModuleStates,
             subsystem,
-            controller=fixture_data._holonomic,
         )
 
         fixture_data._timer.restart()
@@ -654,10 +654,10 @@ def test_SwerveControllerCommand3HolonomicWithRotation(
             new_trajectory,
             fixture_data.getRobotPose,
             fixture_data._kinematics,
+            fixture_data._holonomic,
+            fixture_data.getRotationHeadingZero,
             fixture_data.setModuleStates,
             subsystem,
-            controller=fixture_data._holonomic,
-            desiredRotation=fixture_data.getRotationHeadingZero,
         )
 
         fixture_data._timer.restart()
@@ -717,11 +717,11 @@ def test_SwerveControllerCommand3PID(
             new_trajectory,
             fixture_data.getRobotPose,
             fixture_data._kinematics,
+            fixture_data._xController,
+            fixture_data._yController,
+            fixture_data._rotationController,
             fixture_data.setModuleStates,
             subsystem,
-            xController=fixture_data._xController,
-            yController=fixture_data._yController,
-            thetaController=fixture_data._rotationController,
         )
 
         fixture_data._timer.restart()
@@ -781,12 +781,12 @@ def test_SwerveControllerCommand3PIDWithRotation(
             new_trajectory,
             fixture_data.getRobotPose,
             fixture_data._kinematics,
+            fixture_data._xController,
+            fixture_data._yController,
+            fixture_data._rotationController,
+            fixture_data.getRotationHeadingZero,
             fixture_data.setModuleStates,
             subsystem,
-            xController=fixture_data._xController,
-            yController=fixture_data._yController,
-            thetaController=fixture_data._rotationController,
-            desiredRotation=fixture_data.getRotationHeadingZero,
         )
 
         fixture_data._timer.restart()
@@ -846,9 +846,9 @@ def test_SwerveControllerCommand4Holonomic(
             new_trajectory,
             fixture_data.getRobotPose,
             fixture_data._kinematics,
+            fixture_data._holonomic,
             fixture_data.setModuleStates,
             subsystem,
-            controller=fixture_data._holonomic,
         )
 
         fixture_data._timer.restart()
@@ -908,10 +908,10 @@ def test_SwerveControllerCommand4HolonomicWithRotation(
             new_trajectory,
             fixture_data.getRobotPose,
             fixture_data._kinematics,
+            fixture_data._holonomic,
+            fixture_data.getRotationHeadingZero,
             fixture_data.setModuleStates,
             subsystem,
-            controller=fixture_data._holonomic,
-            desiredRotation=fixture_data.getRotationHeadingZero,
         )
 
         fixture_data._timer.restart()
@@ -971,11 +971,11 @@ def test_SwerveControllerCommand4PID(
             new_trajectory,
             fixture_data.getRobotPose,
             fixture_data._kinematics,
+            fixture_data._xController,
+            fixture_data._yController,
+            fixture_data._rotationController,
             fixture_data.setModuleStates,
             subsystem,
-            xController=fixture_data._xController,
-            yController=fixture_data._yController,
-            thetaController=fixture_data._rotationController,
         )
 
         fixture_data._timer.restart()
@@ -1035,12 +1035,12 @@ def test_SwerveControllerCommand4PIDWithRotation(
             new_trajectory,
             fixture_data.getRobotPose,
             fixture_data._kinematics,
+            fixture_data._xController,
+            fixture_data._yController,
+            fixture_data._rotationController,
+            fixture_data.getRotationHeadingZero,
             fixture_data.setModuleStates,
             subsystem,
-            xController=fixture_data._xController,
-            yController=fixture_data._yController,
-            thetaController=fixture_data._rotationController,
-            desiredRotation=fixture_data.getRotationHeadingZero,
         )
 
         fixture_data._timer.restart()
@@ -1100,9 +1100,9 @@ def test_SwerveControllerCommand6Holonomic(
             new_trajectory,
             fixture_data.getRobotPose,
             fixture_data._kinematics,
+            fixture_data._holonomic,
             fixture_data.setModuleStates,
             subsystem,
-            controller=fixture_data._holonomic,
         )
 
         fixture_data._timer.restart()
@@ -1162,10 +1162,10 @@ def test_SwerveControllerCommand6HolonomicWithRotation(
             new_trajectory,
             fixture_data.getRobotPose,
             fixture_data._kinematics,
+            fixture_data._holonomic,
+            fixture_data.getRotationHeadingZero,
             fixture_data.setModuleStates,
             subsystem,
-            controller=fixture_data._holonomic,
-            desiredRotation=fixture_data.getRotationHeadingZero,
         )
 
         fixture_data._timer.restart()
@@ -1225,11 +1225,11 @@ def test_SwerveControllerCommand6PID(
             new_trajectory,
             fixture_data.getRobotPose,
             fixture_data._kinematics,
+            fixture_data._xController,
+            fixture_data._yController,
+            fixture_data._rotationController,
             fixture_data.setModuleStates,
             subsystem,
-            xController=fixture_data._xController,
-            yController=fixture_data._yController,
-            thetaController=fixture_data._rotationController,
         )
 
         fixture_data._timer.restart()
@@ -1289,12 +1289,12 @@ def test_SwerveControllerCommand6PIDWithRotation(
             new_trajectory,
             fixture_data.getRobotPose,
             fixture_data._kinematics,
+            fixture_data._xController,
+            fixture_data._yController,
+            fixture_data._rotationController,
+            fixture_data.getRotationHeadingZero,
             fixture_data.setModuleStates,
             subsystem,
-            xController=fixture_data._xController,
-            yController=fixture_data._yController,
-            thetaController=fixture_data._rotationController,
-            desiredRotation=fixture_data.getRotationHeadingZero,
         )
 
         fixture_data._timer.restart()

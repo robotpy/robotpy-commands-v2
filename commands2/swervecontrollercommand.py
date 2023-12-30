@@ -2,8 +2,9 @@
 # Open Source Software; you can modify and/or share it under the terms of
 # the WPILib BSD license file in the root directory of this project.
 from __future__ import annotations
-from typing import Callable, Optional, Union, overload, Tuple
-
+from typing import Callable, Optional, Union, Tuple
+from typing_extensions import overload
+from overtake import overtake
 from wpimath.controller import (
     HolonomicDriveController,
     PIDController,
@@ -48,72 +49,13 @@ class SwerveControllerCommand(Command):
             SwerveDrive4Kinematics,
             SwerveDrive6Kinematics,
         ],
-        outputModuleStates: Callable[[SwerveModuleState], None],
-        requirements: Tuple[Subsystem],
-        *,
         xController: PIDController,
         yController: PIDController,
         thetaController: ProfiledPIDControllerRadians,
         desiredRotation: Callable[[], Rotation2d],
-    ) -> None:
-        ...
-
-    @overload
-    def __init__(
-        self,
-        trajectory: Trajectory,
-        pose: Callable[[], Pose2d],
-        kinematics: Union[
-            SwerveDrive2Kinematics,
-            SwerveDrive3Kinematics,
-            SwerveDrive4Kinematics,
-            SwerveDrive6Kinematics,
-        ],
         outputModuleStates: Callable[[SwerveModuleState], None],
         requirements: Tuple[Subsystem],
-        *,
-        xController: PIDController,
-        yController: PIDController,
-        thetaController: ProfiledPIDControllerRadians,
     ) -> None:
-        ...
-
-    @overload
-    def __init__(
-        self,
-        trajectory: Trajectory,
-        pose: Callable[[], Pose2d],
-        kinematics: Union[
-            SwerveDrive2Kinematics,
-            SwerveDrive3Kinematics,
-            SwerveDrive4Kinematics,
-            SwerveDrive6Kinematics,
-        ],
-        outputModuleStates: Callable[[SwerveModuleState], None],
-        requirements: Tuple[Subsystem],
-        *,
-        controller: HolonomicDriveController,
-        desiredRotation: Callable[[], Rotation2d],
-    ) -> None:
-        ...
-
-    @overload
-    def __init__(
-        self,
-        trajectory: Trajectory,
-        pose: Callable[[], Pose2d],
-        kinematics: Union[
-            SwerveDrive2Kinematics,
-            SwerveDrive3Kinematics,
-            SwerveDrive4Kinematics,
-            SwerveDrive6Kinematics,
-        ],
-        outputModuleStates: Callable[[SwerveModuleState], None],
-        requirements: Tuple[Subsystem],
-        *,
-        controller: HolonomicDriveController,
-    ) -> None:
-        ...
         """
         Constructs a new SwerveControllerCommand that when executed will follow the
         provided trajectory. This command will not return output voltages but
@@ -129,7 +71,7 @@ class SwerveControllerCommand(Command):
         :param kinematics:         The kinematics for the robot drivetrain. Can be kinematics for 2/3/4/6
                                    SwerveKinematics.
         :param outputModuleStates: The raw output module states from the position controllers.
-        :param requirements:       The subsystems to require.      
+        :param requirements:       The subsystems to require.
         :param xController:     The Trajectory Tracker PID controller
                                 for the robot's x position.
         :param yController:     The Trajectory Tracker PID controller
@@ -138,8 +80,36 @@ class SwerveControllerCommand(Command):
                                 for angle for the robot.
         :param desiredRotation: The angle that the drivetrain should be
                                 facing. This is sampled at each time step.
+        """
+        super().__init__()
+        self._trajectory = trajectory
+        self._pose = pose
+        self._kinematics = kinematics
+        self._outputModuleStates = outputModuleStates
+        self._controller = HolonomicDriveController(
+            xController, yController, thetaController
+        )
+        self._desiredRotation = desiredRotation
+        self._timer = Timer()
 
-
+    @overload
+    def __init__(
+        self,
+        trajectory: Trajectory,
+        pose: Callable[[], Pose2d],
+        kinematics: Union[
+            SwerveDrive2Kinematics,
+            SwerveDrive3Kinematics,
+            SwerveDrive4Kinematics,
+            SwerveDrive6Kinematics,
+        ],
+        xController: PIDController,
+        yController: PIDController,
+        thetaController: ProfiledPIDControllerRadians,
+        outputModuleStates: Callable[[SwerveModuleState], None],
+        requirements: Tuple[Subsystem],
+    ) -> None:
+        """
         Constructs a new SwerveControllerCommand that when executed will follow the
         provided trajectory. This command will not return output voltages but
         rather raw module states from the position controllers which need to be put
@@ -159,15 +129,43 @@ class SwerveControllerCommand(Command):
                                    provide this.
         :param kinematics:         The kinematics for the robot drivetrain. Can be kinematics for 2/3/4/6
                                    SwerveKinematics.
-        :param outputModuleStates: The raw output module states from the position controllers.
-        :param requirements:       The subsystems to require.      
         :param xController:     The Trajectory Tracker PID controller
                                 for the robot's x position.
         :param yController:     The Trajectory Tracker PID controller
                                 for the robot's y position.
         :param thetaController: The Trajectory Tracker PID controller
                                 for angle for the robot.
+        :param outputModuleStates: The raw output module states from the position controllers.
+        :param requirements:       The subsystems to require.
+        """
+        super().__init__()
+        self._trajectory = trajectory
+        self._pose = pose
+        self._kinematics = kinematics
+        self._outputModuleStates = outputModuleStates
+        self._controller = HolonomicDriveController(
+            xController, yController, thetaController
+        )
+        self._desiredRotation = self._trajectory.states()[-1].pose.rotation
+        self._timer = Timer()
 
+    @overload
+    def __init__(
+        self,
+        trajectory: Trajectory,
+        pose: Callable[[], Pose2d],
+        kinematics: Union[
+            SwerveDrive2Kinematics,
+            SwerveDrive3Kinematics,
+            SwerveDrive4Kinematics,
+            SwerveDrive6Kinematics,
+        ],
+        controller: HolonomicDriveController,
+        desiredRotation: Callable[[], Rotation2d],
+        outputModuleStates: Callable[[SwerveModuleState], None],
+        requirements: Tuple[Subsystem],
+    ) -> None:
+        """
         Constructs a new SwerveControllerCommand that when executed will follow the
         provided trajectory. This command will not return output voltages but
         rather raw module states from the position controllers which need to be put
@@ -182,13 +180,38 @@ class SwerveControllerCommand(Command):
                                    provide this.
         :param kinematics:         The kinematics for the robot drivetrain. Can be kinematics for 2/3/4/6
                                    SwerveKinematics.
-        :param outputModuleStates: The raw output module states from the position controllers.
-        :param requirements:       The subsystems to require.
         :param controller:         The HolonomicDriveController for the drivetrain.
         :param desiredRotation:    The angle that the drivetrain should be
                                    facing. This is sampled at each time step.
+        :param outputModuleStates: The raw output module states from the position controllers.
+        :param requirements:       The subsystems to require.
 
+        """
+        super().__init__()
+        self._trajectory = trajectory
+        self._pose = pose
+        self._kinematics = kinematics
+        self._outputModuleStates = outputModuleStates
+        self._controller = controller
+        self._desiredRotation = desiredRotation
+        self._timer = Timer()
 
+    @overload
+    def __init__(
+        self,
+        trajectory: Trajectory,
+        pose: Callable[[], Pose2d],
+        kinematics: Union[
+            SwerveDrive2Kinematics,
+            SwerveDrive3Kinematics,
+            SwerveDrive4Kinematics,
+            SwerveDrive6Kinematics,
+        ],
+        controller: HolonomicDriveController,
+        outputModuleStates: Callable[[SwerveModuleState], None],
+        requirements: Tuple[Subsystem],
+    ) -> None:
+        """
         Constructs a new SwerveControllerCommand that when executed will follow the
         provided trajectory. This command will not return output voltages but
         rather raw module states from the position controllers which need to be put
@@ -208,11 +231,21 @@ class SwerveControllerCommand(Command):
                                    provide this.
         :param kinematics:         The kinematics for the robot drivetrain. Can be kinematics for 2/3/4/6
                                    SwerveKinematics.
+        :param controller:         The HolonomicDriveController for the drivetrain.
         :param outputModuleStates: The raw output module states from the position controllers.
         :param requirements:       The subsystems to require.
-        :param controller:         The HolonomicDriveController for the drivetrain.
-        """
 
+        """
+        super().__init__()
+        self._trajectory = trajectory
+        self._pose = pose
+        self._kinematics = kinematics
+        self._outputModuleStates = outputModuleStates
+        self._controller = controller
+        self._desiredRotation = self._trajectory.states()[-1].pose.rotation
+        self._timer = Timer()
+
+    @overtake(runtime_type_checker="beartype")
     def __init__(
         self,
         trajectory: Trajectory,
@@ -232,40 +265,7 @@ class SwerveControllerCommand(Command):
         thetaController: Optional[ProfiledPIDControllerRadians] = None,
         desiredRotation: Optional[Callable[[], Rotation2d]] = None,
     ):
-        super().__init__()
-        self._trajectory = trajectory
-        self._pose = pose
-        self._kinematics = kinematics
-        self._outputModuleStates = outputModuleStates
-
-        # Parse the controller parameters combination. If the controller is passed in constructed,
-        # ignore the PID controllers. If it's None, parse them.
-        if controller is not None:
-            self._controller = controller
-        else:
-            # Verify the PID controller combination
-            if (xController and yController and thetaController) is None:
-                raise RuntimeError(
-                    f"Failed to instantiate the Swerve2ControllerCommand: Could not create HolonomicDriveController from PID requirements"
-                )
-
-            # Adding the mypy type error annotation since it incorrectly is giving an error that the type is:
-            # PIDController | None expected PIDController
-            # The statement is true, but ignore the error because the None type check on above makes sure the
-            # typing is correct.
-            self._controller = HolonomicDriveController(xController, yController, thetaController)  # type: ignore
-
-        # If the desired rotation isn't provided, just take the final rotation from the trajectory
-        if desiredRotation is not None:
-            self._desiredRotation = desiredRotation
-        else:
-            self._desiredRotation = self._trajectory.states()[-1].pose.rotation
-        self.addRequirements(
-            # Ignoring type due to mypy stating the addRequirements was expecting a Subsystem but got an iterable of a subsystem.
-            # The iterable of the subsystem was to be able to force optional kwargs for the users when overloading the constructor.
-            requirements,  # type: ignore
-        )
-        self._timer = Timer()
+        ...
 
     def initialize(self):
         self._timer.restart()
