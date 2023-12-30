@@ -69,12 +69,12 @@ class RamseteCommand(Command):
         super().__init__()
 
         self._timer = Timer()
-        self.trajectory = trajectory
-        self.pose = pose
-        self.follower = controller
-        self.kinematics = kinematics
-        self.output = output
-        self.usePID = False
+        self._trajectory = trajectory
+        self._pose = pose
+        self._follower = controller
+        self._kinematics = kinematics
+        self._output = output
+        self._usePID = False
         # All the parameter checks pass, inform scheduler.  Type ignoring is set explictitly for the linter because this
         # implementation declares the tuple explicitly, whereas the general implementations use the unpack operator (*)
         # to pass the requirements to the scheduler.
@@ -119,18 +119,18 @@ class RamseteCommand(Command):
         self._timer = Timer()
 
         # Store all the requirements that are required
-        self.trajectory = trajectory
-        self.pose = pose
-        self.follower = controller
-        self.kinematics = kinematics
-        self.output = output
-        self.leftController = leftController
-        self.rightController = rightController
-        self.wheelspeeds = wheelSpeeds
-        self.feedforward = feedforward
+        self._trajectory = trajectory
+        self._pose = pose
+        self._follower = controller
+        self._kinematics = kinematics
+        self._output = output
+        self._leftController = leftController
+        self._rightController = rightController
+        self._wheelspeeds = wheelSpeeds
+        self._feedforward = feedforward
         self._prevSpeeds = DifferentialDriveWheelSpeeds()
         self._prevTime = -1.0
-        self.usePID = True
+        self._usePID = True
         # All the parameter checks pass, inform scheduler.  Type ignoring is set explictitly for the linter because this
         # implementation declares the tuple explicitly, whereas the general implementations use the unpack operator (*)
         # to pass the requirements to the scheduler.
@@ -155,8 +155,8 @@ class RamseteCommand(Command):
 
     def initialize(self):
         self._prevTime = -1
-        initial_state = self.trajectory.sample(0)
-        self._prevSpeeds = self.kinematics.toWheelSpeeds(
+        initial_state = self._trajectory.sample(0)
+        self._prevSpeeds = self._kinematics.toWheelSpeeds(
             ChassisSpeeds(
                 initial_state.velocity,
                 0,
@@ -164,48 +164,48 @@ class RamseteCommand(Command):
             )
         )
         self._timer.restart()
-        if self.usePID:
-            self.leftController.reset()
-            self.rightController.reset()
+        if self._usePID:
+            self._leftController.reset()
+            self._rightController.reset()
 
     def execute(self):
         curTime = self._timer.get()
         dt = curTime - self._prevTime
 
         if self._prevTime < 0:
-            self.output(0.0, 0.0)
+            self._output(0.0, 0.0)
             self._prevTime = curTime
             return
 
-        targetWheelSpeeds = self.kinematics.toWheelSpeeds(
-            self.follower.calculate(self.pose(), self.trajectory.sample(curTime))
+        targetWheelSpeeds = self._kinematics.toWheelSpeeds(
+            self._follower.calculate(self._pose(), self._trajectory.sample(curTime))
         )
 
         leftSpeedSetpoint = targetWheelSpeeds.left
         rightSpeedSetpoint = targetWheelSpeeds.right
 
-        if self.usePID:
-            leftFeedforward = self.feedforward.calculate(
+        if self._usePID:
+            leftFeedforward = self._feedforward.calculate(
                 leftSpeedSetpoint, (leftSpeedSetpoint - self._prevSpeeds.left) / dt
             )
 
-            rightFeedforward = self.feedforward.calculate(
+            rightFeedforward = self._feedforward.calculate(
                 rightSpeedSetpoint,
                 (rightSpeedSetpoint - self._prevSpeeds.right) / dt,
             )
 
-            leftOutput = leftFeedforward + self.leftController.calculate(
-                self.wheelspeeds().left, leftSpeedSetpoint
+            leftOutput = leftFeedforward + self._leftController.calculate(
+                self._wheelspeeds().left, leftSpeedSetpoint
             )
 
-            rightOutput = rightFeedforward + self.rightController.calculate(
-                self.wheelspeeds().right, rightSpeedSetpoint
+            rightOutput = rightFeedforward + self._rightController.calculate(
+                self._wheelspeeds().right, rightSpeedSetpoint
             )
-            self.output(leftOutput, rightOutput)
+            self._output(leftOutput, rightOutput)
         else:
             leftOutput = leftSpeedSetpoint
             rightOutput = rightSpeedSetpoint
-            self.output(leftOutput, rightOutput)
+            self._output(leftOutput, rightOutput)
 
         self._prevSpeeds = targetWheelSpeeds
         self._prevTime = curTime
@@ -214,10 +214,10 @@ class RamseteCommand(Command):
         self._timer.stop()
 
         if interrupted:
-            self.output(0.0, 0.0)
+            self._output(0.0, 0.0)
 
     def isFinished(self):
-        return self._timer.hasElapsed(self.trajectory.totalTime())
+        return self._timer.hasElapsed(self._trajectory.totalTime())
 
     def initSendable(self, builder: SendableBuilder):
         super().initSendable(builder)
