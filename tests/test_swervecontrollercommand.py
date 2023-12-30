@@ -41,8 +41,8 @@ class SwerveControllerCommandTestDataFixtures:
 
         # The module positions and states start empty and will be populated below in the selector
         # self._modulePositions: Tuple[kinematics.SwerveModulePosition] = []
-        self._modulePositions: List[kinematics.SwerveModulePosition] = []
-        self._moduleStates: List[kinematics.SwerveModuleState] = []
+        self._modulePositions: Tuple[kinematics.SwerveModulePosition] = []
+        self._moduleStates: Tuple[kinematics.SwerveModuleState] = []
 
         # Setup PID controllers, but if an error test case is requested, make sure it provides
         # data that should break the command instantiation
