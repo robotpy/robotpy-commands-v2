@@ -91,6 +91,7 @@ class SwerveControllerCommand(Command):
         )
         self._desiredRotation = desiredRotation
         self._timer = Timer()
+        self.addRequirements(requirements)  # type: ignore
 
     @overload
     def __init__(
@@ -148,6 +149,7 @@ class SwerveControllerCommand(Command):
         )
         self._desiredRotation = self._trajectory.states()[-1].pose.rotation
         self._timer = Timer()
+        self.addRequirements(requirements)  # type:ignore
 
     @overload
     def __init__(
@@ -195,6 +197,7 @@ class SwerveControllerCommand(Command):
         self._controller = controller
         self._desiredRotation = desiredRotation
         self._timer = Timer()
+        self.addRequirements(requirements)  # type:ignore
 
     @overload
     def __init__(
@@ -244,6 +247,7 @@ class SwerveControllerCommand(Command):
         self._controller = controller
         self._desiredRotation = self._trajectory.states()[-1].pose.rotation
         self._timer = Timer()
+        self.addRequirements(requirements)  # type: ignore
 
     @overtake(runtime_type_checker="beartype")
     def __init__(
