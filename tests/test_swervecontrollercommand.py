@@ -220,35 +220,7 @@ class SwerveControllerCommandTestDataFixtures:
         self._moduleStates = states
 
     def getRobotPose(self) -> geometry.Pose2d:
-        if isinstance(self._odometry, kinematics.SwerveDrive2Odometry):
-            self._odometry.update(
-                self._angle, self._modulePositions[0], self._modulePositions[1]
-            )
-        elif isinstance(self._odometry, kinematics.SwerveDrive3Odometry):
-            self._odometry.update(
-                self._angle,
-                self._modulePositions[0],
-                self._modulePositions[1],
-                self._modulePositions[2],
-            )
-        elif isinstance(self._odometry, kinematics.SwerveDrive4Odometry):
-            self._odometry.update(
-                self._angle,
-                self._modulePositions[0],
-                self._modulePositions[1],
-                self._modulePositions[2],
-                self._modulePositions[3],
-            )
-        elif isinstance(self._odometry, kinematics.SwerveDrive6Odometry):
-            self._odometry.update(
-                self._angle,
-                self._modulePositions[0],
-                self._modulePositions[1],
-                self._modulePositions[2],
-                self._modulePositions[3],
-                self._modulePositions[4],
-                self._modulePositions[5],
-            )
+        self._odometry.update(self._angle, *self._modulePositions)
 
         return self._odometry.getPose()
 
