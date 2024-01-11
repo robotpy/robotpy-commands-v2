@@ -28,18 +28,12 @@ class SysIdRoutine(SysIdRoutineLog):
         timeout: seconds = 10.0
         recordState: Callable[["SysIdRoutineLog.State"], None] = None
 
+    @dataclass
     class Mechanism:
-        def __init__(
-            self,
-            drive: Callable[[Measure[Voltage]], None],
-            log: Optional[Callable[["SysIdRoutineLog"], None]] = None,
-            subsystem=None,
-            name: Optional[str] = None,
-        ):
-            self.m_drive = drive
-            self.m_log = log or (lambda l: None)
-            self.m_subsystem = subsystem
-            self.m_name = name or subsystem.getName()
+        drive: volts
+        log: Optional[Callable[["SysIdRoutineLog", None]]] = None
+        subsystem = None
+        name: Optional[str] = None
 
     class Direction(Enum):
         kForward = 0
