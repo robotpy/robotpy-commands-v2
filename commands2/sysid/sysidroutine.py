@@ -40,11 +40,11 @@ class SysIdRoutine(SysIdRoutineLog):
         kReverse = 1
 
     def __init__(self, config: Config, mechanism: Mechanism):
-        super().__init__(mechanism.m_subsystem.getName())
-        self.m_config = config
-        self.m_mechanism = mechanism
-        self.m_outputVolts = Volts(0)
-        self.m_recordState = config.m_recordState or self.recordState
+        super().__init__(mechanism.subsystem.getName())
+        self.config = config
+        self.mechanism = mechanism
+        self.outputVolts = Volts(0)
+        self.recordState = config.recordState or self.recordState
 
     def quasistatic(self, direction: Direction) -> Command:
         timer = Timer()
@@ -57,27 +57,27 @@ class SysIdRoutine(SysIdRoutineLog):
             timer.start()
 
         def execute():
-            self.m_outputVolts.mut_replace(
+            self.outputVolts.mut_replace(
                 output_sign
                 * timer.get()
-                * self.m_config.m_rampRate.in_(Volts.per(Seconds(1))),
+                * self.config.rampRate.in_(Volts.per(Seconds(1))),
                 Volts,
             )
-            self.m_mechanism.m_drive(self.m_outputVolts)
-            self.m_mechanism.m_log(self)
-            self.m_recordState(state)
+            self.mechanism.drive(self.outputVolts)
+            self.mechanism.log(self)
+            self.recordState(state)
 
         def end():
-            self.m_mechanism.m_drive(Volts.of(0))
-            self.m_recordState("kNone")
+            self.mechanism.drive(Volts.of(0))
+            self.recordState("kNone")
             timer.stop()
 
         return (
-            self.m_mechanism.m_subsystem.runOnce(command)
-            .andThen(self.m_mechanism.m_subsystem.run(execute))
+            self.mechanism.subsystem.runOnce(command)
+            .andThen(self.mechanism.subsystem.run(execute))
             .finallyDo(end)
-            .withName(f"sysid-{state}-{self.m_mechanism.m_name}")
-            .withTimeout(self.m_config.m_timeout.in_(Seconds))
+            .withName(f"sysid-{state}-{self.mechanism.name}")
+            .withTimeout(self.config.timeout.in_(Seconds))
         )
 
     def dynamic(self, direction: Direction) -> Command:
@@ -87,23 +87,23 @@ class SysIdRoutine(SysIdRoutineLog):
         ]
 
         def command():
-            self.m_outputVolts.mut_replace(
-                self.m_config.m_stepVoltage.in_(Volts) * output_sign, Volts
+            self.outputVolts.mut_replace(
+                self.config.stepVoltage.in_(Volts) * output_sign, Volts
             )
 
         def execute():
-            self.m_mechanism.m_drive(self.m_outputVolts)
-            self.m_mechanism.m_log(self)
-            self.m_recordState(state)
+            self.mechanism.drive(self.outputVolts)
+            self.mechanism.log(self)
+            self.recordState(state)
 
         def end():
-            self.m_mechanism.m_drive(Volts.of(0))
-            self.m_recordState("kNone")
+            self.mechanism.drive(Volts.of(0))
+            self.recordState("kNone")
 
         return (
-            self.m_mechanism.m_subsystem.runOnce(command)
-            .andThen(self.m_mechanism.m_subsystem.run(execute))
+            self.mechanism.subsystem.runOnce(command)
+            .andThen(self.mechanism.subsystem.run(execute))
             .finallyDo(end)
-            .withName(f"sysid-{state}-{self.m_mechanism.m_name}")
-            .withTimeout(self.m_config.m_timeout.in_(Seconds))
+            .withName(f"sysid-{state}-{self.mechanism.name}")
+            .withTimeout(self.config.timeout.in_(Seconds))
         )
