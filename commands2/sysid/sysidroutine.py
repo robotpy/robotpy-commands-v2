@@ -43,33 +43,29 @@ class SysIdRoutine(SysIdRoutineLog):
         super().__init__(mechanism.subsystem.getName())
         self.config = config
         self.mechanism = mechanism
-        self.outputVolts = Volts(0)
+        self.outputVolts = 0.0
         self.recordState = config.recordState or self.recordState
 
     def quasistatic(self, direction: Direction) -> Command:
         timer = Timer()
         output_sign = 1.0 if direction == self.Direction.kForward else -1.0
-        state = {"kForward": "kQuasistaticForward", "kReverse": "kQuasistaticReverse"}[
-            direction
-        ]
+        state = {
+            self.Direction.kForward: SysIdRoutineLog.State.kQuasistaticForward,
+            self.Direction.kReverse: SysIdRoutineLog.State.kQuasistaticReverse,
+        }[direction]
 
         def command():
             timer.start()
 
         def execute():
-            self.outputVolts.mut_replace(
-                output_sign
-                * timer.get()
-                * self.config.rampRate.in_(Volts.per(Seconds(1))),
-                Volts,
-            )
+            self.outputVolts = output_sign * timer.get() * self.config.rampRate
             self.mechanism.drive(self.outputVolts)
             self.mechanism.log(self)
             self.recordState(state)
 
         def end():
-            self.mechanism.drive(Volts.of(0))
-            self.recordState("kNone")
+            self.mechanism.drive(0.0)
+            self.recordState(SysIdRoutineLog.State.kNone)
             timer.stop()
 
         return (
@@ -77,7 +73,7 @@ class SysIdRoutine(SysIdRoutineLog):
             .andThen(self.mechanism.subsystem.run(execute))
             .finallyDo(end)
             .withName(f"sysid-{state}-{self.mechanism.name}")
-            .withTimeout(self.config.timeout.in_(Seconds))
+            .withTimeout(self.config.timeout)
         )
 
     def dynamic(self, direction: Direction) -> Command:
