@@ -1,4 +1,5 @@
 from dataclasses import dataclass
+from enum import Enum
 
 from wpilib.sysid import SysIdRoutineLog
 from ..command import Command
@@ -40,9 +41,9 @@ class SysIdRoutine(SysIdRoutineLog):
             self.m_subsystem = subsystem
             self.m_name = name or subsystem.getName()
 
-    class Direction:
-        kForward = "kForward"
-        kReverse = "kReverse"
+    class Direction(Enum):
+        kForward = 0
+        kReverse = 1
 
     def __init__(self, config: Config, mechanism: Mechanism):
         super().__init__(mechanism.m_subsystem.getName())
