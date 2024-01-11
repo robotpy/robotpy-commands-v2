@@ -6,15 +6,8 @@ from ..command import Command
 from wpilib import Timer
 
 from wpimath.units import seconds, volts
-from wpilib.units import (
-    Volts,
-    Seconds,
-    Voltage,
-    Velocity,
-    Measure,
-    Time,
-)
-from typing import Callable, Dict, Optional
+
+from typing import Callable, Optional
 
 
 volts_per_second = float
