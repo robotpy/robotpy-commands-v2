@@ -1,5 +1,5 @@
 from wpilib.sysid import SysIdRoutineLog
-from wpilib.command import Command
+from ..command import Command
 from wpilib import Timer
 from wpilib.units import (
     Volts,
