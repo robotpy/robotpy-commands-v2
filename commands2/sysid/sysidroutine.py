@@ -78,14 +78,13 @@ class SysIdRoutine(SysIdRoutineLog):
 
     def dynamic(self, direction: Direction) -> Command:
         output_sign = 1.0 if direction == self.Direction.kForward else -1.0
-        state = {"kForward": "kDynamicForward", "kReverse": "kDynamicReverse"}[
-            direction
-        ]
+        state = {
+            self.Direction.kForward: SysIdRoutineLog.State.kDynamicForward,
+            self.Direction.kReverse: SysIdRoutineLog.State.kDynamicReverse,
+        }[direction]
 
         def command():
-            self.outputVolts.mut_replace(
-                self.config.stepVoltage.in_(Volts) * output_sign, Volts
-            )
+            self.outputVolts = self.config.stepVoltage * output_sign
 
         def execute():
             self.mechanism.drive(self.outputVolts)
@@ -93,13 +92,13 @@ class SysIdRoutine(SysIdRoutineLog):
             self.recordState(state)
 
         def end():
-            self.mechanism.drive(Volts.of(0))
-            self.recordState("kNone")
+            self.mechanism.drive(0.0)
+            self.recordState(SysIdRoutineLog.State.kNone)
 
         return (
             self.mechanism.subsystem.runOnce(command)
             .andThen(self.mechanism.subsystem.run(execute))
             .finallyDo(end)
             .withName(f"sysid-{state}-{self.mechanism.name}")
-            .withTimeout(self.config.timeout.in_(Seconds))
+            .withTimeout(self.config.timeout)
         )
