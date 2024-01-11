@@ -1,6 +1,10 @@
+from dataclasses import dataclass
+
 from wpilib.sysid import SysIdRoutineLog
 from ..command import Command
 from wpilib import Timer
+
+from wpimath.units import seconds, volts
 from wpilib.units import (
     Volts,
     Seconds,
@@ -12,19 +16,16 @@ from wpilib.units import (
 from typing import Callable, Dict, Optional
 
 
+volts_per_second = float
+
+
 class SysIdRoutine(SysIdRoutineLog):
+    @dataclass
     class Config:
-        def __init__(
-            self,
-            rampRate: Optional[Measure[Velocity[Voltage]]] = None,
-            stepVoltage: Optional[Measure[Voltage]] = None,
-            timeout: Optional[Measure[Time]] = None,
-            recordState: Optional[Callable[["State"], None]] = None,
-        ):
-            self.m_rampRate = rampRate or Volts.of(1).per(Seconds.of(1))
-            self.m_stepVoltage = stepVoltage or Volts.of(7)
-            self.m_timeout = timeout or Seconds.of(10)
-            self.m_recordState = recordState
+        rampRate: volts_per_second = 1.0
+        stepVoltage: volts = 7.0
+        timeout: seconds = 10.0
+        recordState: Callable[["SysIdRoutineLog.State"], None] = None
 
     class Mechanism:
         def __init__(
