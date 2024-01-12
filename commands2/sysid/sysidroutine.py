@@ -24,13 +24,13 @@ class SysIdRoutine(SysIdRoutineLog):
     @dataclass
     class Mechanism:
         drive: volts
-        log: Optional[Callable[["SysIdRoutineLog", None]]] = None
+        log: Optional[Callable[[SysIdRoutineLog], None]] = None
         subsystem = None
         name: Optional[str] = None
 
     class Direction(Enum):
-        kForward = 0
-        kReverse = 1
+        kForward = 1
+        kReverse = -1
 
     def __init__(self, config: Config, mechanism: Mechanism):
         super().__init__(mechanism.subsystem.getName())
@@ -62,10 +62,10 @@ class SysIdRoutine(SysIdRoutineLog):
             timer.stop()
 
         return (
-            self.mechanism.subsystem.runOnce(command)
+            self.mechanism.subsystem.runOnce(timer.start)
             .andThen(self.mechanism.subsystem.run(execute))
             .finallyDo(end)
-            .withName(f"sysid-{state}-{self.mechanism.name}")
+            .withName(f"sysid-{SysIdRoutineLog.stateEnumToString(state)}-{self.mechanism.name}")
             .withTimeout(self.config.timeout)
         )
 
