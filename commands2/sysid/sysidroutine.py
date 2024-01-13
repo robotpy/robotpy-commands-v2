@@ -71,7 +71,7 @@ class SysIdRoutine(SysIdRoutineLog):
                           the subsystem if left null.
         """
 
-        drive: volts
+        drive: Callable[[volts], None]
         log: Callable[[SysIdRoutineLog], None]
         subsystem: Subsystem
         name: Optional[str] = None
