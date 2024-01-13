@@ -51,7 +51,7 @@ class SysIdRoutine(SysIdRoutineLog):
         rampRate: volts_per_second = 1.0
         stepVoltage: volts = 7.0
         timeout: seconds = 10.0
-        recordState: Callable[[State], None]
+        recordState: Optional[Callable[[State], None]] = None
 
     @dataclass
     class Mechanism:
