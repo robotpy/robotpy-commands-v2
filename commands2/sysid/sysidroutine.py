@@ -124,7 +124,7 @@ class SysIdRoutine(SysIdRoutineLog):
             self.mechanism.log(self)
             self.recordState(state)
 
-        def end():
+        def end(interrupted: bool):
             self.mechanism.drive(0.0)
             self.recordState(State.kNone)
             timer.stop()
@@ -165,7 +165,7 @@ class SysIdRoutine(SysIdRoutineLog):
             self.mechanism.log(self)
             self.recordState(state)
 
-        def end():
+        def end(interrupted: bool):
             self.mechanism.drive(0.0)
             self.recordState(State.kNone)
 
