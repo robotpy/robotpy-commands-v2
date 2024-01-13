@@ -96,7 +96,8 @@ class SysIdRoutine(SysIdRoutineLog):
         self.config = config
         self.mechanism = mechanism
         self.outputVolts = 0.0
-        self.recordState = config.recordState or self.recordState
+        if config.recordState != None:
+            self.recordState = config.recordState
 
     def quasistatic(self, direction: Direction) -> Command:
         """Returns a command to run a quasistatic test in the specified direction.
