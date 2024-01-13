@@ -130,7 +130,9 @@ class SysIdRoutine(SysIdRoutineLog):
             self.mechanism.subsystem.runOnce(timer.start)
             .andThen(self.mechanism.subsystem.run(execute))
             .finallyDo(end)
-            .withName(f"sysid-{SysIdRoutineLog.stateEnumToString(state)}-{self.mechanism.name}")
+            .withName(
+                f"sysid-{SysIdRoutineLog.stateEnumToString(state)}-{self.mechanism.name}"
+            )
             .withTimeout(self.config.timeout)
         )
 
