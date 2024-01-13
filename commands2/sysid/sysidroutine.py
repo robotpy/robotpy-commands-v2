@@ -1,7 +1,7 @@
 from dataclasses import dataclass
 from enum import Enum
 
-from wpilib.sysid import SysIdRoutineLog
+from wpilib.sysid import SysIdRoutineLog, State
 from ..command import Command
 from ..subsystem import Subsystem
 from wpilib import Timer
@@ -51,7 +51,7 @@ class SysIdRoutine(SysIdRoutineLog):
         rampRate: volts_per_second = 1.0
         stepVoltage: volts = 7.0
         timeout: seconds = 10.0
-        recordState: Callable[["SysIdRoutineLog.State"], None] = None
+        recordState: Callable[[State], None]
 
     @dataclass
     class Mechanism:
@@ -72,7 +72,7 @@ class SysIdRoutine(SysIdRoutineLog):
         """
 
         drive: volts
-        log: Optional[Callable[[SysIdRoutineLog], None]]
+        log: Callable[[SysIdRoutineLog], None]
         subsystem: Subsystem
         name: Optional[str] = None
 
@@ -114,8 +114,8 @@ class SysIdRoutine(SysIdRoutineLog):
         timer = Timer()
         output_sign = 1.0 if direction == self.Direction.kForward else -1.0
         state = {
-            self.Direction.kForward: SysIdRoutineLog.State.kQuasistaticForward,
-            self.Direction.kReverse: SysIdRoutineLog.State.kQuasistaticReverse,
+            self.Direction.kForward: State.kQuasistaticForward,
+            self.Direction.kReverse: State.kQuasistaticReverse,
         }[direction]
 
         def execute():
@@ -126,7 +126,7 @@ class SysIdRoutine(SysIdRoutineLog):
 
         def end():
             self.mechanism.drive(0.0)
-            self.recordState(SysIdRoutineLog.State.kNone)
+            self.recordState(State.kNone)
             timer.stop()
 
         return (
@@ -153,8 +153,8 @@ class SysIdRoutine(SysIdRoutineLog):
 
         output_sign = 1.0 if direction == self.Direction.kForward else -1.0
         state = {
-            self.Direction.kForward: SysIdRoutineLog.State.kDynamicForward,
-            self.Direction.kReverse: SysIdRoutineLog.State.kDynamicReverse,
+            self.Direction.kForward: State.kDynamicForward,
+            self.Direction.kReverse: State.kDynamicReverse,
         }[direction]
 
         def command():
@@ -167,7 +167,7 @@ class SysIdRoutine(SysIdRoutineLog):
 
         def end():
             self.mechanism.drive(0.0)
-            self.recordState(SysIdRoutineLog.State.kNone)
+            self.recordState(State.kNone)
 
         return (
             self.mechanism.subsystem.runOnce(command)
