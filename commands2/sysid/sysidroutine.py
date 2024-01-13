@@ -3,6 +3,7 @@ from enum import Enum
 
 from wpilib.sysid import SysIdRoutineLog
 from ..command import Command
+from ..subsystem import Subsystem
 from wpilib import Timer
 
 from wpimath.units import seconds, volts
@@ -72,7 +73,7 @@ class SysIdRoutine(SysIdRoutineLog):
 
         drive: volts
         log: Optional[Callable[[SysIdRoutineLog], None]] = None
-        subsystem = None
+        subsystem: Subsystem = None
         name: Optional[str] = None
 
     class Direction(Enum):
