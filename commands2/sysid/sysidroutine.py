@@ -72,8 +72,8 @@ class SysIdRoutine(SysIdRoutineLog):
         """
 
         drive: volts
-        log: Optional[Callable[[SysIdRoutineLog], None]] = None
-        subsystem: Subsystem = None
+        log: Optional[Callable[[SysIdRoutineLog], None]]
+        subsystem: Subsystem
         name: Optional[str] = None
 
     class Direction(Enum):
