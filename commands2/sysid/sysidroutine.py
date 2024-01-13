@@ -76,6 +76,10 @@ class SysIdRoutine(SysIdRoutineLog):
         subsystem: Subsystem
         name: Optional[str] = None
 
+        def __post_init__(self):
+            if self.name == None:
+                self.name = self.subsystem.getName()
+
     class Direction(Enum):
         """Motor direction for a SysId test."""
 
