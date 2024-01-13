@@ -112,9 +112,6 @@ class SysIdRoutine(SysIdRoutineLog):
             self.Direction.kReverse: SysIdRoutineLog.State.kQuasistaticReverse,
         }[direction]
 
-        def command():
-            timer.start()
-
         def execute():
             self.outputVolts = output_sign * timer.get() * self.config.rampRate
             self.mechanism.drive(self.outputVolts)
