@@ -73,9 +73,10 @@ def test_record_state_bookends_motor_logging(
 
     mechanism.assert_has_calls(
         [
-            call.recordState(State.kQuasistaticForward),
             call.drive(ANY),
             call.log(ANY),
+            call.recordState(State.kQuasistaticForward),
+            call.drive(ANY),
             call.recordState(State.kNone),
         ],
         any_order=False,
@@ -86,9 +87,10 @@ def test_record_state_bookends_motor_logging(
 
     mechanism.assert_has_calls(
         [
-            call.recordState(State.kDynamicForward),
             call.drive(ANY),
             call.log(ANY),
+            call.recordState(State.kDynamicForward),
+            call.drive(ANY),
             call.recordState(State.kNone),
         ],
         any_order=False,
