@@ -27,7 +27,7 @@ def mechanism():
 def sysid_routine(mechanism):
     return SysIdRoutine(
         SysIdRoutine.Config(recordState=mechanism.recordState),
-        SysIdRoutine.Mechanism(mechanism.drive, mechanism.log, mechanism),
+        SysIdRoutine.Mechanism(mechanism.drive, mechanism.log, Subsystem()),
     )
 
 
