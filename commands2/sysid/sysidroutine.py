@@ -96,8 +96,7 @@ class SysIdRoutine(SysIdRoutineLog):
         self.config = config
         self.mechanism = mechanism
         self.outputVolts = 0.0
-        if config.recordState != None:
-            self.recordState = config.recordState
+        self.logState = config.recordState or self.recordState
 
     def quasistatic(self, direction: Direction) -> Command:
         """Returns a command to run a quasistatic test in the specified direction.
@@ -122,11 +121,11 @@ class SysIdRoutine(SysIdRoutineLog):
             self.outputVolts = output_sign * timer.get() * self.config.rampRate
             self.mechanism.drive(self.outputVolts)
             self.mechanism.log(self)
-            self.recordState(state)
+            self.logState(state)
 
         def end(interrupted: bool):
             self.mechanism.drive(0.0)
-            self.recordState(State.kNone)
+            self.logState(State.kNone)
             timer.stop()
 
         return (
@@ -163,11 +162,11 @@ class SysIdRoutine(SysIdRoutineLog):
         def execute():
             self.mechanism.drive(self.outputVolts)
             self.mechanism.log(self)
-            self.recordState(state)
+            self.logState(state)
 
         def end(interrupted: bool):
             self.mechanism.drive(0.0)
-            self.recordState(State.kNone)
+            self.logState(State.kNone)
 
         return (
             self.mechanism.subsystem.runOnce(command)
