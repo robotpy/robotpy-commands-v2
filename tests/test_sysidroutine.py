@@ -1,6 +1,6 @@
 import pytest
 from unittest.mock import Mock, call, ANY
-from wpilib.simulation import stepTiming
+from wpilib.simulation import stepTiming, pauseTiming, resumeTiming
 from wpimath.units import volts
 from commands2 import Command, Subsystem
 from commands2.sysid import SysIdRoutine
@@ -49,6 +49,13 @@ def dynamic_forward(sysid_routine):
 @pytest.fixture
 def dynamic_reverse(sysid_routine):
     return sysid_routine.dynamic(SysIdRoutine.Direction.kReverse)
+
+
+@pytest.fixture(autouse=True)
+def timing():
+    pauseTiming()
+    yield
+    resumeTiming()
 
 
 def run_command(command: Command):
