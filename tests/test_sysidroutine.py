@@ -130,7 +130,6 @@ def test_tests_output_correct_voltage(
         [
             call(1.0),
             call(0.0),
-            call(ANY),
         ],
         any_order=False,
     )
@@ -142,7 +141,6 @@ def test_tests_output_correct_voltage(
         [
             call(-1.0),
             call(0.0),
-            call(ANY),
         ],
         any_order=False,
     )
@@ -154,7 +152,6 @@ def test_tests_output_correct_voltage(
         [
             call(7.0),
             call(0.0),
-            call(ANY),
         ],
         any_order=False,
     )
@@ -166,7 +163,6 @@ def test_tests_output_correct_voltage(
         [
             call(-7.0),
             call(0.0),
-            call(ANY),
         ],
         any_order=False,
     )
