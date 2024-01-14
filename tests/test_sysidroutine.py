@@ -105,16 +105,16 @@ def test_tests_declare_correct_state(
     dynamic_reverse,
 ):
     run_command(quasistatic_forward)
-    mechanism.assert_called_with(recordState=State.kQuasistaticForward)
+    mechanism.recordState.assert_any_call(State.kQuasistaticForward)
 
     run_command(quasistatic_reverse)
-    mechanism.assert_called_with(recordState=State.kQuasistaticReverse)
+    mechanism.recordState.assert_any_call(State.kQuasistaticReverse)
 
     run_command(dynamic_forward)
-    mechanism.assert_called_with(recordState=State.kDynamicForward)
+    mechanism.recordState.assert_any_call(State.kDynamicForward)
 
     run_command(dynamic_reverse)
-    mechanism.assert_called_with(recordState=State.kDynamicReverse)
+    mechanism.recordState.assert_any_call(State.kDynamicReverse)
 
 
 def test_tests_output_correct_voltage(
