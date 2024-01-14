@@ -126,11 +126,11 @@ def test_tests_output_correct_voltage(
 ):
     run_command(quasistatic_forward)
 
-    mechanism.assert_has_calls(
+    mechanism.drive.assert_has_calls(
         [
-            call.drive(1.0),
-            call.drive(0.0),
-            call.drive(ANY),
+            call(1.0),
+            call(0.0),
+            call(ANY),
         ],
         any_order=False,
     )
@@ -138,11 +138,11 @@ def test_tests_output_correct_voltage(
     mechanism.reset_mock()
     run_command(quasistatic_reverse)
 
-    mechanism.assert_has_calls(
+    mechanism.drive.assert_has_calls(
         [
-            call.drive(-1.0),
-            call.drive(0.0),
-            call.drive(ANY),
+            call(-1.0),
+            call(0.0),
+            call(ANY),
         ],
         any_order=False,
     )
@@ -150,11 +150,11 @@ def test_tests_output_correct_voltage(
     mechanism.reset_mock()
     run_command(dynamic_forward)
 
-    mechanism.assert_has_calls(
+    mechanism.drive.assert_has_calls(
         [
-            call.drive(7.0),
-            call.drive(0.0),
-            call.drive(ANY),
+            call(7.0),
+            call(0.0),
+            call(ANY),
         ],
         any_order=False,
     )
@@ -162,11 +162,11 @@ def test_tests_output_correct_voltage(
     mechanism.reset_mock()
     run_command(dynamic_reverse)
 
-    mechanism.assert_has_calls(
+    mechanism.drive.assert_has_calls(
         [
-            call.drive(-7.0),
-            call.drive(0.0),
-            call.drive(ANY),
+            call(-7.0),
+            call(0.0),
+            call(ANY),
         ],
         any_order=False,
     )
