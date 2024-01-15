@@ -13,26 +13,26 @@ from typing import Callable, Optional
 
 volts_per_second = float
 
-"""A SysId characterization routine for a single mechanism. Mechanisms may have multiple motors.
-
-A single subsystem may have multiple mechanisms, but mechanisms should not share test
-routines. Each complete test of a mechanism should have its own SysIdRoutine instance, since the
-log name of the recorded data is determined by the mechanism name.
-
-The test state (e.g. "quasistatic-forward") is logged once per iteration during test
-execution, and once with state "none" when a test ends. Motor frames are logged every iteration
-during test execution.
-
-Timestamps are not coordinated across data, so motor frames and test state tags may be
-recorded on different log frames. Because frame alignment is not guaranteed, SysId parses the log
-by using the test state flag to determine the timestamp range for each section of the test, and
-then extracts the motor frames within the valid timestamp ranges. If a given test was run
-multiple times in a single logfile, the user will need to select which of the tests to use for
-the fit in the analysis tool.
-"""
-
 
 class SysIdRoutine(SysIdRoutineLog):
+    """A SysId characterization routine for a single mechanism. Mechanisms may have multiple motors.
+
+    A single subsystem may have multiple mechanisms, but mechanisms should not share test
+    routines. Each complete test of a mechanism should have its own SysIdRoutine instance, since the
+    log name of the recorded data is determined by the mechanism name.
+
+    The test state (e.g. "quasistatic-forward") is logged once per iteration during test
+    execution, and once with state "none" when a test ends. Motor frames are logged every iteration
+    during test execution.
+
+    Timestamps are not coordinated across data, so motor frames and test state tags may be
+    recorded on different log frames. Because frame alignment is not guaranteed, SysId parses the log
+    by using the test state flag to determine the timestamp range for each section of the test, and
+    then extracts the motor frames within the valid timestamp ranges. If a given test was run
+    multiple times in a single logfile, the user will need to select which of the tests to use for
+    the fit in the analysis tool.
+    """
+
     @dataclass
     class Config:
         """Create a new configuration for a SysId test routine.
