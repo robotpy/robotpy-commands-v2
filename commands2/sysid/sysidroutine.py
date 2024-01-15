@@ -111,14 +111,13 @@ class SysIdRoutine(SysIdRoutineLog):
         """
 
         timer = Timer()
-        output_sign = 1.0 if direction == self.Direction.kForward else -1.0
         state = {
             self.Direction.kForward: State.kQuasistaticForward,
             self.Direction.kReverse: State.kQuasistaticReverse,
         }[direction]
 
         def execute():
-            self.outputVolts = output_sign * timer.get() * self.config.rampRate
+            self.outputVolts = direction.value * timer.get() * self.config.rampRate
             self.mechanism.drive(self.outputVolts)
             self.mechanism.log(self)
             self.logState(state)
@@ -150,14 +149,13 @@ class SysIdRoutine(SysIdRoutineLog):
         :returns: A command to run the test.
         """
 
-        output_sign = 1.0 if direction == self.Direction.kForward else -1.0
         state = {
             self.Direction.kForward: State.kDynamicForward,
             self.Direction.kReverse: State.kDynamicReverse,
         }[direction]
 
         def command():
-            self.outputVolts = self.config.stepVoltage * output_sign
+            self.outputVolts = direction.value * self.config.stepVoltage
 
         def execute():
             self.mechanism.drive(self.outputVolts)
