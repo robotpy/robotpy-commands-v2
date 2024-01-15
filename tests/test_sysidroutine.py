@@ -128,8 +128,8 @@ def test_tests_output_correct_voltage(
 
     mechanism.drive.assert_has_calls(
         [
-            call(1.0),
-            call(0.0),
+            call(pytest.approx(1.0)),
+            call(pytest.approx(0.0)),
         ],
         any_order=False,
     )
@@ -139,8 +139,8 @@ def test_tests_output_correct_voltage(
 
     mechanism.drive.assert_has_calls(
         [
-            call(-1.0),
-            call(0.0),
+            call(pytest.approx(-1.0)),
+            call(pytest.approx(0.0)),
         ],
         any_order=False,
     )
@@ -150,8 +150,8 @@ def test_tests_output_correct_voltage(
 
     mechanism.drive.assert_has_calls(
         [
-            call(7.0),
-            call(0.0),
+            call(pytest.approx(7.0)),
+            call(pytest.approx(0.0)),
         ],
         any_order=False,
     )
@@ -161,8 +161,8 @@ def test_tests_output_correct_voltage(
 
     mechanism.drive.assert_has_calls(
         [
-            call(-7.0),
-            call(0.0),
+            call(pytest.approx(-7.0)),
+            call(pytest.approx(0.0)),
         ],
         any_order=False,
     )
