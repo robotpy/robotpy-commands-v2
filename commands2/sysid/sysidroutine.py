@@ -35,7 +35,7 @@ class SysIdRoutine(SysIdRoutineLog):
 
     @dataclass
     class Config:
-        """Create a new configuration for a SysId test routine.
+        """Hardware-independent configuration for a SysId test routine.
 
         :param rampRate:    The voltage ramp rate used for quasistatic test routines. Defaults to 1 volt
                             per second if left null.
@@ -55,7 +55,10 @@ class SysIdRoutine(SysIdRoutineLog):
 
     @dataclass
     class Mechanism:
-        """Create a new mechanism specification for a SysId routine.
+        """A mechanism to be characterized by a SysId routine.
+
+        Defines callbacks needed for the SysId test routine to control
+        and record data from the mechanism.
 
         :param drive:     Sends the SysId-specified drive signal to the mechanism motors during test
                           routines.
