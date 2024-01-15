@@ -75,7 +75,6 @@ __all__ = [
     "SequentialCommandGroup",
     "StartEndCommand",
     "Subsystem",
-    "SysIdRoutine",
     "TimedCommandRobot",
     "TrapezoidProfileSubsystem",
     "WaitCommand",
