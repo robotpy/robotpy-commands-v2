@@ -28,15 +28,16 @@ class Subsystem(Sendable):
     base for user implementations that handles this.
     """
 
-    def __new__(cls, *arg, **kwargs) -> "Subsystem":
-        instance = super().__new__(cls)
-        super().__init__(instance)
-        SendableRegistry.addLW(instance, cls.__name__, cls.__name__)
-        # add to the scheduler
-        from .commandscheduler import CommandScheduler
+    if not TYPE_CHECKING:
+        def __new__(cls, *arg, **kwargs) -> "Subsystem":
+            instance = super().__new__(cls)
+            super().__init__(instance)
+            SendableRegistry.addLW(instance, cls.__name__, cls.__name__)
+            # add to the scheduler
+            from .commandscheduler import CommandScheduler
 
-        CommandScheduler.getInstance().registerSubsystem(instance)
-        return instance
+            CommandScheduler.getInstance().registerSubsystem(instance)
+            return instance
 
     def __init__(self) -> None:
         pass
