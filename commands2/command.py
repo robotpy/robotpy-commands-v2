@@ -60,16 +60,14 @@ class Command(Sendable):
 
     requirements: Set[Subsystem]
 
-    if not TYPE_CHECKING:
-
-        def __new__(cls, *args, **kwargs) -> Self:
-            instance = super().__new__(
-                cls,
-            )
-            super().__init__(instance)
-            SendableRegistry.add(instance, cls.__name__)
-            instance.requirements = set()
-            return instance
+    def __new__(cls, *args, **kwargs) -> Self:
+        instance = super().__new__(
+            cls,
+        )
+        super().__init__(instance)
+        SendableRegistry.add(instance, cls.__name__)
+        instance.requirements = set()
+        return instance
 
     def __init__(self):
         pass

@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 from typing import TYPE_CHECKING, Callable, Optional
+from typing_extensions import Self
 
 if TYPE_CHECKING:
     from .command import Command
@@ -28,17 +29,15 @@ class Subsystem(Sendable):
     base for user implementations that handles this.
     """
 
-    if not TYPE_CHECKING:
+    def __new__(cls, *arg, **kwargs) -> Self:
+        instance = super().__new__(cls)
+        super().__init__(instance)
+        SendableRegistry.addLW(instance, cls.__name__, cls.__name__)
+        # add to the scheduler
+        from .commandscheduler import CommandScheduler
 
-        def __new__(cls, *arg, **kwargs) -> "Subsystem":
-            instance = super().__new__(cls)
-            super().__init__(instance)
-            SendableRegistry.addLW(instance, cls.__name__, cls.__name__)
-            # add to the scheduler
-            from .commandscheduler import CommandScheduler
-
-            CommandScheduler.getInstance().registerSubsystem(instance)
-            return instance
+        CommandScheduler.getInstance().registerSubsystem(instance)
+        return instance
 
     def __init__(self) -> None:
         pass
