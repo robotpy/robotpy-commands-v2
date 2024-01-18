@@ -117,6 +117,4 @@ if not TYPE_CHECKING:
             warnings.warn("CommandBase is deprecated", DeprecationWarning, stacklevel=2)
             return Command
 
-        raise AttributeError(
-            f"module {__name__!r} has no attribute {attr!r}"
-        )
+        raise AttributeError(f"module {__name__!r} has no attribute {attr!r}")
