@@ -61,6 +61,7 @@ class Command(Sendable):
     requirements: Set[Subsystem]
 
     if not TYPE_CHECKING:
+
         def __new__(cls, *args, **kwargs) -> Self:
             instance = super().__new__(
                 cls,

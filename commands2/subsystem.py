@@ -29,6 +29,7 @@ class Subsystem(Sendable):
     """
 
     if not TYPE_CHECKING:
+
         def __new__(cls, *arg, **kwargs) -> "Subsystem":
             instance = super().__new__(cls)
             super().__init__(instance)
