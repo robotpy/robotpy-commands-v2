@@ -8,9 +8,23 @@ import math
 from wpilib import Timer
 
 from wpimath.geometry import Pose2d, Rotation2d, Translation2d
-from wpimath.kinematics import SwerveModuleState, SwerveModulePosition, SwerveDrive4Kinematics, SwerveDrive4Odometry
-from wpimath.controller import ProfiledPIDControllerRadians, PIDController, HolonomicDriveController
-from wpimath.trajectory import TrapezoidProfileRadians, Trajectory, TrajectoryConfig, TrajectoryGenerator
+from wpimath.kinematics import (
+    SwerveModuleState,
+    SwerveModulePosition,
+    SwerveDrive4Kinematics,
+    SwerveDrive4Odometry,
+)
+from wpimath.controller import (
+    ProfiledPIDControllerRadians,
+    PIDController,
+    HolonomicDriveController,
+)
+from wpimath.trajectory import (
+    TrapezoidProfileRadians,
+    Trajectory,
+    TrajectoryConfig,
+    TrajectoryGenerator,
+)
 
 
 from util import *  # type: ignore
@@ -22,13 +36,12 @@ import pytest
 
 import commands2
 
+
 def test_swervecontrollercommand():
-
-
     timer = Timer()
     angle = Rotation2d(0)
 
-    swerve_module_states =  (
+    swerve_module_states = (
         SwerveModuleState(0, Rotation2d(0)),
         SwerveModuleState(0, Rotation2d(0)),
         SwerveModuleState(0, Rotation2d(0)),
@@ -73,7 +86,7 @@ def test_swervecontrollercommand():
     def set_module_states(states):
         nonlocal swerve_module_states
         swerve_module_states = states
-    
+
     def get_robot_pose() -> Pose2d:
         odometry.update(angle, swerve_module_positions)
         return odometry.getPose()
@@ -97,7 +110,7 @@ def test_swervecontrollercommand():
                 PIDController(0.6, 0, 0),
                 rot_controller,
             ),
-            outputModuleStates=set_module_states, 
+            outputModuleStates=set_module_states,
             requirements=(subsystem,),
         )
 
@@ -115,17 +128,13 @@ def test_swervecontrollercommand():
                 swerve_module_positions[i].angle = swerve_module_states[i].angle
 
             sim.step(0.005)
-        
+
         timer.stop()
         command.end(True)
 
-        assert end_state.pose.X() == pytest.approx(
-            get_robot_pose().X(), x_tolerance
-        )
+        assert end_state.pose.X() == pytest.approx(get_robot_pose().X(), x_tolerance)
 
-        assert end_state.pose.Y() == pytest.approx(
-            get_robot_pose().Y(), y_tolerance
-        )
+        assert end_state.pose.Y() == pytest.approx(get_robot_pose().Y(), y_tolerance)
 
         assert end_state.pose.rotation().radians() == pytest.approx(
             get_robot_pose().rotation().radians(),
