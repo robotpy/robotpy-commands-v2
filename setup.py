@@ -14,8 +14,6 @@ setuptools.setup(
     install_requires=[
         "wpilib<2025,>=2024.0.0b2",
         "typing_extensions>=4.1.0,<5",
-        "overtake~=0.4.0",
-        "beartype~=0.16.4",
     ],
     license="BSD-3-Clause",
     python_requires=">=3.8",
