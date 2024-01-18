@@ -118,5 +118,5 @@ if not TYPE_CHECKING:
             return Command
 
         raise AttributeError(
-            "module {!r} has no attribute " "{!r}".format(__name__, attr)
+            f"module {__name__!r} has no attribute {attr!r}"
         )
