@@ -3,26 +3,9 @@ from .command import Command, InterruptionBehavior
 
 from . import cmd
 
-# from .cmd import (
-#     deadline,
-#     either,
-#     none,
-#     parallel,
-#     print_,
-#     race,
-#     repeatingSequence,
-#     run,
-#     runEnd,
-#     runOnce,
-#     select,
-#     sequence,
-#     startEnd,
-#     waitSeconds,
-#     waitUntil,
-# )
-from .commandgroup import CommandGroup, IllegalCommandUse
 from .commandscheduler import CommandScheduler
 from .conditionalcommand import ConditionalCommand
+from .exceptions import IllegalCommandUse
 from .functionalcommand import FunctionalCommand
 from .instantcommand import InstantCommand
 from .notifiercommand import NotifierCommand
@@ -53,7 +36,6 @@ from typing import TYPE_CHECKING
 __all__ = [
     "cmd",
     "Command",
-    "CommandGroup",
     "CommandScheduler",
     "ConditionalCommand",
     "FunctionalCommand",
@@ -82,21 +64,6 @@ __all__ = [
     "WaitCommand",
     "WaitUntilCommand",
     "WrapperCommand",
-    # "none",
-    # "runOnce",
-    # "run",
-    # "startEnd",
-    # "runEnd",
-    # "print_",
-    # "waitSeconds",
-    # "waitUntil",
-    # "either",
-    # "select",
-    # "sequence",
-    # "repeatingSequence",
-    # "parallel",
-    # "race",
-    # "deadline",
     "Trigger",  # was here in 2023
 ]
 
