@@ -12,7 +12,6 @@ from .notifiercommand import NotifierCommand
 from .parallelcommandgroup import ParallelCommandGroup
 from .paralleldeadlinegroup import ParallelDeadlineGroup
 from .parallelracegroup import ParallelRaceGroup
-from .perpetualcommand import PerpetualCommand
 from .pidcommand import PIDCommand
 from .pidsubsystem import PIDSubsystem
 from .printcommand import PrintCommand
@@ -46,7 +45,6 @@ __all__ = [
     "ParallelCommandGroup",
     "ParallelDeadlineGroup",
     "ParallelRaceGroup",
-    "PerpetualCommand",
     "PIDCommand",
     "PIDSubsystem",
     "PrintCommand",
