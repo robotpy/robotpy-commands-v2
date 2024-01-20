@@ -1,7 +1,7 @@
 # notrack
 from __future__ import annotations
 
-from typing import Iterable, List, Tuple, Union
+from typing import Iterable, List, Tuple, Union, Any
 
 from .command import Command
 
@@ -18,7 +18,7 @@ def flatten_args_commands(
     return tuple(flattened_commands)
 
 
-def format_args_kwargs(*args, **kwargs) -> str:
+def format_args_kwargs(*args: Any, **kwargs: Any) -> str:
     return ", ".join(
         [repr(arg) for arg in args]
         + [f"{key}={repr(value)}" for key, value in kwargs.items()]

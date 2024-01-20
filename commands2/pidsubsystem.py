@@ -64,7 +64,7 @@ class PIDSubsystem(Subsystem):
         """
         return self._controller.getSetpoint()
 
-    def useOutput(self, output: float, setpoint: float):
+    def useOutput(self, output: float, setpoint: float) -> None:
         """
         Uses the output from the PIDController.
 

@@ -3,7 +3,7 @@
 
 from __future__ import annotations
 
-from typing import TYPE_CHECKING, Callable, Optional
+from typing import TYPE_CHECKING, Any, Callable, Optional
 from typing_extensions import Self
 
 if TYPE_CHECKING:
@@ -28,7 +28,7 @@ class Subsystem(Sendable):
     constructor of users' Subsystem implementations.
     """
 
-    def __new__(cls, *arg, **kwargs) -> Self:
+    def __new__(cls, *arg: Any, **kwargs: Any) -> Self:
         instance = super().__new__(cls)
         super().__init__(instance)
         SendableRegistry.addLW(instance, cls.__name__, cls.__name__)

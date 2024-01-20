@@ -5,7 +5,7 @@ from typing import Set
 
 from .command import Command, InterruptionBehavior
 from .commandscheduler import CommandScheduler
-
+from .subsystem import Subsystem
 
 class WrapperCommand(Command):
     """
@@ -63,7 +63,7 @@ class WrapperCommand(Command):
         """
         return self._command.isFinished()
 
-    def getRequirements(self) -> Set:
+    def getRequirements(self) -> Set[Subsystem]:
         """
         Specifies the set of subsystems used by this command. Two commands cannot use the same
         subsystem at the same time. If the command is scheduled as interruptible and another command is

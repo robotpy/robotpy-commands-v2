@@ -9,7 +9,6 @@ from typing import TYPE_CHECKING, Any, Callable, Set
 from typing_extensions import Self, TypeAlias
 
 if TYPE_CHECKING:
-    from .instantcommand import InstantCommand
     from .subsystem import Subsystem
     from .parallelracegroup import ParallelRaceGroup
     from .sequentialcommandgroup import SequentialCommandGroup
@@ -57,7 +56,7 @@ class Command(Sendable):
 
     requirements: Set[Subsystem]
 
-    def __new__(cls, *args, **kwargs) -> Self:
+    def __new__(cls, *args: Any, **kwargs: Any) -> Self:
         instance = super().__new__(
             cls,
         )

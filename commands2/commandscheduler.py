@@ -1,9 +1,8 @@
 from __future__ import annotations
 
-from typing import Any, Callable, Dict, Iterable, List, Optional, Set, Union
+from typing import Any, Callable, Dict, Iterable, List, Optional, Set
 
 import hal
-from typing_extensions import Self
 from wpilib import RobotBase, RobotState, TimedRobot, Watchdog
 from wpilib.event import EventLoop
 
@@ -129,7 +128,7 @@ class CommandScheduler:
             action(command)
         # self._watchdog.addEpoch()
 
-    def schedule(self, *commands) -> None:
+    def schedule(self, *commands: Command) -> None:
         """
         Schedules a command for execution. Does nothing if the command is already scheduled. If a
         command's requirements are not available, it will only be started if all the commands currently
@@ -145,7 +144,7 @@ class CommandScheduler:
 
         command = commands[0]
 
-        if command is None:
+        if command is None: # type: ignore
             # DriverStation.reportWarning("CommandScheduler tried to schedule a null command!", True)
             return
 

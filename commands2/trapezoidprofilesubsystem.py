@@ -70,7 +70,7 @@ class TrapezoidProfileSubsystem(Subsystem):
         """Disable the TrapezoidProfileSubsystem's output."""
         self._enabled = False
 
-    def useState(self, state: TrapezoidProfile.State):
+    def useState(self, state: TrapezoidProfile.State) -> None:
         """
         Users should override this to consume the current state of the motion profile.
 

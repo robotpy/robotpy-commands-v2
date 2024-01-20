@@ -1,7 +1,7 @@
 # validated: 2024-01-19 DS 192a28af4731 ProxyCommand.java
 from __future__ import annotations
 
-from typing import Callable, overload
+from typing import Any, Callable, overload
 
 from wpiutil import SendableBuilder
 
@@ -18,7 +18,7 @@ class ProxyCommand(Command):
     _supplier: Callable[[], Command]
 
     @overload
-    def __init__(self, supplier: Callable[[], Command]):
+    def __init__(self, supplier: Callable[[], Command]) -> None:
         """
         Creates a new ProxyCommand that schedules the supplied command when initialized, and ends when
         it is no longer scheduled. Useful for lazily creating commands at runtime.
@@ -28,7 +28,7 @@ class ProxyCommand(Command):
         ...
 
     @overload
-    def __init__(self, command: Command):
+    def __init__(self, command: Command) -> None:
         """
         Creates a new ProxyCommand that schedules the given command when initialized, and ends when it
         is no longer scheduled.
@@ -37,7 +37,7 @@ class ProxyCommand(Command):
         """
         ...
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, *args: Any, **kwargs: Any):
         super().__init__()
 
         def init_supplier(supplier: Callable[[], Command]):

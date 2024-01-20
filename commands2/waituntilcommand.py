@@ -1,7 +1,7 @@
 # validated: 2024-01-20 DS aaea85ff1656 WaitUntilCommand.java
 from __future__ import annotations
 
-from typing import Callable, overload
+from typing import Any, Callable, overload
 
 from wpilib import Timer
 from wpimath import units
@@ -19,7 +19,7 @@ class WaitUntilCommand(Command):
     _condition: Callable[[], bool]
 
     @overload
-    def __init__(self, condition: Callable[[], bool]):
+    def __init__(self, condition: Callable[[], bool]) -> None:
         """
         Creates a new WaitUntilCommand that ends after a given condition becomes true.
 
@@ -28,7 +28,7 @@ class WaitUntilCommand(Command):
         ...
 
     @overload
-    def __init__(self, time: units.seconds):
+    def __init__(self, time: units.seconds) -> None:
         """
         Creates a new WaitUntilCommand that ends after a given match time.
 
@@ -40,7 +40,7 @@ class WaitUntilCommand(Command):
         """
         ...
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, *args: Any, **kwargs: Any):
         super().__init__()
 
         def init_condition(condition: Callable[[], bool]) -> None:

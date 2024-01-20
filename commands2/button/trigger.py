@@ -1,5 +1,5 @@
 from types import SimpleNamespace
-from typing import Callable, overload
+from typing import Any, Callable, overload
 
 from typing_extensions import Self
 from wpilib.event import EventLoop
@@ -22,7 +22,7 @@ class Trigger:
     _condition: Callable[[], bool]
 
     @overload
-    def __init__(self, condition: Callable[[], bool] = lambda: False):
+    def __init__(self, condition: Callable[[], bool] = lambda: False) -> None:
         """
         Creates a new trigger based on the given condition.
 
@@ -33,7 +33,7 @@ class Trigger:
         ...
 
     @overload
-    def __init__(self, loop: EventLoop, condition: Callable[[], bool]):
+    def __init__(self, loop: EventLoop, condition: Callable[[], bool]) -> None:
         """
         Creates a new trigger based on the given condition.
 
@@ -42,7 +42,7 @@ class Trigger:
         """
         ...
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, *args: Any, **kwargs: Any):
         def init_loop_condition(loop: EventLoop, condition: Callable[[], bool]):
             self._loop = loop
             self._condition = condition

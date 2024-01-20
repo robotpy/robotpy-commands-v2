@@ -1,5 +1,5 @@
 # validated: 2024-01-20 DS 7a099cb02a33 button/NetworkButton.java
-from typing import overload
+from typing import Any, overload
 
 from ntcore import BooleanSubscriber, BooleanTopic, NetworkTable, NetworkTableInstance
 
@@ -61,9 +61,9 @@ class NetworkButton(Trigger):
         """
         pass
 
-    def __init__(self, *args, **kwargs) -> None:
+    def __init__(self, *args: Any, **kwargs: Any) -> None:
         def init_sub(sub: BooleanSubscriber):
-            return super(NetworkButton, self).__init__(
+            super(NetworkButton, self).__init__(
                 lambda: sub.getTopic().getInstance().isConnected() and sub.get()
             )
 

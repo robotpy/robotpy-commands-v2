@@ -66,7 +66,7 @@ class PIDCommand(Command):
             self._controller.calculate(self._measurement(), self._setpoint())
         )
 
-    def end(self, interrupted):
+    def end(self, interrupted: bool):
         self._useOutput(0)
 
     def getController(self):
