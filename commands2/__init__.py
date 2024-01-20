@@ -16,7 +16,6 @@ from .pidcommand import PIDCommand
 from .pidsubsystem import PIDSubsystem
 from .printcommand import PrintCommand
 from .proxycommand import ProxyCommand
-from .proxyschedulecommand import ProxyScheduleCommand
 from .repeatcommand import RepeatCommand
 from .runcommand import RunCommand
 from .schedulecommand import ScheduleCommand
@@ -49,7 +48,6 @@ __all__ = [
     "PIDSubsystem",
     "PrintCommand",
     "ProxyCommand",
-    "ProxyScheduleCommand",
     "RepeatCommand",
     "RunCommand",
     "ScheduleCommand",
