@@ -9,6 +9,7 @@ from .deferredcommand import DeferredCommand
 from .exceptions import IllegalCommandUse
 from .functionalcommand import FunctionalCommand
 from .instantcommand import InstantCommand
+from .mecanumcontrollercommand import MecanumControllerCommand
 from .notifiercommand import NotifierCommand
 from .parallelcommandgroup import ParallelCommandGroup
 from .paralleldeadlinegroup import ParallelDeadlineGroup
@@ -47,6 +48,7 @@ __all__ = [
     "IllegalCommandUse",
     "InstantCommand",
     "InterruptionBehavior",
+    "MecanumControllerCommand",
     "NotifierCommand",
     "ParallelCommandGroup",
     "ParallelDeadlineGroup",
