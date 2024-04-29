@@ -59,7 +59,7 @@ class ProxyCommand(Command):
             warnings.warn(
                 "The ProxyCommand supplier constructor has been deprecated",
                 DeprecationWarning,
-                stacklevel=2,
+                stacklevel=3,
             )
 
         def init_command(command: Command):
