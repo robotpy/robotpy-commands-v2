@@ -27,7 +27,7 @@ class ProxyCommand(Command):
     def __init__(self, supplier: Callable[[], Command]):
         """
         Creates a new ProxyCommand that schedules the supplied command when initialized, and ends when
-        it is no longer scheduled. it is no longer scheduled. Use this for lazily creating **proxied** commands at
+        it is no longer scheduled. Use this for lazily creating **proxied** commands at
         runtime. Proxying should only be done to escape from composition requirement semantics, so if
         only initialization time command construction is needed, use DeferredCommand instead.
 
