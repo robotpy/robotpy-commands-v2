@@ -14,10 +14,10 @@ class ProxyCommand(Command):
     """
     Schedules a given command when this command is initialized and ends when it ends, but does not
     directly run it. Use this for including a command in a composition without adding its
-    requirements, but only if you know what you are doing. If you are unsure, see 
+    requirements, but only if you know what you are doing. If you are unsure, see
     `the WPILib docs <https://docs.wpilib.org/en/stable/docs/software/commandbased/command-compositions.html#scheduling-other-commands>`_
-    for a complete explanation of proxy semantics. Do not proxy a command from a subsystem already 
-    required by the composition, or else the composition will cancel itself when the proxy is reached. 
+    for a complete explanation of proxy semantics. Do not proxy a command from a subsystem already
+    required by the composition, or else the composition will cancel itself when the proxy is reached.
     If this command is interrupted, it will cancel the command.
     """
 
@@ -57,7 +57,9 @@ class ProxyCommand(Command):
             assert callable(supplier)
             self._supplier = supplier
             warnings.warn(
-                "The ProxyCommand supplier constructor has been deprecated", DeprecationWarning, stacklevel=2
+                "The ProxyCommand supplier constructor has been deprecated",
+                DeprecationWarning,
+                stacklevel=2,
             )
 
         def init_command(command: Command):
