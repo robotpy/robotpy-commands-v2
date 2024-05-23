@@ -256,7 +256,7 @@ class CommandScheduler(Sendable):
                 # skip as the normal scheduledCommands was modified
                 # and that command was canceled
                 continue
-            
+
             if isDisabled and not command.runsWhenDisabled():
                 self._cancel(command, None)
                 continue
