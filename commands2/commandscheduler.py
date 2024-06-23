@@ -482,7 +482,7 @@ class CommandScheduler(Sendable):
 
     def printWatchdogEpochs(self) -> None:
         """
-        Prints the watchdog epochs to the console.
+        Prints list of epochs added so far and their times.
         """
         self._watchdog.printEpochs()
 
