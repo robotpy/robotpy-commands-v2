@@ -51,8 +51,11 @@ class ParallelRaceGroup(Command):
         for command in commands:
             in_common = command.getRequirements().intersection(self.requirements)
             if in_common:
+                requirements_str = ", ".join([s.getName() for s in command.getRequirements()])
                 raise IllegalCommandUse(
-                    "Multiple commands in a parallel composition cannot require the same subsystems.",
+                    f"Command {command.getName()} could not be added to this ParallelCommandGroup"
+                    f" because the subsystems [{requirements_str}] are already required in this command."
+                    f" Multiple commands in a parallel composition cannot require the same subsystems.",
                     common=in_common,
                 )
 
