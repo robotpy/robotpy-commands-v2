@@ -8,6 +8,18 @@ if TYPE_CHECKING:
     from .util import *
 
 
+initialStates: list[tuple[commands2.button.InitialState, bool, map[str, bool]]] = [
+    (commands2.button.InitialState.kFalse, True, { "onTrue": True, "onFalse": False }),
+    (commands2.button.InitialState.kFalse, False, { "onTrue": False, "onFalse": False }),
+    (commands2.button.InitialState.kTrue, True, { "onTrue": False, "onFalse": False }),
+    (commands2.button.InitialState.kTrue, False, { "onTrue": False, "onFalse": True }),
+    (commands2.button.InitialState.kCondition, True, { "onTrue": False, "onFalse": False }),
+    (commands2.button.InitialState.kCondition, False, { "onTrue": False, "onFalse": False }),
+    (commands2.button.InitialState.kNegCondition, True, { "onTrue": True, "onFalse": False }),
+    (commands2.button.InitialState.kNegCondition, False, { "onTrue": False, "onFalse": True }),
+]
+
+
 def test_onTrue(scheduler: commands2.CommandScheduler):
     finished = OOBoolean(False)
     command1 = commands2.WaitUntilCommand(finished)
@@ -23,6 +35,21 @@ def test_onTrue(scheduler: commands2.CommandScheduler):
     finished.set(True)
     scheduler.run()
     assert not command1.isScheduled()
+
+
+@pytest.mark.parametrize("initialState,pressed,results", initialStates)
+def test_onTrueInitialState(scheduler: commands2.CommandScheduler, initialState: commands2.button.InitialState, pressed: bool, results: map[str, bool]):
+    command1 = commands2.cmd.idle()
+    button = InternalButton()
+    shouldBeScheduled = results["onTrue"]
+
+    button.setPressed(pressed)
+    button.onTrue(command1, initialState)
+
+    assert not command1.isScheduled()
+
+    scheduler.run()
+    assert command1.isScheduled()
 
 
 def test_onFalse(scheduler: commands2.CommandScheduler):
@@ -42,6 +69,21 @@ def test_onFalse(scheduler: commands2.CommandScheduler):
     assert not command1.isScheduled()
 
 
+@pytest.mark.parametrize("initialState,pressed,results", initialStates)
+def test_onFalseInitialState(scheduler: commands2.CommandScheduler, initialState: commands2.button.InitialState, pressed: bool, results: map[str, bool]):
+    command1 = commands2.cmd.idle()
+    button = InternalButton()
+    shouldBeScheduled = results["onFalse"]
+
+    button.setPressed(pressed)
+    button.onFalse(command1, initialState)
+
+    assert not command1.isScheduled()
+
+    scheduler.run()
+    assert command1.isScheduled()
+
+
 def test_onChange(scheduler: commands2.CommandScheduler):
     finished = OOBoolean(False)
     command1 = commands2.WaitUntilCommand(finished)
@@ -57,6 +99,21 @@ def test_onChange(scheduler: commands2.CommandScheduler):
     finished.set(True)
     scheduler.run()
     assert not command1.isScheduled()
+
+
+@pytest.mark.parametrize("initialState,pressed,results", initialStates)
+def test_onChangeInitialState(scheduler: commands2.CommandScheduler, initialState: commands2.button.InitialState, pressed: bool, results: map[str, bool]):
+    command1 = commands2.cmd.idle()
+    button = InternalButton()
+    shouldBeScheduled = results["onTrue"] || results["onFalse"]
+
+    button.setPressed(pressed)
+    button.onChange(command1, initialState)
+
+    assert not command1.isScheduled()
+
+    scheduler.run()
+    assert command1.isScheduled()
 
 
 def test_whileTrueRepeatedly(scheduler: commands2.CommandScheduler):
@@ -159,6 +216,21 @@ def test_toggleOnTrue(scheduler: commands2.CommandScheduler):
     scheduler.run()
     assert startCounter == 1
     assert endCounter == 1
+
+
+@pytest.mark.parametrize("initialState,pressed,results", initialStates)
+def test_toggleOnTrueInitialState(scheduler: commands2.CommandScheduler, initialState: commands2.button.InitialState, pressed: bool, results: map[str, bool]):
+    command1 = commands2.cmd.idle()
+    button = InternalButton()
+    shouldBeScheduled = results["onTrue"]
+
+    button.setPressed(pressed)
+    button.toggleOnTrue(command1, initialState)
+
+    assert not command1.isScheduled()
+
+    scheduler.run()
+    assert command1.isScheduled()
 
 
 def test_cancelWhenActive(scheduler: commands2.CommandScheduler):
