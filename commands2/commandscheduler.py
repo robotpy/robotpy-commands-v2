@@ -177,7 +177,8 @@ class CommandScheduler(Sendable):
         using those requirements have been scheduled as interruptible. If this is the case, they will
         be interrupted and the command will be scheduled.
 
-        WARNING: using this function directly is often a footgun and should be avoided. Instead Triggers should be used to schedule Commands.
+        WARNING: using this function directly can often lead to unexpected behavior and should be
+        avoided. Instead Triggers should be used to schedule Commands.
 
         :param commands: the commands to schedule.
         """
