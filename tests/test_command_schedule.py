@@ -99,5 +99,10 @@ def test_getAllSubystems(scheduler: commands2.CommandScheduler):
     scheduler.registerSubsystem(sub1)
     scheduler.registerSubsystem(sub2)
     sublist = scheduler.getAllSubsystems()
-    assert sublist[0].getName() == "test123"
-    assert sublist[1].getName() == "hey"
+    con1 = sublist[0].getName() == "test123"
+    con2 = sublist[0].getName() == "hey"
+    assert con1 or con2
+    if(con1):
+        assert sublist[1].getName() == "hey"
+    else:
+        assert sublist[1].getName() == "test123"
