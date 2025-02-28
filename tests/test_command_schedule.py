@@ -88,3 +88,16 @@ def test_notScheduledCancel(scheduler: commands2.CommandScheduler):
     command = commands2.Command()
 
     scheduler.cancel(command)
+
+def test_getAllSubystems(scheduler: commands2.CommandScheduler):
+    sub1 = commands2.Subsystem()
+    sub1.setName("test123")
+    sub2 = commands2.Subsystem()
+    sub2.setName("hey")
+    start_spying_on(sub1)
+    start_spying_on(sub2)
+    scheduler.registerSubsystem(sub1)
+    scheduler.registerSubsystem(sub2)
+    sublist = scheduler.getAllSubsystems()
+    assert sublist[0].getName() == "test123"
+    assert sublist[1].getName() == "hey"
