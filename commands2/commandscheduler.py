@@ -339,7 +339,7 @@ class CommandScheduler(Sendable):
         Gets all registered subsystems as an immutable tuple.
         """
         return tuple(self._subsystems.keys())
-    
+
     def unregisterAllSubsystems(self):
         """
         Un-registers all registered Subsystems with the scheduler. All currently registered subsystems
