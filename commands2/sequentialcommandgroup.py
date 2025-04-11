@@ -86,7 +86,7 @@ class SequentialCommandGroup(Command):
         self._currentCommandIndex = -1
 
     def isFinished(self) -> bool:
-        return self._currentCommandIndex == len(self._commands)
+        return self._currentCommandIndex == len(self._commands) or self._currentCommandIndex == -1
 
     def runsWhenDisabled(self) -> bool:
         return self._runsWhenDisabled
