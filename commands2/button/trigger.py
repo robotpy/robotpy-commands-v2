@@ -1,4 +1,5 @@
 # validated: 2024-04-02 DS 0b1345946950 button/Trigger.java
+from enum import Enum
 from types import SimpleNamespace
 from typing import Callable, overload
 
@@ -9,6 +10,37 @@ from wpimath.filter import Debouncer
 from ..command import Command
 from ..commandscheduler import CommandScheduler
 from ..util import format_args_kwargs
+
+
+class InitialState(Enum):
+    """
+    Enum specifying the initial state to use for a binding. This impacts whether or not the binding will be triggered immediately.
+    """
+
+    kFalse = 0
+    """
+    Indicates the binding should use false as the initial value. This causes a rising edge at the
+    start if and only if the condition starts true.
+    """
+
+    kTrue = 1
+    """
+    Indicates the binding should use true as the initial value. This causes a falling edge at the
+    start if and only if the condition starts false.
+    """
+
+    kCondition = 2
+    """
+    Indicates the binding should use the trigger's condition as the initial value. This never causes an edge at the
+    start.
+    """
+
+    kNegCondition = 3
+    """
+    Indicates the binding should use the negated trigger's condition as the initial value. This always causes an edge
+    at the start. Rising or falling depends on if the condition starts true or false,
+    respectively.
+    """
 
 
 class Trigger:
@@ -84,15 +116,34 @@ Invoked with: {format_args_kwargs(self, *args, **kwargs)}
 """
         )
 
-    def onTrue(self, command: Command) -> Self:
+    def _get_initial_state(self, initial_state: InitialState) -> bool:
+        """
+        Gets the initial state for a binding based on an initial state policy.
+
+        :param initialState: Initial state policy.
+        :returns: The initial state to use.
+        """
+        # match-case statement is Python 3.10+
+        if initial_state is InitialState.kFalse:
+            return False
+        if initial_state is InitialState.kTrue:
+            return True
+        if initial_state is InitialState.kCondition:
+            return self._condition()
+        if initial_state is InitialState.kNegCondition:
+            return not self._condition()
+        return False
+
+    def onTrue(self, command: Command, initial_state: InitialState = InitialState.kCondition) -> Self:
         """
         Starts the given command whenever the condition changes from `False` to `True`.
 
         :param command: the command to start
+        :param initial_state: the initial state to use
         :returns: this trigger, so calls can be chained
         """
 
-        state = SimpleNamespace(pressed_last=self._condition())
+        state = SimpleNamespace(pressed_last=self._get_initial_state(initial_state))
 
         @self._loop.bind
         def _():
@@ -103,15 +154,16 @@ Invoked with: {format_args_kwargs(self, *args, **kwargs)}
 
         return self
 
-    def onFalse(self, command: Command) -> Self:
+    def onFalse(self, command: Command, initial_state: InitialState = InitialState.kCondition) -> Self:
         """
         Starts the given command whenever the condition changes from `True` to `False`.
 
         :param command: the command to start
+        :param initial_state: the initial state to use
         :returns: this trigger, so calls can be chained
         """
 
-        state = SimpleNamespace(pressed_last=self._condition())
+        state = SimpleNamespace(pressed_last=self._get_initial_state(initial_state))
 
         @self._loop.bind
         def _():
@@ -122,15 +174,16 @@ Invoked with: {format_args_kwargs(self, *args, **kwargs)}
 
         return self
 
-    def onChange(self, command: Command) -> Self:
+    def onChange(self, command: Command, initial_state: InitialState = InitialState.kCondition) -> Self:
         """
         Starts the command when the condition changes.
 
         :param command: the command t start
+        :param initial_state: the initial state to use
         :returns: this trigger, so calls can be chained
         """
 
-        state = SimpleNamespace(pressed_last=self._condition())
+        state = SimpleNamespace(pressed_last=self._get_initial_state(initial_state))
 
         @self._loop.bind
         def _():
@@ -143,7 +196,7 @@ Invoked with: {format_args_kwargs(self, *args, **kwargs)}
 
         return self
 
-    def whileTrue(self, command: Command) -> Self:
+    def whileTrue(self, command: Command, initial_state: InitialState = InitialState.kCondition) -> Self:
         """
         Starts the given command when the condition changes to `True` and cancels it when the condition
         changes to `False`.
@@ -152,10 +205,11 @@ Invoked with: {format_args_kwargs(self, *args, **kwargs)}
         should restart, see :class:`commands2.RepeatCommand`.
 
         :param command: the command to start
+        :param initial_state: the initial state to use
         :returns: this trigger, so calls can be chained
         """
 
-        state = SimpleNamespace(pressed_last=self._condition())
+        state = SimpleNamespace(pressed_last=self._get_initial_state(initial_state))
 
         @self._loop.bind
         def _():
@@ -168,7 +222,7 @@ Invoked with: {format_args_kwargs(self, *args, **kwargs)}
 
         return self
 
-    def whileFalse(self, command: Command) -> Self:
+    def whileFalse(self, command: Command, initial_state: InitialState = InitialState.kCondition) -> Self:
         """
         Starts the given command when the condition changes to `False` and cancels it when the
         condition changes to `True`.
@@ -177,10 +231,11 @@ Invoked with: {format_args_kwargs(self, *args, **kwargs)}
         should restart, see :class:`commands2.RepeatCommand`.
 
         :param command: the command to start
+        :param initial_state: the initial state to use
         :returns: this trigger, so calls can be chained
         """
 
-        state = SimpleNamespace(pressed_last=self._condition())
+        state = SimpleNamespace(pressed_last=self._get_initial_state(initial_state))
 
         @self._loop.bind
         def _():
@@ -193,15 +248,16 @@ Invoked with: {format_args_kwargs(self, *args, **kwargs)}
 
         return self
 
-    def toggleOnTrue(self, command: Command) -> Self:
+    def toggleOnTrue(self, command: Command, initial_state: InitialState = InitialState.kCondition) -> Self:
         """
         Toggles a command when the condition changes from `False` to `True`.
 
         :param command: the command to toggle
+        :param initial_state: the initial state to use
         :returns: this trigger, so calls can be chained
         """
 
-        state = SimpleNamespace(pressed_last=self._condition())
+        state = SimpleNamespace(pressed_last=self._get_initial_state(initial_state))
 
         @self._loop.bind
         def _():
@@ -215,15 +271,16 @@ Invoked with: {format_args_kwargs(self, *args, **kwargs)}
 
         return self
 
-    def toggleOnFalse(self, command: Command) -> Self:
+    def toggleOnFalse(self, command: Command, initial_state: InitialState = InitialState.kCondition) -> Self:
         """
         Toggles a command when the condition changes from `True` to `False`.
 
         :param command: the command to toggle
+        :param initial_state: the initial state to use
         :returns: this trigger, so calls can be chained
         """
 
-        state = SimpleNamespace(pressed_last=self._condition())
+        state = SimpleNamespace(pressed_last=self._get_initial_state(initial_state))
 
         @self._loop.bind
         def _():
